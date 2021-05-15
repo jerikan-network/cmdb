@@ -1,0 +1,26 @@
+templates:
+  network-interfaces: linux/interfaces.j2
+  keepalived.conf: linux/keepalived.j2
+  authorized_keys: linux/authorized-keys.j2
+  nftables.conf: linux/nftables-rules-v4.j2
+  sysctl.conf: linux/sysctl.conf.j2
+  motd: linux/motd.j2
+  dhcpd.conf: linux/dhcp.j2
+  nginx.conf: linux/nginx.j2
+  conserver.cf: linux/conserver.j2
+checks:
+  - description: "/etc/network/interfaces syntax check"
+    script: checks/linux-interfaces
+    cache: network-interfaces
+  - description: "keepalived.conf syntax check"
+    script: checks/linux-keepalived
+    cache: keepalived.conf
+  - description: "SSH authorized_keys syntax check"
+    script: checks/linux-authorized_keys
+    cache: authorized_keys
+  - description: "dhcpd.conf syntax check"
+    script: checks/linux-dhcpd
+    cache: dhcpd.conf
+  - description: "nftables.conf syntax check"
+    script: checks/linux-nftables
+    cache: nftables.conf

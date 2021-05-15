@@ -1,0 +1,23 @@
+- name: copy DHCP configuration file
+  copy:
+    dest: "/etc/dhcp/dhcpd.conf"
+    src: "{{ host_dir }}/dhcpd.conf"
+  notify: DHCP configuration changed
+
+- name: copy DHCP service configuration file
+  copy:
+    src: "{{ host_dir }}/default-isc-dhcp"
+    dest: /etc/default/isc-dhcp-server-private
+  notify: DHCP configuration changed
+
+- name: enable ISC DHCP server on private VRF
+  systemd:
+    name: dhcpd@private.service
+    state: started
+    enabled: true
+
+- name: stop non-VRF-aware DHCP server service
+  systemd:
+    name: dhcpd.service
+    state: stopped
+    enabled: false

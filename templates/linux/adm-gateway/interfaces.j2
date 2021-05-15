@@ -1,0 +1,7 @@
+{% set oob_ifaces = lookup("topology", "oob-interfaces") %}
+auto oob
+iface oob inet static
+  address {{ lookup("topology", "addresses").oob | store("addresses", "oob") }}
+  bond-mode active-backup
+  bond-miimon 100
+  bond-slaves {{ (oob_ifaces or ["none"])|join(" ") }}

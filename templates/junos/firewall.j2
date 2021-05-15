@@ -1,0 +1,733 @@
+{% macro then(action, ipv, count=False, limit=False, log=False) %}
+{# "then" macro for then statement #}
+{% if action is defined and action in ["discard", "accept"] %}
+then {
+  {{ "policer management-{};".format(limit) if limit }}
+  {{ "count {}-{}-{};".format(ipv, action, count)  if count }}
+  {{ "log;" if action == "discard" or log }}
+  {{ action }};
+}
+{% else %}
+{% error "bad action or action not defined on re protect policy" %}
+{% endif %}
+{% endmacro %}
+
+policy-options  {
+  prefix-list ipv4-admin {
+{% for items, prefix in lookup('topology', 'acl-addresses').admin.items() %}
+    {{ prefix }};
+{% endfor %}
+{% if lookup('topology', 'addresses').main is defined %}
+    /* OOB-subnet */
+    {{ lookup('topology', 'addresses').main | ipaddr('subnet') }};
+{% endif %}
+  }
+  prefix-list ipv4-snmp {
+{% if 'edge' in groups and lookup('system', 'sampling').type is not none %}
+    {{ lookup("system", "sampling")["snmp-prefix"] }};
+{% endif %}
+  }
+}
+{% if model == 'mx10003' %}
+firewall {
+  family inet {
+  {% for police, speed in ["low", "1m"],["high", "5m"] %}
+    prefix-action management-{{ police }}-police-set {
+      policer management-{{ speed }};
+      count;
+      filter-specific;
+      subnet-prefix-length 24;
+      destination-prefix-length 32;
+    }
+{% endfor %}
+  }
+}
+{% endif %}
+{% set ipv4_filter_list = [] %}
+{% set ipv6_filter_list = [] %}
+{# OSPF #}
+{% if protectre.ospf %}
+{% set filter = 'accept-ospf' %}
+{% do ipv4_filter_list.append("ipv4-{}".format(filter)) %}
+{% do ipv6_filter_list.append("ipv6-{}".format(filter)) %}
+firewall {
+  family inet {
+    filter ipv4-{{ filter }} {
+      apply-flags omit;
+      term accept-ospf {
+        from {
+          source-prefix-list {
+            ipv4-router;
+          }
+          destination-prefix-list {
+            ipv4-router;
+            ospf;
+          }
+          protocol ospf;
+        }
+        {{ then("accept", "ipv4", filter) | indent(10) }}
+      }
+    }
+  }
+  family inet6 {
+  {% set ipv = "ipv6" %}
+    filter ipv6-{{ filter }} {
+      apply-flags omit;
+      term accept-ospfv3 {
+        from {
+          source-prefix-list {
+            ipv6-link-local;
+          }
+          next-header ospf;
+        }
+        {{ then("accept", ipv, filter) | indent(10) }}
+      }
+    }
+  }
+}
+policy-options {
+  prefix-list ospf {
+    224.0.0.5/32;
+    224.0.0.6/32;
+  }
+}
+{% endif %}
+{# BGP #}
+{% if protectre.bgp %}
+{% set filter = 'accept-bgp' %}
+{% do ipv4_filter_list.append("ipv4-{}".format(filter)) %}
+{% do ipv6_filter_list.append("ipv6-{}".format(filter)) %}
+  {% for ipv in ["ipv4","ipv6"] %}
+firewall {
+  family {{"inet" if ipv=="ipv4" else "inet6"}} {
+    filter {{ ipv }}-{{ filter }} {
+      apply-flags omit;
+      term accept-bgp {
+        from {
+          source-prefix-list {
+            {{ ipv }}-bgp-neighbors-routing-instances;
+            {{ ipv }}-bgp-neighbors;
+          }
+          destination-prefix-list {
+            {{ ipv }}-router;
+          }
+          {{"protocol" if ipv=="ipv4" else "next-header"}} tcp;
+          port bgp;
+        }
+        {{ then("accept", ipv, filter) | indent(10) }}
+      }
+    }
+  }
+}
+policy-options {
+  prefix-list {{ ipv }}-bgp-neighbors-routing-instances {
+    apply-path "routing-instances <*> protocols bgp group <{{ ipv }}-*> neighbor <*>";
+  }
+    prefix-list {{ ipv }}-bgp-neighbors {
+    apply-path "protocols bgp group <{{ ipv }}-*> neighbor <*>";
+  }
+}
+{% endfor %}
+{% endif %}
+{# RTR #}
+{% if protectre.rtr %}
+{% set filter = 'accept-rtr' %}
+{% do ipv4_filter_list.append("ipv4-{}".format(filter)) %}
+firewall {
+  family inet {
+    filter ipv4-{{ filter }} {
+      term accept-established-tcp-rtr {
+        apply-flags omit;
+        from {
+          source-prefix-list {
+            ipv4-rtr-servers;
+          }
+          destination-prefix-list {
+            ipv4-router;
+          }
+          protocol tcp;
+          source-port 3323;
+          tcp-established;
+        }
+        {{ then("accept", ipv, "established-tcp-rtr") | indent(10) }}
+      }
+    }
+  }
+}
+policy-options {
+  prefix-list ipv4-rtr-servers {
+    apply-path "routing-options validation group validators session <*>";
+  }
+}
+{% endif %}
+{# VRRP #}
+{% if protectre.vrrp %}
+{% set filter = 'accept-vrrp' %}
+{% do ipv4_filter_list.append("ipv4-{}".format(filter)) %}
+firewall {
+  family inet {
+  {% set ipv = "ipv4" %}
+    filter ipv4-{{ filter }} {
+      apply-flags omit;
+      term accept-vrrp {
+        from {
+          source-prefix-list {
+            ipv4-router;
+          }
+          destination-prefix-list {
+            vrrp;
+          }
+          protocol [ vrrp ah ];
+        }
+        {{ then("accept", ipv, filter) | indent(10) }}
+      }
+    }
+  }
+}
+policy-options {
+  prefix-list vrrp {
+  224.0.0.18/32;
+  }
+}
+{% endif %}
+{# BFD #}
+{% if protectre.bfd %}
+{% set filter = 'accept-bfd' %}
+{% do ipv4_filter_list.append("ipv4-{}".format(filter)) %}
+{% do ipv6_filter_list.append("ipv6-{}".format(filter)) %}
+firewall {
+  family inet {
+  {% set ipv = "ipv4" %}
+    filter ipv4-{{ filter }} {
+      apply-flags omit;
+      term accept-bfd {
+        from {
+          source-prefix-list {
+            ipv4-router;
+          }
+          destination-prefix-list {
+            ipv4-router;
+          }
+          protocol udp;
+          source-port 49152-65535;
+          destination-port 3784-3785;
+        }
+        {{ then("accept", ipv, filter) | indent(10) }}
+      }
+    }
+  }
+  family inet6 {
+  {% set ipv = "ipv6" %}
+    filter ipv6-{{ filter }} {
+      apply-flags omit;
+      term accept-bfd {
+        from {
+          source-prefix-list {
+            ipv6-router;
+          }
+          destination-prefix-list {
+            ipv6-router;
+          }
+          protocol udp;
+          source-port 49152-65535;
+          destination-port 3784-3785;
+         }
+         {{ then("accept", ipv, filter) | indent(10) }}
+      }
+    }
+  }
+}
+{% endif %}
+ {% set disable = lookup("system", "bypass-protect-re") %}
+{# loopback configuration #}
+groups protect-re {
+  interfaces {
+    lo0 {
+      unit <*> {
+       family inet {
+          filter input-list [{{ "ipv4-security" if not disable }} {{ " ".join(ipv4_filter_list) }} ipv4-accept-common-services ipv4-accept-established {{ "ipv4-accept-all" if disable }} ipv4-discard-all ];
+        }
+       family inet6 {
+          filter input-list [ {{ "ipv6-security" if not disable }} {{ " ".join(ipv6_filter_list) }} ipv6-accept-icmp6-misc ipv6-accept-common-services {{ "ipv6-accept-all" if disable }} ipv6-discard-all ];
+        }
+      }
+    }
+  }
+}
+
+interfaces {
+  lo0 {
+  apply-groups protect-re;
+  }
+}
+{% set all_policy =  ["discard"] %}
+{% if disable %}
+  {% do all_policy.append("accept") %}
+{% else %}
+{# discard fragment and any ip option#}
+firewall {
+  family inet {
+  {% set ipv = "ipv4" %}
+    filter ipv4-security {
+      term discard-frags {
+        apply-flags omit;
+        from {
+          is-fragment;
+        }
+        {{ then("discard", ipv, "discard-frags") | indent(10) }}
+      }
+      term discard-ip-options {
+        apply-flags omit;
+        from {
+          ip-options any;
+        }
+        {{ then("discard", ipv, "discard-ip-options") | indent(10) }}
+      }
+    }
+  }
+  family inet6 {
+  {% set ipv = "ipv6" %}
+    filter ipv6-security {
+      term discard-extension-headers {
+        apply-flags omit;
+        from {
+            next-header [ dstopts egp fragment gre icmp igmp ipip ipv6 no-next-header routing rsvp sctp ];
+        }
+        {{ then("discard", ipv, "discard-extension-headers") | indent(10) }}
+      }
+      term icmp6-unassigned-discard {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type [ 102-106 155-199 202-254 ];
+        }
+        {{ then("discard", ipv, "icmp6-unassigned-discard") | indent(10) }}
+      }
+      term icmp-rfc4443-discard {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type [ 100-101 200-201 ];
+        }
+        {{ then("discard", ipv, "icmp6-rfc4443") | indent(10) }}
+      }
+    }
+  }
+}
+{% endif %}
+{# discard and accept all policy #}
+{% for action in all_policy | tolist %}
+firewall {
+  family inet {
+  {% set ipv = "ipv4" %}
+    filter ipv4-{{ action }}-all {
+      apply-flags omit;
+      term {{ action }}-ttl1-unknown {
+        from {
+          ttl 1;
+        }
+         {{ then(action, ipv, "ttl1-unknown", log=True) | indent(10) }}
+    }
+  {% for protocol in ["tcp", "udp", "icmp"] %}
+      term {{ action }}-{{ protocol }} {
+        from {
+          protocol {{ protocol }};
+        }
+        {{ then(action, ipv, protocol, log=True) | indent(10) }}
+      }
+    {% endfor %}
+      term {{ action }}-unknown {
+        {{ then(action, ipv, "unknown", log=True) | indent(10) }}
+      }
+    }
+  }
+  family inet6 {
+  {% set ipv = "ipv6" %}
+    filter ipv6-{{ action }}-all {
+      apply-flags omit;
+      term {{ action }}-hoplimit1-unknown {
+        from {
+          hop-limit 1;
+        }
+        {{ then("discard", ipv, "hoplimit1-unknown", log=True) | indent(10) }}
+      }
+    {% for protocol in ["tcp", "udp", "icmp"] %}
+      term {{ action }}-{{ protocol }} {
+        from {
+          next-header {{ protocol }};
+        }
+        {{ then(action, ipv, protocol, log=True) | indent(10) }}
+      }
+    {% endfor %}
+      term {{ action }}-unknown {
+        {{ then(action, ipv, "unknown", log=True) | indent(10) }}
+      }
+    }
+  }
+}
+{% endfor %}
+{# STATIC PART#}
+policy-options  {
+  prefix-list ipv4-router {
+    apply-path "interfaces <*> unit <*> family inet address <*>";
+  }
+  prefix-list ipv6-router {
+    apply-path "interfaces <*> unit <*> family inet6 address <*>";
+  }
+  prefix-list ntp-servers {
+    apply-path "system ntp server <*>";
+  }
+  prefix-list snmp-client-lists {
+    apply-path "snmp client-list <*> <*>";
+  }
+  prefix-list snmp-community-clients {
+    apply-path "snmp community <*> clients <*>";
+  }
+  prefix-list ipv4-localhost {
+    127.0.0.1/32;
+  }
+  prefix-list ipv6-link-local {
+    fe80::/64;
+  }
+  prefix-list dns-servers {
+    apply-path "system name-server <*>";
+  }
+}
+firewall {
+{% for speed in ["1m", "5m"] %}
+  policer management-{{ speed }} {
+    if-exceeding {
+      bandwidth-limit {{ speed }};
+      burst-size-limit 625k;
+    }
+    then discard;
+  }
+{% endfor %}
+  family inet {
+{% set ipv = "ipv4" %}
+    filter ipv4-accept-established {
+      term accept-established-tcp-ssh {
+        apply-flags omit;
+        from {
+          destination-prefix-list {
+            ipv4-router;
+          }
+          source-port ssh;
+          tcp-established;
+        }
+        {{ then("accept", ipv, "established-tcp-ssh", "5m") | indent(10) }}
+      }
+      term accept-established-tcp-http {
+        apply-flags omit;
+        from {
+          source-prefix-list {
+            ipv4-admin;
+          }
+          destination-prefix-list {
+            ipv4-router;
+          }
+          source-port [ http https ];
+          tcp-established;
+        }
+        {{ then("accept", ipv, "established-tcp-http") | indent(10) }}
+      }
+      term accept-established-udp-ephemeral {
+        apply-flags omit;
+        from {
+          destination-prefix-list {
+            ipv4-router;
+          }
+          protocol udp;
+          destination-port 49152-65535;
+        }
+        {{ then("accept", ipv, "established-udp-ephemeral", "5m") | indent(10) }}
+      }
+    }
+    filter ipv4-accept-common-services {
+      term accept-icmp {
+        apply-flags omit;
+        from {
+          protocol icmp;
+          ttl-except 1;
+          icmp-type [ echo-reply echo-request time-exceeded unreachable source-quench router-advertisement parameter-problem ];
+        }
+        {{ then("accept", ipv, "icmp", "5m") | indent(10) }}
+      }
+      term accept-traceroute-udp {
+        apply-flags omit;
+        from {
+          destination-prefix-list {
+            ipv4-router;
+          }
+          protocol udp;
+          ttl 1;
+          destination-port 33435-33450;
+        }
+        {{ then("accept", ipv, "traceroute-udp", "5m") | indent(10) }}
+      }
+      term accept-traceroute-icmp {
+        apply-flags omit;
+        from {
+          destination-prefix-list {
+            ipv4-router;
+          }
+          protocol icmp;
+          ttl 1;
+          icmp-type [ echo-request timestamp time-exceeded ];
+        }
+        {{ then("accept", ipv, "traceroute-icmp", "5m") | indent(10) }}
+      }
+      term accept-ssh {
+        apply-flags omit;
+        from {
+          source-prefix-list {
+            ipv4-admin;
+          }
+          protocol tcp;
+          destination-port [ ssh 830 ];
+        }
+        {{ then("accept", ipv, "ssh", "5m") | indent(10) }}
+      }
+      term accept-snmp {
+        apply-flags omit;
+        from {
+          source-prefix-list {
+            snmp-client-lists;
+            snmp-community-clients;
+            ipv4-snmp;
+          }
+          destination-prefix-list {
+            ipv4-router;
+          }
+          protocol udp;
+          destination-port snmp;
+        }
+        {{ then("accept", ipv, "snmp", "5m") | indent(10) }}
+      }
+      term accept-ntp {
+        apply-flags omit;
+        from {
+          source-prefix-list {
+            ntp-servers;
+            ipv4-router;
+            ipv4-localhost;
+          }
+          destination-prefix-list {
+            ipv4-router;
+            ipv4-localhost;
+          }
+          protocol udp;
+          port ntp;
+        }
+        {{ then("accept", ipv, "ntp", "1m") | indent(10) }}
+      }
+      term accept-dns {
+        apply-flags omit;
+        from {
+          source-prefix-list {
+            dns-servers;
+          }
+          destination-prefix-list {
+            ipv4-router;
+          }
+          protocol udp;
+          source-port 53;
+        }
+        {{ then("accept", ipv, "dns", "1m") | indent(10) }}
+      }
+{% if protectre.dhcp %}
+      term dhcp-client-accept {
+        apply-flags omit;
+        from {
+            source-address {
+                0.0.0.0/32;
+            }
+            destination-address {
+                255.255.255.255/32;
+            }
+            protocol udp;
+            source-port 68;
+            destination-port 67;
+        }
+        {{ then("accept", ipv, "dhcp", "1m") | indent(10) }}
+      }
+      term dhcp-server-accept {
+        apply-flags omit;
+        from {
+            protocol udp;
+            source-port [ 67 68 ];
+            destination-port [ 67 68 ];
+        }
+        {{ then("accept", ipv, "dhcp", "1m") | indent(10) }}
+      }
+{% endif %}
+    }
+  }
+  family inet6 {
+{% set ipv = "ipv6" %}
+    filter ipv6-accept-common-services {
+      term accept-traceroute-udp {
+      apply-flags omit;
+        from {
+          destination-prefix-list {
+            ipv6-router;
+          }
+          next-header udp;
+          destination-port 33435-33450;
+          hop-limit 1;
+        }
+        {{ then("accept", ipv, "traceroute-udp", "1m") | indent(10) }}
+      }
+      term accept-traceroute-icmp6 {
+      apply-flags omit;
+        from {
+          destination-prefix-list {
+            ipv6-router;
+          }
+          next-header icmp;
+          icmp-type [ echo-request time-exceeded ];
+          hop-limit 1;
+        }
+        {{ then("accept", ipv, "traceroute-icmp6", "1m") | indent(10) }}
+      }
+    }
+    filter ipv6-accept-icmp6-misc {
+      term neigbor-discovery-accept {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type 133-136;
+        }
+        then accept;
+      }
+      term inverse-neigbor-discovery-accept {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type 141-142;
+        }
+        {{ then("accept", ipv, "icmp6-misc", "1m") | indent(10) }}
+      }
+      term icmp6-echo-request {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type echo-request;
+        }
+        {{ then("accept", ipv, "icmp6-echo-request", "1m") | indent(10) }}
+      }
+      term icmp6-echo-reply {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type echo-reply;
+        }
+        {{ then("accept", ipv, "icmp6-echo-reply", "1m") | indent(10) }}
+      }
+      term icmp6-dest-unreachable-accept {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type destination-unreachable;
+        }
+        {{ then("accept", ipv, "icmp6-dest-unreachable", "1m") | indent(10) }}
+      }
+      term icmp6-packet-too-big-accept {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type packet-too-big;
+        }
+        {{ then("accept", ipv, "icmp6-too-big", "1m") | indent(10) }}
+      }
+      term icmp6-time-exceeded-accept {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type time-exceeded;
+          icmp-code 0;
+        }
+        {{ then("accept", ipv, "icmp6-time-exceeded", "1m") | indent(10) }}
+      }
+      term icmp6-parameter-problem-accept {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type parameter-problem;
+          icmp-code [ 1 2 ];
+        }
+        {{ then("accept", ipv, "icmp6-parameter-problem", "1m") | indent(10) }}
+      }
+    }
+  }
+}
+{# apply some firewall rules on the internet ingress interfaces #}
+{% if "edge" in groups and lookup('system', 'firewall') is defined  %}
+firewall {
+  family inet {
+    filter ipv4-internet-ingress {
+    {% for fwrule in lookup('system', 'firewall') %}
+      term {{ loop.index }} {
+        from {
+        {% if fwrule.src is defined %}
+          source-address {
+            {{ fwrule.src }};
+          }
+        {% endif %}
+          {% if fwrule.protocol is defined %}
+          protocol {{ fwrule.protocol }};
+          {% endif %}
+          {% if fwrule.dport is defined %}
+          destination-port {{ fwrule.dport }};
+          {% endif %}
+          {% if fwrule.sport is defined %}
+          source-port {{ fwrule.sport }};
+          {% endif %}
+        }
+        {% if fwrule.action == "deny" %}
+        then {
+          {% if fwrule.sport is defined %}
+          count ipv4-reject-sport-{{ fwrule.sport }};
+          {% endif %}
+          {% if fwrule.dport is defined %}
+          count ipv4-reject-dport-{{ fwrule.dport }};
+          {% endif %}
+          {% if fwrule.src is defined or fwrule.dport is defined or fwrule.sport is defined %}
+          reject;
+          {% else %}{% error "filtering might drop all inbound udp/tcp" %}
+          {% endif %}
+        }
+        {% elif fwrule.action == "permit" %}
+        then accept;
+        {% else %}
+          {% error "unknown action" %}
+        {% endif %}
+      }
+    {% endfor %}
+     term accept-remaining {
+       then accept;
+      }
+    }
+  }
+}
+groups firewall-ingress-protect {
+  interfaces {
+    <*> {
+      unit <*> {
+        family inet {
+          filter input-list ipv4-internet-ingress;
+        }
+      }
+    }
+  }
+}
+  {% for interface, data in lookup('topology', 'interfaces').items() %}
+    {% if data.type is defined and data.type not in ("core", "man") and data.get("address", [])|ipv4 %}
+interfaces {
+  {{ interface }} {
+    apply-groups firewall-ingress-protect;
+  }
+}
+    {% endif %}
+  {% endfor %}
+{% endif %}

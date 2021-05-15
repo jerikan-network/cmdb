@@ -1,0 +1,19 @@
+#!/bin/sh
+
+output=$(mktemp)
+trap "rm -f $output" EXIT
+
+vtysh -u $(whoami) --dryrun -f output/"$1"/frr.conf 2> $output
+ret=$?
+
+>&2 cat $output
+case $ret in
+    2)
+        # FRR doesn't know valide command exit-vrf, maybe a version
+        # issue?
+        ! grep -vq "^.*exit-vrf$" $output || exit 2
+        ! grep -q "^.*exit-vrf$" $output || exit 0
+        exit 2
+        ;;
+esac
+exit $ret

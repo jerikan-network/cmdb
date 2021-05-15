@@ -1,0 +1,19 @@
+- name: import someone@example.com GPG key
+  environment:
+    GPGKEY: "{{ lookup('hashi_vault', 'secret=kv/infra/all/network/ci/whois:pgpkey')|b64encode }}"
+  shell: |
+    echo $GPGKEY | base64 -d | gpg --no-tty --batch --import
+  check_mode: false
+  changed_when: false
+  tags: always
+
+- import_tasks: geofeed.yaml
+  tags: deploy:geofeed
+- import_tasks: dns.yaml
+  tags: deploy:dns
+- import_tasks: netbox.yaml
+  tags: deploy:netbox
+- import_tasks: irr.yaml
+  tags: deploy:irr
+- import_tasks: roas.yaml
+  tags: deploy:roas

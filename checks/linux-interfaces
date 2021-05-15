@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Check syntax with ifupdown
+target=$PWD/output/"$1"/network-interfaces
+ifup -n -i $target -a --state-dir=/dev/null

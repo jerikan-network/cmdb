@@ -1,0 +1,5 @@
+templates:
+  config.txt: iosxr/main.j2
+  config-base.txt: iosxr/base.j2
+diff:
+  - config.txt

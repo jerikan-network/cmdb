@@ -1,0 +1,49 @@
+{% if "spine" in groups or "sspine" in groups %}
+  {% set uplinks = []  %}
+  {% for iface, device in lookup('topology', 'ports').items() if device.startswith('edge') %}
+    {% do uplinks.append(iface) %}
+  {% endfor %}
+  {% if uplinks %}
+
+INGRESS_CHAIN = INPUT
+
+[iptables]
+# Protect BGP peering with s-spines
+    {% for uplink in uplinks %}
+      {% set me=lookup("bgptth", ":{} whatever".format(uplink)).public | ipaddr('address') %}
+      {% set edge=lookup("bgptth", ":{} whatever".format(uplink)).public | ippeer %}
+{# BGP #}
+-A $INGRESS_CHAIN --in-interface {{ uplink }}.100 -s {{ edge }} -d {{ me }} -p tcp --dport 179 -j SETCLASS --class 7
+-A $INGRESS_CHAIN -s {{ edge }} -d {{ me }} -p tcp --dport 179 -j POLICE --set-mode pkt --set-rate 2000 --set-burst 2000
+
+-A $INGRESS_CHAIN --in-interface {{ uplink }}.100 -s {{ edge }} -d {{ me }} -p tcp --sport 179 -j SETCLASS --class 7
+-A $INGRESS_CHAIN -s {{ edge }} -d {{ me }} -p tcp --sport 179 -j POLICE --set-mode pkt --set-rate 2000 --set-burst 2000
+
+{# ICMP #}
+-A $INGRESS_CHAIN --in-interface {{ uplink }}.100 -s {{ edge }} -d {{ me }} -p icmp -j SETCLASS --class 2
+-A $INGRESS_CHAIN -s {{ edge }} -d {{ me }} -p icmp -j POLICE --set-mode pkt --set-rate 100 --set-burst 40
+
+{# Drop everything else #}
+-A $INGRESS_CHAIN --in-interface {{ uplink }}.100 -j DROP
+
+    {% endfor %}
+
+[ip6tables]
+# Protect BGP peering with s-spines
+    {% for uplink in uplinks %}
+      {% set me=lookup("bgptth", ":{} whatever".format(uplink)).public | ipaddr('address') | ipv4toipv6 %}
+      {% set edge=lookup("bgptth", ":{} whatever".format(uplink)).public | ippeer | ipv4toipv6 %}
+{# BGP #}
+-A $INGRESS_CHAIN --in-interface {{ uplink }}.100 -s {{ edge }} -d {{ me }} -p tcp --dport 179 -j POLICE --set-mode pkt --set-rate 2000 --set-burst 2000 --set-class 7
+-A $INGRESS_CHAIN --in-interface {{ uplink }}.100 -s {{ edge }} -d {{ me }} -p tcp --sport 179 -j POLICE --set-mode pkt --set-rate 2000 --set-burst 2000 --set-class 7
+
+{# ICMP #}
+-A $INGRESS_CHAIN --in-interface {{ uplink }}.100 -s {{ edge }} -p icmpv6 -j POLICE --set-mode pkt --set-rate 400 --set-burst 400 --set-class 2
+-A $INGRESS_CHAIN --in-interface {{ uplink }}.100 -d fe80::/16 -p icmpv6 -j POLICE --set-mode pkt --set-rate 400 --set-burst 400 --set-class 2
+
+{# Drop everything #}
+-A $INGRESS_CHAIN --in-interface {{ uplink }}.100 -j DROP
+
+    {% endfor %}
+  {% endif %}
+{% endif %}

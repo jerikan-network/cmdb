@@ -1,0 +1,12 @@
+peers:
+  transit:
+    kinx-dom:
+      asn: 9286
+      remote:
+        - 121.78.30.149
+        - 2401:2700::165
+    kinx-int:
+      asn: 9957
+      remote:
+        - 121.78.30.157
+        - 2401:2700::16d

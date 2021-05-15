@@ -1,0 +1,45 @@
+{# OOB template for EX3400 (assuming 48 ports plus 4 SFP 1G ports configured as uplinks) and ELS #}
+{% set oob = lookup("topology", "addresses").main %}
+interfaces {
+  irb unit 0 {
+    family inet {
+      address {{ oob | store("addresses", "oob") }};
+    }
+  }
+{% set ports = lookup("topology", "ports") %}
+  interface-range downlink {
+    description "OOB downlink";
+    unit 0 family ethernet-switching;
+{% for i in range(0, 48) if i not in ports.uplink|torange %}
+    member ge-0/0/{{ i }};
+{% endfor %}
+  }
+  interface-range uplink {
+    description "OOB uplink";
+    unit 0 family ethernet-switching;
+{% for i in range(0, 48) if i in ports.uplink|torange %}
+    member ge-0/0/{{ i }};
+{% endfor %}
+{% for nb in range(0, 4) %}
+    member ge-0/2/{{ nb }};
+{% endfor %}
+  }
+}
+
+protocols {
+  mstp {
+    interface downlink edge;
+    bpdu-block-on-edge;
+{% set priority = lookup("system", "spanning-tree").priority | default(0) %}
+{% if priority %}
+    bridge-priority {{ priority }};
+{% endif %}
+  }
+}
+
+vlans {
+  default {
+    vlan-id 1;
+    l3-interface irb.0;
+  }
+}

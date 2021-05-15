@@ -1,0 +1,70 @@
+- name: install common packages
+  apt:
+    name:
+      - console-data
+      - curl
+      - ethtool
+      - fping
+      - ifenslave
+      - iproute2
+      - mg
+      - mtr-tiny
+      - iptables-persistent
+      - oping
+      - pciutils
+      - speedtest-cli
+      - sudo
+      - vlan
+      - zsh
+      - nftables
+  when: ansible_os_family == 'Debian'
+
+- name: create a "blade" user
+  user:
+    name: blade
+    comment: Blade Team
+    group: adm
+- include_tasks: shell.yaml
+  vars:
+    users:
+      - root
+      - blade
+
+- name: grant password-less sudo to "blade" user
+  copy:
+    content: |
+      blade ALL=(ALL:ALL) NOPASSWD: ALL
+    dest: "/etc/sudoers.d/blade"
+    mode: "0440"
+
+- name: secure SSH configuration
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regex: "^(# *)?{{ item.directive }} "
+    line: "{{ item.directive }} {{ item.value }}"
+  loop:
+    - directive: PasswordAuthentication
+      value: "no"
+    - directive: PermitRootLogin
+      value: prohibit-password
+  notify: SSH configuration changed
+
+- name: install SSH keys
+  copy:
+    src: "{{ host_dir }}/authorized_keys"
+    dest: "{{ item.home }}/.ssh/"
+    owner: "{{ item.user }}"
+    mode: "0600"
+  loop:
+    - {user: root, home: /root}
+    - {user: blade, home: /home/blade}
+
+- name: deploy motd
+  copy:
+    src: "{{ host_dir }}/motd"
+    dest: /etc/motd
+
+- name: enable persistent journal
+  file:
+    path: /var/log/journal
+    state: directory

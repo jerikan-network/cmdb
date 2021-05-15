@@ -1,0 +1,178 @@
+{% set loopbackv4 = lookup('topology', 'addresses').loopback | tolist | ipv4 | first %}
+{% set sampling_type = lookup('system', 'sampling').type %}
+{% if sampling_type %}
+routing-options {
+  static {
+      route {{ lookup('system', 'sampling').target }}/32 next-table internet.inet.0;
+  }
+}
+{% if sampling_type == "ipfix" %} 
+groups {
+  sampling {
+      interfaces {
+          <*> {
+              unit <*> {
+                  family inet {
+                      sampling {
+                          input;
+                      }
+                  }
+                  family inet6 {
+                      sampling {
+                          input;
+                      }
+                  }
+              }
+          }
+      }
+  }
+}
+services {
+  flow-monitoring {
+    version-ipfix {
+  {% for version in ("ipv4","ipv6") %}
+        template {{ version }} {
+            flow-active-timeout 10;
+            flow-inactive-timeout 10;
+            template-refresh-rate {
+                packets 30;
+                seconds 30;
+            }
+            option-refresh-rate {
+                packets 30;
+                seconds 30;
+            }
+            {{ version }}-template;
+        }
+  {% endfor %}
+    }
+  }
+}
+forwarding-options {
+  sampling {
+    instance {
+        sample-ins {
+            input {
+                rate 1024;
+                max-packets-per-second 65535;
+            }
+
+  {% for version in ("ipv4","ipv6") %}
+            family {{ "inet" if version == "ipv4" else "inet6" }} {
+                output {
+                    flow-server {{ lookup('system', 'sampling').target }}{
+                        port 20013;
+                        autonomous-system-type origin;
+                        source-address {{ loopbackv4 }};
+                        version-ipfix {
+                            template {
+                                {{ version }};
+                            }
+                        }
+                    }
+                    inline-jflow {
+                        source-address {{ loopbackv4 }};
+                    }
+                }
+            }
+  {% endfor %}
+        }
+    }
+  }
+}
+  
+{% for iface, infos in lookup('topology', 'interfaces').items() if infos and infos.aggregate is not defined and not "." in iface %}
+  {% if  infos.address is defined  or infos.remote is defined %}
+interfaces {{ iface }} apply-groups sampling; 
+  {% endif %}
+{% endfor %}
+
+chassis { 
+   fpc 0 {
+       sampling-instance sample-ins;
+       inline-services {
+  {% if lookup('system', 'sampling').flex %}
+           flex-flow-sizing;
+  {% else %}
+           flow-table-size {
+               ipv4-flow-table-size 10;
+               ipv6-flow-table-size 5;
+           }
+  {% endif %}
+       }
+   }
+}
+{% elif sampling_type == "sflow" %}
+protocols {
+    sflow {
+      agent-id {{ loopbackv4 }};
+      polling-interval 5;
+      sample-rate ingress 8192;
+      source-ip {{ loopbackv4 }};
+      collector {{ lookup('system', 'sampling').target }}  {
+          udp-port 20013;
+      }
+{% set ifd_list = [] %}
+{% for iface, infos in lookup('topology', 'interfaces').items() if infos and infos.address is defined  and iface.split(".")[0] not in ifd_list %}
+    {% set ifd = iface.split(".")[0] %}
+    {% set unit = iface.split(".")[1] if "." in iface else 0 %}
+    {% if iface.startswith('ae') %}
+      {% for parent, infos_parent in lookup('topology', 'interfaces').items() if infos_parent and infos_parent.aggregate is defined and infos_parent.aggregate == ifd %}
+        {% if parent not in ifd_list %}
+      interfaces {{ "{}.{}".format(parent, unit) }};
+          {% do ifd_list.append(parent) %}
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      interfaces {{ "{}.{}".format(ifd, unit) }};
+      {% do ifd_list.append(ifd) %}
+    {% endif %}
+{% endfor %}
+{% set sspines = devices("environment","location","groups==sspine-bgp") %}
+{% for sspine in sspines %}
+  {% for port, device in lookup("topology", "ports", sspine).items() if device == shorthost %}
+    {% for interface, infos in lookup("topology", "interfaces").items() if infos.remote is defined and "{}.{}.blade-group.net".format(infos.remote, location) == sspine %}
+      interfaces {{ interface }}.100;
+    {% endfor %}
+  {% endfor %}
+{% endfor %}
+  }
+}
+{% else %}
+  {% error "unknown sampling type" %}
+{% endif %}
+
+{# Kentik support #}
+{% set asn = lookup("bgp", "local-asn") %}
+routing-instances {
+  internet {
+    protocols {
+      bgp {
+{% for collectors in lookup("system", "sampling").collector | tolist %}
+  {% for name, peers in collectors.items() %}
+    {% for neighbor in peers | tolist %}
+      {% set version = neighbor | ipv %}
+        group ipv{{ version }}-{{ name }}-collector {
+          type internal;
+          local-as {{ asn }};
+      {% for address in lookup("topology", "addresses").loopback | tolist | ipaddr(version=version) %}
+          local-address {{ address }};
+          cluster {{ lookup("topology", "addresses").loopback | tolist | ipv4 | first }};
+      {% endfor %}
+          import KENTIK-IN-V{{ version }};
+          export KENTIK-OUT-V{{ version }};
+          family {{ "inet" if version == 4 else "inet6" }} {
+            unicast;
+          }
+          neighbor {{ neighbor }} {
+            description "Route collector: {{ name | upper }} [IPv{{ version }}]";
+          }
+        }
+   {% endfor %}
+ {% endfor %}
+{% endfor %}
+      }
+    }
+  }
+}
+{% endif %}

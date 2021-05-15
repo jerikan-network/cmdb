@@ -1,0 +1,22 @@
+- name: switch user to Zsh
+  user:
+    name: "{{ item }}"
+    shell: "/bin/zsh"
+  loop: "{{ users }}"
+  register: zshusers
+- name: install zshrc
+  copy:
+    src: zshrc
+    dest: "{{ item.home }}/.zshrc"
+    owner: "{{ item.name }}"
+  loop: "{{ zshusers.results }}"
+  loop_control:
+    label: "{{ item.name }}"
+- name: install zshenv
+  copy:
+    src: zshenv
+    dest: "{{ item.home }}/.zshenv"
+    owner: "{{ item.name }}"
+  loop: "{{ zshusers.results }}"
+  loop_control:
+    label: "{{ item.name }}"

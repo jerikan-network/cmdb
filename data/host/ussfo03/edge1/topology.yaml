@@ -1,0 +1,126 @@
+interfaces:
+  xe-0/0/0:0:
+    connectivity: 10G
+  xe-0/0/0:1:
+    connectivity: 10G
+  xe-0/0/0:2:
+    connectivity: 10G
+  xe-0/0/0:3:
+    connectivity: 10G
+  xe-0/0/1:0:
+    connectivity: 10G
+  xe-0/0/1:1:
+    connectivity: 10G
+  xe-0/0/1:2:
+    connectivity: 10G
+  xe-0/0/1:3:
+    connectivity: 10G
+  xe-0/0/2:0:
+    connectivity: 10G
+  xe-0/0/2:1:
+    connectivity: 10G
+  xe-0/0/2:2:
+    connectivity: 10G
+  xe-0/0/2:3:
+    connectivity: 10G
+  et-0/0/3:
+    connectivity: null
+  et-0/0/4:
+    connectivity: null
+  et-0/0/5:
+    connectivity: 100G-LR4
+    aggregate: ae2
+  et-0/0/6:
+    connectivity: null
+  et-0/0/7:
+    connectivity: 100G-LR4
+    type: transit
+    provider: telia
+    contract: ...
+    address:
+      - 62.115.33.75/31
+      - 2001:2000:3080:2256::2/126
+  et-0/0/8:
+    connectivity: null
+  et-0/0/9:
+    connectivity: null
+  et-0/0/10:
+    connectivity: null
+  et-0/0/11:
+    connectivity: 100G
+  et-0/0/12:
+    connectivity: null
+  et-0/0/13:
+    connectivity: 100G
+  et-0/0/14:
+    connectivity: null
+  et-0/0/15:
+    connectivity: null
+  et-0/0/16:
+    connectivity: null
+  et-0/0/17:
+    connectivity: 100G
+  et-0/0/18:
+    connectivity: null
+  et-0/0/19:
+    connectivity: 100G
+  et-0/0/20:
+    connectivity: null
+  et-0/0/21:
+    connectivity: null
+  et-0/0/22:
+    connectivity: null
+  et-0/0/23:
+    connectivity: 100G
+  et-0/0/24:
+    connectivity: null
+  et-0/0/25:
+    connectivity: 100G-SR4
+    remote: s-spine2
+    type: core
+  et-0/0/26:
+    connectivity: null
+  et-0/0/27:
+    connectivity: null
+  et-0/0/28:
+    connectivity: null
+  et-0/0/29:
+    connectivity: 100G-SR4
+    remote: s-spine1
+    type: core
+  et-0/0/30:
+    connectivity: null
+  et-0/0/31:
+    connectivity: 100G-SR4
+    aggregate: ae0
+  et-0/0/32:
+    connectivity: null
+  et-0/0/33:
+    connectivity: null
+  et-0/0/34:
+    connectivity: null
+  et-0/0/35:
+    connectivity: 100G-SR4
+    aggregate: ae0
+  ae0:
+    type: core 
+    remote: edge2
+  ae0.100:
+    ospf: 10
+    address:
+      - 69.58.92.8/31
+      - ~^ip6
+  ae2:
+    type: man
+    remote: edge1.sv2
+    address:
+      - 69.58.92.6/31
+      - ~^ip6
+    contract: ...
+    provider: zayo
+addresses:
+  loopback:
+    - 69.58.92.1
+    - ~^ip6
+  main: 172.30.24.1/21
+mac: 88:90:09:D2:AB:18

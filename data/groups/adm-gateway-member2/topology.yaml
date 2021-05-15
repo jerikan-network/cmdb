@@ -1,0 +1,2 @@
+addresses:
+  main: "~{{ lookup('topology', 'base-admin') | ipoffset('0.0.0.5') | ipaddr('address') }}"

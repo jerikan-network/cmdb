@@ -1,0 +1,18 @@
+ports:
+  swp1: to1-p1
+  swp2: to2-p1
+  swp3: to1-p2
+  swp4: to2-p2
+  swp5: to1-sp2
+  swp6: to1-sp2
+  swp7: to2-sp2
+  swp8: to2-sp2
+  # swp9-28:
+  swp29: to1-ap1
+  swp30: to2-ap1
+  swp31s0: edge1
+  swp32s0: edge2
+
+ports-personality:
+  40G: 1-30
+  4x: 31-32

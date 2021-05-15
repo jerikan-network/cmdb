@@ -1,0 +1,3 @@
+- name: restart conserver
+  service: name=conserver-server state=restarted
+  listen: conserver configuration changed

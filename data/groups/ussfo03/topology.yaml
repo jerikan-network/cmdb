@@ -1,0 +1,50 @@
+patchpanels:
+  "C1.01.101 Demarc 01": # Baie N1 U30 MMF
+    type: SC-UPC
+    ports:
+      24:
+        description: Cogent OOB
+        device: gateway1
+        port: rescue
+        reference: ...
+        contract: ...
+  "A.01.01.03.51": # Baie N1 U31-32 6 ports SMF
+    type: LC-UPC
+    ports:
+      9,10:
+        description: MAN SV2
+        device: edge1
+        port: ae2
+        reference: ...
+        circuit: ...
+      11,12:
+        description: Telia 100G
+        device: edge1
+        port: et-0/0/7
+        reference: ...
+
+  "A.01.05.01.41": # Baie N2 U31-32 3 ports SMF
+    type: LC-UPC
+    ports:
+      1,2:
+        description: Cogent 100G
+        device: edge2
+        port: et-0/0/1
+        reference: ...
+      3,4:
+        description: SMFIX 10G
+        device: edge2
+        port: xe-0/0/3:1
+        reference: ...
+
+base: 172.30.0.0/18
+base-public: 69.58.92.0/24
+base-public-6: 2605:940:500:b1:a:de::/96
+base-provisioning: 10.144.0.0/15
+vlans:
+  public: 100
+  private: 10
+
+addresses:
+  prometheus: 172.30.64.12
+  pxe: 172.30.64.88

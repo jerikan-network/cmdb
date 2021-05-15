@@ -1,0 +1,4 @@
+{% for group in groups %}
+  {% include ["linux/{}/dhcp.j2".format(group),
+              "linux/dhcp-{}.j2".format(group)] ignore missing %}
+{% endfor %}

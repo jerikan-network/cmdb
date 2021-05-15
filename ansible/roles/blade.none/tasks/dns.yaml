@@ -1,0 +1,83 @@
+# For Route53 access, we have a "network-ci-route53" user created in
+# AWS with the following policy attached:
+#
+# {
+#     "Version": "2012-10-17",
+#     "Statement": [
+#         {
+#             "Effect": "Allow",
+#             "Action": [
+#                 "route53:CreateHostedZone",
+#                 "route53:ListHostedZones",
+#                 "route53:ChangeResourceRecordSets",
+#                 "route53:ListResourceRecordSets",
+#                 "route53:UpdateHostedZoneComment"
+#             ],
+#             "Resource": "*"
+#         }
+#     ]
+# }
+
+- name: create temporary file for NS used by reverse zones
+  check_mode: false
+  changed_when: false
+  tempfile:
+    suffix: .yaml
+    state: file
+  register: ns_reverses
+- name: create temporary file for DNS record exports to RRs
+  check_mode: false
+  changed_when: false
+  tempfile:
+    suffix: .txt
+    state: file
+  register: dnsrecords
+
+- name: update DNS records
+  dns_sync:
+    aws_key: "{{ lookup('hashi_vault', 'secret=kv/infra/all/network/ci/dns:route53-accesskey') }}"
+    aws_secret: "{{ lookup('hashi_vault', 'secret=kv/infra/all/network/ci/dns:route53-secretkey') }}"
+    powerdns_apikey: "{{ lookup('hashi_vault', 'secret=kv/infra/gcp/PowerDNS:API_KEY_GCP') }}"
+    powerdns_server: "http://10.0.0.16:8081/api/v1/servers/localhost"
+    source: "{{ host_dir }}/dns.yaml"
+  register: dns_sync
+
+- name: push domain records to ARIN
+  dns_sync_arin:
+    key: "{{ lookup('hashi_vault', 'secret=kv/infra/all/network/ci/whois:arin-apikey') }}"
+    reverses: "{{ dns_sync.reverses }}"
+    org: BGC-107
+  register: dns_sync
+
+- name: generate domain records for RIPE
+  dns_sync_irr:
+    irr: RIPE
+    contact: BN2763-RIPE
+    mntner: fr-blade-1-mnt
+    reverses: "{{ dns_sync.reverses }}"
+  register: dns_sync
+- import_tasks: whois.yaml
+  vars:
+    who: RIPE DNS
+    content: "{{ dns_sync.records }}"
+    email: auto-dbm@ripe.net
+  when: dns_sync.records is defined
+
+- name: generate domain records for APNIC
+  dns_sync_irr:
+    irr: APNIC
+    contact: BSA5-AP
+    mntner: MAINT-BLADESAS-AP
+    reverses: "{{ dns_sync.reverses }}"
+  register: dns_sync
+- import_tasks: whois.yaml
+  vars:
+    who: APNIC DNS
+    content: "{{ dns_sync.records }}"
+    email: auto-dbm@apnic.net
+  when: dns_sync.records is defined
+
+- name: check for remaining reverse zones
+  assert:
+    that: "dns_sync.reverses|length == 0"
+    fail_msg: "unknown reverse zones left to be processed"

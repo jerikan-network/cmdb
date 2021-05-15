@@ -1,0 +1,85 @@
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+service unsupported-transceiver
+no errdisable detect cause gbic-invalid
+no service dhcp
+no service pad
+!
+hostname {{ host }}
+!
+boot-start-marker
+boot-end-marker
+!
+no aaa new-model
+{% if model == "c2960g" or  model == "c3750e" %}
+system mtu routing 1500
+{% endif %}
+{% if model == "c2960s" %}
+switch 1 provision ws-c2960s-48ts-l
+{% endif %}
+{% if model == "c3750e" %}
+switch 1 provision ws-c3750e-24td
+{% endif %}
+!
+crypto pki trustpoint TP-self-signed-211224320
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-211224320
+ revocation-check none
+ rsakeypair TP-self-signed-211224320
+!
+!
+crypto pki certificate chain TP-self-signed-211224320
+!
+{% include "ios/ssh.j2" %}
+!
+no ip domain-lookup
+ip domain-name blade-group.net
+login block-for 100 attempts 30 within 100
+login on-failure log
+file prompt quiet
+!
+archive
+ path flash:archive
+ write-memory
+!
+vlan internal allocation policy ascending
+lldp run
+!
+no ip http server
+no ip http secure-server
+!
+ip access-list standard SNMP
+ permit 172.16.0.0 0.15.255.255
+ip access-list standard SSH
+ permit 172.16.0.0 0.15.255.255
+ permit 10.0.0.0 0.0.255.255
+ permit 10.1.0.0 0.0.255.255
+!
+banner motd 
+{{ lookup('system', 'motd') }}
+
+!
+snmp-server community {{ lookup('system', 'snmp')["ro-community"] }} RO SNMP
+!
+line con 0
+ exec-timeout 15 0
+ login local
+line vty 0 4
+ access-class SSH in
+ exec-timeout 15 0
+ login local
+ transport input ssh
+line vty 5 15
+ access-class SSH in
+ exec-timeout 15 0
+ login local
+ transport input ssh
+!
+{% for ntp in lookup("system", "ntp") %}
+ntp server {{ ntp }}
+{% endfor %}
+!
+{% for syslog in lookup("system", "syslog") %}
+logging host {{ syslog }}
+{% endfor %}

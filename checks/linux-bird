@@ -1,0 +1,11 @@
+#!/bin/sh
+
+conf=$(mktemp)
+trap "rm -f $conf" EXIT
+
+(
+    grep -qFx "table public;" output/"$1"/bird.conf || echo "table public;"
+    grep -qFx "table private;" output/"$1"/bird.conf || echo "table private;"
+    cat output/"$1"/bird.conf
+) > $conf
+bird -d -p -c $conf

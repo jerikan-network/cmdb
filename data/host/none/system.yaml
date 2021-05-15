@@ -1,0 +1,4 @@
+ansible-vars:
+  ansible_host: ""
+  ansible_connection: local
+in-sync: true

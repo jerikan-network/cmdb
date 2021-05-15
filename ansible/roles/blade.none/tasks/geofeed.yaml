@@ -1,0 +1,24 @@
+# The network-ci-geofeed service account needs the following
+# permission in the "blade-infra" bucket:
+#
+#  Role: Storage Object Admin
+#  Condition:
+#    resource.service == "storage.googleapis.com" &&
+#    resource.name == "blade-infra/network/geofeed.csv"
+#
+# But in reality, we cannot set a condition, so we don't.
+
+# Mirrored automatically here:
+#  https://blade-public-static.blade-group.com/network/geofeed.csv
+
+- name: synchronize geofeed with GCP bucket
+  environment:
+    GCP_SA: "{{ lookup('hashi_vault', 'secret=kv/infra/all/network/ci/gcp-service-account:geofeed')|b64encode }}"
+  shell: |
+    set -e
+    credentials=$(mktemp)
+    trap "rm -f $credentials" EXIT
+    echo "$GCP_SA" | base64 -d > $credentials
+    gsutil -o Credentials:gs_service_key_file=$credentials \
+      cp -a public-read \
+        {{ host_dir }}/geofeed.csv gs://blade-infra/network/geofeed.csv

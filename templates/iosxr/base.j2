@@ -1,0 +1,53 @@
+hostname {{ host }}
+clock timezone UTC 0
+banner motd C
+{{ lookup('system', 'motd') }}
+C
+domain name blade-group.net
+{% for dns in lookup('system', 'dns') %}
+domain vrf VRF-MANAGEMENT name-server {{ dns }}
+{% endfor %}
+!
+{% for syslog in lookup('system', 'syslog') %}
+logging {{ syslog }} vrf VRF-MANAGEMENT
+{% endfor %}
+!
+vrf VRF-MANAGEMENT
+ address-family ipv4 unicast
+!
+line default
+ exec-timeout 0 0
+!
+ntp
+{% for ntp in lookup('system', 'ntp') %}
+ server vrf VRF-MANAGEMENT {{ ntp }}
+{% endfor %}
+!
+xml agent tty
+ iteration off
+!
+lldp
+!
+ipv4 access-list ACL-INTERNET-IN-V4
+ {% for rule in lookup("system", "firewall") | default([], true) %}
+    {% if rule.protocol is not defined %}
+ {{ rule.action }} ipv4 {{ rule.src | default("any") }} {{ rule.dst | default("any") }}
+    {% else %}
+ {{ rule.action }} {{ rule.protocol }} {{ rule.src | default("any") }} {% if rule.sport is defined %} eq {{ rule.sport }}{% endif %} {{ rule.dst | default("any") }} {% if rule.dport is defined %} eq {{ rule.dport }}{% endif %}
+
+    {% endif %}
+ {% endfor %}
+ permit ipv4 any any
+!
+ipv4 access-list ACL-SNMP
+{% if "edge" in groups and lookup("system", "sampling").type is not none %}
+ permit ipv4 {{ lookup("system", "sampling")["snmp-prefix"] }} any
+{% endif %}
+!
+snmp-server vrf VRF-MANAGEMENT
+snmp-server community {{ lookup("system", 'snmp')["ro-community"] }} RO IPv4 ACL-SNMP
+snmp-server contact Blade Network team <someone@example.com>
+snmp-server location {{ lookup("system", "datacenter") }}, {{ lookup("system", "country") }}
+snmp-server ifindex persist
+!
+{% include "iosxr/ssh.j2" %}

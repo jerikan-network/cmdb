@@ -1,0 +1,119 @@
+{# Unlike RIPE, many objects cannot be updated, including top-level
+   inetnums, aut-num, organisation, abuse #}
+
+{% import "none/whois.j2" as whois %}
+
+{# inetnum/inet6num #}
+{% set alreadyseen = [] %}
+{% set allnets = {} %}
+{% set apnicnets = lookup("bgp", "irr").apnic %}
+{% macro inetnum(net, country) %}
+  {% if net not in apnicnets and net not in alreadyseen %}
+    {% do alreadyseen.append(net) %}
+    {% for apnicnet in apnicnets if net|ipaddr(apnicnet) %}
+      {% if net|ipv4 %}
+inetnum:        {{ net|ipaddr('network') }} - {{ net|ipaddr('broadcast') }}
+      {% else %}
+inet6num:       {{ net }}
+      {% endif %}
+netname:        APAC-BLADE-CUSTOMERS-{{ country }}
+descr:          Blade IPv{{ net|ipv }} - {{ country }} customers
+country:        {{ country }}
+geoloc:         {{ lookup("bgp", "geoloc")[country].coords }}
+admin-c:        BSA5-AP
+tech-c:         BSA5-AP
+      {# Status #}
+      {% if allnets.keys()|list|reject("equalto", net)|ipaddr(net) %}
+status:         ALLOCATED NON-PORTABLE
+      {% else %}
+status:         ASSIGNED NON-PORTABLE
+      {% endif %}
+mnt-by:         MAINT-BLADESAS-AP
+mnt-irt:        IRT-BLADESAS-AP
+remarks:        synced with cmdb
+source:         APNIC
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+{# nets from nat devices #}
+{% for nat in devices("environment==prod", "groups==nat-gateway") %}
+  {% do allnets.update(lookup("bgp", "ip-blocks", nat)) %}
+{% endfor %}
+{# nets originated from edge devices #}
+{% for edge in devices("environment==prod", "groups==edge") %}
+  {% do allnets.update(lookup("bgp", "supernets", edge)) %}
+{% endfor %}
+{% for net, data in allnets.items() if data.country is defined %}
+{{ inetnum(net, data.country) }}
+{% endfor %}
+
+{# route/route6 #}
+{% set alreadyseen = [] %}
+{% macro route(net, asn, descr) %}
+  {% if net not in alreadyseen %}
+    {% do alreadyseen.append(net) %}
+    {% for apnicnet in apnicnets if net|ipaddr(apnicnet) %}
+      {% if net|ipv4 %}
+route:          {{ net }}
+      {% else %}
+route6:         {{ net }}
+      {% endif %}
+descr:          Blade IPv{{ net|ipv }} - {{ descr }}
+origin:         AS{{ asn }}
+mnt-by:         MAINT-BLADESAS-AP
+remarks:        synced with cmdb
+source:         APNIC
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+{% for edge in devices("environment==prod", "groups==edge") %}
+  {% for net in lookup("bgp", "supernets", edge) %}
+{{ route(net, lookup("bgp", "local-asn", edge), scope(edge).location|upper) }}
+  {% endfor %}
+{% endfor %}
+
+key-cert:       {{ whois.keycert }}
+{{ whois.gpgkey() }}
+remarks:        synced with cmdb
+mnt-by:         MAINT-BLADESAS-AP
+source:         APNIC
+
+mntner:         MAINT-BLADESAS-AP
+descr:          Blade SAS
+country:        FR
+admin-c:        BSA5-AP
+upd-to:         someone@example.com
+auth:           {{ whois.keycert }}
+mnt-by:         MAINT-BLADESAS-AP
+referral-by:    APNIC-HM
+remarks:        synced with cmdb
+source:         APNIC
+
+{% macro address() %}
+address:        151 rue Saint Denis
+address:        75002 Paris
+address:        France
+{%- endmacro %}
+
+irt:            IRT-BLADESAS-AP
+{{ address() }}
+e-mail:         someone@example.com
+abuse-mailbox:  someone@example.com
+admin-c:        BSA5-AP
+tech-c:         BSA5-AP
+auth:           {{ whois.keycert }}
+mnt-by:         MAINT-BLADESAS-AP
+remarks:        synced with cmdb
+source:         APNIC
+
+role:           Blade SAS administrator
+{{ address() }}
+country:        FR
+phone:          +33145750790
+e-mail:         someone@example.com
+admin-c:        BSA5-AP
+tech-c:         BSA5-AP
+nic-hdl:        BSA5-AP
+mnt-by:         MAINT-BLADESAS-AP
+remarks:        synced with cmdb
+source:         APNIC

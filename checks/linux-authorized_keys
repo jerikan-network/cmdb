@@ -1,0 +1,3 @@
+#!/bin/sh
+
+ssh-keygen -lf output/"$1"/authorized_keys

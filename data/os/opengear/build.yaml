@@ -1,0 +1,4 @@
+templates:
+  config.txt: opengear/config.j2
+  motd: opengear/motd.j2
+  ssh_authorized_keys: opengear/ssh_authorized_keys.j2

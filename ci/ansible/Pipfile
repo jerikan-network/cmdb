@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+ansible-base = "==2.10.*"
+ara = "==1.5.*"
+attrs = "*"
+boto3 = "*"
+hvac = "*"
+ipwhois = "*"
+Jinja2 = "==2.11.*"
+junos-eznc = "==2.4.*"
+lxml = "*"
+mitogen = "==0.3.0rc1"
+napalm = "==3.2.*"
+packaging = "*"
+PyMySQL = "*"
+PyYAML = "*"
+pynetbox = "==6.*"
+requests = "*"
+"ruamel.yaml" = "*"
+textfsm = "*"

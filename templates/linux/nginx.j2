@@ -1,0 +1,4 @@
+{% for group in groups %}
+  {% include ["linux/{}/nginx.j2".format(group),
+              "linux/nginx-{}.j2".format(group)] ignore missing %}
+{% endfor %}

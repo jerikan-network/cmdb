@@ -1,0 +1,3 @@
+#!/bin/sh
+
+wait-for-it junoser:4567 -t 10 -- python3 -m jerikan "$@"

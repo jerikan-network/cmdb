@@ -1,0 +1,4 @@
+ports-personality:
+  4x: 1-28
+  2x: 29-30
+  100G: 31-32

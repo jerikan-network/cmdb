@@ -1,0 +1,31 @@
+# Format:
+# Prefix,Country(ISO3166-1),Region(ISO3166-2),City,Postal
+# See: https://datatracker.ietf.org/doc/html/draft-google-self-published-geofeeds#section-2
+#
+# Utility for looking up ISO 3166-2:
+# https://www.iso.org/obp/ui/#iso:code:3166:US
+
+{%- set lines = [] %}
+{% macro add(net, data) %}
+  {% set country = data.country %}
+  {% set region = "{}-{}".format(data.country, data.region) if data.region is defined else "" %}
+  {% set city = lookup("bgp", "geoloc")[region or country].city %}
+  {% do lines.append((net, country, region, city)) %}
+{% endmacro %}
+
+{% filter trim %}
+{% for edge in devices("environment==prod", "groups==edge") %}
+  {% for net, data in lookup("bgp", "supernets", edge).items() if data.country is defined %}
+    {{ add(net, data) }}
+  {% endfor %}
+{% endfor %}
+{% for nat in devices("environment==prod", "groups==nat-gateway") %}
+  {% for net, data in lookup("bgp", "ip-blocks", nat).items() %}
+    {{ add(net, data) }}
+  {% endfor %}
+{% endfor %}
+{% endfilter %}
+
+{% for line in lines|sort(attribute="1,2,3,0")|unique %}
+{{ line|join(",") }},
+{% endfor %}

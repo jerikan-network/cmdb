@@ -1,0 +1,43 @@
+- name: reload ssh
+  service: name=ssh state=reloaded
+  listen: SSH configuration changed
+
+- name: restart snmpd
+  service: name=snmpd state=restarted
+  listen: SNMP configuration changed
+
+- name: restart lldpd
+  service: name=lldpd state=restarted
+  listen: lldpd configuration changed
+
+- name: reload networking
+  service: name=networking state=reloaded
+  listen: interfaces configuration changed
+
+- name: restart dhcpd
+  service: name=dhcpd@private state=restarted
+  listen: DHCP configuration changed
+
+- name: restart dhcp relay
+  service: name=dhcrelay state=restarted
+  listen: DHCP Relay Config changed
+
+- name: restart switchd
+  service: name=switchd state=restarted
+  listen: ports configuration changed
+
+- name: restart frr
+  service: name=frr state=restarted
+  listen: frr daemons changed
+
+- name: reload frr
+  service: name=frr state=reloaded
+  listen: frr configuration changed
+
+- name: restart acl
+  service: name=acltool state=restarted
+  listen: ACLs changed
+
+- name: restart rsyslog
+  service: name=rsyslog state=restarted
+  listen: rsyslog configuration changed

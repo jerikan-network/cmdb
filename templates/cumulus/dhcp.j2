@@ -1,0 +1,36 @@
+{% if "tor-bgp" in groups %}
+default-lease-time 3600;
+max-lease-time 7200;
+
+option tftp-server-address code 150 = array of ip-address;
+option pxe-system-type code 93 = array of unsigned integer 16;
+option domain-name-servers {{ lookup("system", "dns")|join(", ") }};
+option domain-name "{{ location }}.blade-group.net";
+option domain-search "{{ location }}.blade-group.net";
+
+# Provisioning subnets
+group {
+  ignore-client-uids true; # iPXE sends a Client-ID while PXE does not
+{% set pxe = lookup("topology", "addresses").pxe %}
+  option tftp-server-address {{ pxe }};
+  if exists user-class and option user-class = "iPXE" {
+    filename "{{ lookup("system", "ipxe-url") }}";
+  } elsif option pxe-system-type = 00:07 {
+    next-server {{ pxe }};
+    filename "ipxe.efi";
+  } else {
+    next-server {{ pxe }};
+    filename "undionly.kpxe";
+  }
+
+  {% for odevice, iface, provisioning, private, public, lasn, rasn, member in store("bgptth-configuration-" ~ location)
+     if odevice == device %}
+  # Port {{ iface }}
+  subnet {{ provisioning | ipaddr('network') }} netmask {{ provisioning | ipaddr('netmask') }} {
+    range {{ provisioning | ipaddr('address') }};
+    option routers {{ provisioning | ippeer }};
+  }
+
+  {% endfor %}
+}
+{% endif %}

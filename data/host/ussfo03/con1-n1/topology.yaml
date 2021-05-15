@@ -1,0 +1,10 @@
+interfaces:
+  wan:
+    address: 172.30.24.13/21
+  lan:
+    address: 172.30.24.14/21
+ports:
+  1: edge1
+  2: s-spine1
+  3: to1-ap1
+  4: ob1-n1

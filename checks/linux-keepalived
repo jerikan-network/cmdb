@@ -1,0 +1,18 @@
+#!/bin/sh
+
+output=$(mktemp)
+trap "rm -f $output" EXIT
+
+keepalived -t -f output/"$1"/keepalived.conf 2> $output
+ret=$?
+
+>&2 cat $output
+case $ret in
+    4)
+        # If we get this error, this is harmless. It's the last check
+        # keepalived does.
+        ! grep -q "^Non-existent interface specified" $output || exit 0
+        exit 4
+        ;;
+esac
+exit $ret

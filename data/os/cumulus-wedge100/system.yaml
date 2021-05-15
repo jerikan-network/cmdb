@@ -1,0 +1,5 @@
+netbox:
+  manufacturer: Edge-Core
+  model: Wedge 100-32X
+ansible-vars:
+  bmc_ipv6: "~{{ lookup('topology', 'mac-bmc')|mac2ipv6 }}"

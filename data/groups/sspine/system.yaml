@@ -1,0 +1,3 @@
+protect-re: true
+netbox:
+  role: net_spine_switch

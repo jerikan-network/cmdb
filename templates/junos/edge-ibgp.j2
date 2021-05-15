@@ -1,0 +1,60 @@
+{% for loopback in lookup("topology", "addresses").loopback | tolist %}
+{% do protectre.update({"ospf": True}) %}
+{% do protectre.update({"bgp": True}) %}
+  {# Set loopback #}
+  {% set version = loopback|ipv %}
+  {# Set peers #}
+    {% set peers = {} %}
+    {% if lookup("topology", "man") %}
+      {% for device in devices("environment", "groups==edge") if lookup("topology", "man", device) == lookup("topology", "man") %}
+        {% for address in lookup("topology", "addresses", device).loopback | tolist if host not in device and (address|ipv)==version %}
+        {% do peers.update({device: address }) %}
+      {% endfor %}
+    {% endfor %}
+    {% else %}
+      {% for device in devices("environment", "location", "groups==edge") %}
+        {% for address in lookup("topology", "addresses", device).loopback | tolist if host not in device and (address|ipv)==version %}
+          {% do peers.update({device: address }) %}
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
+routing-instances {
+  internet {
+    protocols {
+      bgp {
+        group ipv{{ version }}-edges-IBGP {
+          type internal;
+          description "IPv{{ version }} - iBGP AS{{ lookup("bgp", "local-asn") }}";
+          local-address {{ loopback }};
+          family {{ 'inet' if version == 4 else 'inet6' }} {
+            unicast loops 5;
+        }
+          import IBGP-IN-V{{ version }};
+          export IBGP-OUT-V{{ version }};
+    {% set asn = lookup("bgp", "local-asn") %}
+          peer-as {{ asn }};
+          local-as {{ asn }};
+          {% for peer_name, peer in  peers.items() if (peer|ipv)==version %}
+          neighbor {{ peer }} {
+            description "IPv{{ version }} - iBGP session to {{ peer_name }}";
+           }
+         {% endfor %}
+        }
+          }
+      {{ 'ospf' if version == 4 else 'ospf3' }} {
+        area 0.0.0.0 {
+          interface lo0.666 {
+            passive;
+          }
+          {% for interface, value in lookup("topology", "interfaces").items() if value.ospf is defined %}
+          interface {{ interface }} {
+            interface-type p2p;
+            metric {{ value.ospf }};
+          }
+        {% endfor %}
+        }
+      }
+    }
+  }
+}
+{% endfor %}

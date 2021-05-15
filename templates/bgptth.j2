@@ -1,0 +1,86 @@
+{% macro iterate(callback) %}
+{# DOWNLINKS SERVERS #}
+  {% if "tor-bgp" in groups %}
+    {% if "tor-bgp-compute" in groups %}
+      {% set kind="compute" %}
+    {% elif "tor-bgp-storage" in groups %}
+      {% set kind="storage" %}
+    {% elif "tor-bgp-admin" in groups %}
+      {% set kind="admin" %}
+    {% else %}
+        {% error "unknown kind of tor" %}
+    {% endif %}
+    {% set serverports = lookup("topology", "ports").server[kind] %}
+    {% for i in serverports | torange %}
+      {% set interfaces = [] %}
+      {% if "cumulus" == os %}
+        {% set breakouts = lookup("topology", "ports-personality") %}
+        {% for personality, bports in breakouts.items() if i in bports|torange %}
+          {% if "x" in personality %}
+            {% for subinterface in range(personality.split("x")[0]|int) %}
+              {% do interfaces.append("swp{}s{}".format(i, subinterface)) %}
+            {% endfor %}
+          {% else %}
+            {# In most context, this should be swpX, except for BGPttH where it should be swpXs0 #}
+            {% do interfaces.append("swp{}".format(i)) %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      {% if "junos" == os %}
+        {% do interfaces.append("xe-0/0/{}".format(i)) %}
+      {% endif %}
+      {% for iface in interfaces -%}
+        {% set local_params = lookup("bgptth", ":{} server".format(iface)) %}
+        {% set remote_params = lookup("bgptth", "server :{}".format(iface)) %}
+        {% set iface = iface|store("bgptth-configuration-" ~ location,
+                                                  remote_params.provisioning,
+                                                  remote_params.private,
+                                                  remote_params.public,
+                                                  remote_params.asn,
+                                                  local_params.asn,
+                                                  member|int) %}
+{{ callback(iface, local_params, remote_params, kind=kind, **kwargs) }}
+      {%- endfor %}
+    {% endfor %}
+  {% elif "spine" in groups or "sspine" in groups %}
+    {% for iface, description in lookup("topology", "ports").items() -%}
+      {% set local_params = lookup("bgptth", ":{} whatever".format(iface)) %}
+      {% set remote_params = lookup("bgptth", "{} :{}".format(description, iface)) %}
+      {% if description | regex_search("^to.-sp") %}
+        {% set remote_kind = "storage" %}
+      {% elif description | regex_search("^to.-p") %}
+        {% set remote_kind = "compute" %}
+      {% elif description | regex_search("^to.-ap") %}
+        {% set remote_kind = "admin" %}
+      {% elif description | regex_search("^spine.") %}
+        {% set remote_kind = "spine" %}
+      {% elif description | regex_search("^edge.") %}
+        {% set remote_kind = "edge" %}
+      {% else %}
+        {% error "unknown kind of remote" %}
+      {% endif %}
+{{ callback(iface, local_params, remote_params, kind=remote_kind, **kwargs) }}
+    {%- endfor %}
+  {% endif %}
+{# UPLINKS #}
+  {% if "sspine" not in groups %}
+    {% for device, uplinks in lookup("topology", "uplinks").items() %}
+      {% for iface in uplinks|torange -%}
+        {% set ports_list = [] %}
+          {% set ports = lookup("topology", "ports", device) %}
+          {% for port, description in ports.items() if description == shorthost %}
+            {% do ports_list.append(port) %}
+          {% endfor %}
+          {% if "cumulus" in os %}
+            {% set iface = iface|regex_replace("^(\\d+)", "swp\\1") -%}
+          {% endif %}
+          {% if "junos" == os %}
+            {% set iface = iface|regex_replace("^(\\d+)", "et-0/0/\\1") -%}
+          {% endif %}
+          {% set local_params = lookup("bgptth", " {}:{}".format(device, ports_list[loop.index0])) %}
+          {% set remote_params = lookup("bgptth", ":{} whatever".format(ports_list[loop.index0]), device) %}
+{{ callback(iface, local_params, remote_params, kind=kind|default(none), uplink=true, **kwargs) }}
+      {%- endfor %}
+    {% endfor %}
+  {% endif %}
+{% endmacro %}

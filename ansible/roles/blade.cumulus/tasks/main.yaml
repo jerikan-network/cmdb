@@ -1,0 +1,116 @@
+- import_tasks: base.yaml
+  tags: base
+- import_tasks: bmc.yaml
+  when: "'model-wedge100' in group_names"
+
+- name: copy license
+  copy:
+    content: "{{ cmdb_data.license }}"
+    dest: /etc/cumulus/license.txt
+  register: license
+
+- name: activate license
+  shell: cl-license -i /etc/cumulus/license.txt
+  when: license.changed
+
+- name: copy cumulus net configuration file
+  copy:
+    src: "{{ host_dir }}/config.txt"
+    dest: /etc/cumulus/config.txt
+  register: configuration
+
+- name: apply configuration and commit
+  shell: ztp -r /etc/cumulus/config.txt
+  when: configuration.changed
+
+- block:
+    - name: copy ports configuration file
+      copy:
+        src: "{{ host_dir }}/ports.conf"
+        dest: /etc/cumulus/ports.conf
+      notify: ports configuration changed
+    - name: copy interfaces configuration file
+      copy:
+        src: "{{ host_dir }}/interfaces.conf"
+        dest: /etc/network/interfaces
+      notify: interfaces configuration changed
+
+- block:
+    - name: configure frr daemons
+      lineinfile:
+        path: /etc/frr/daemons
+        regex: "^{{ item.protocol }}="
+        line: "{{ item.protocol }}={% if item.enabled %}yes{% else %}no{% endif %}"
+        create: true
+      loop:
+        - protocol: zebra
+          enabled: true
+        - protocol: bgpd
+          enabled: true
+        - protocol: ospfd
+          enabled: "{{ inventory_hostname in groups['adm-agg'] }}"
+      notify: frr daemons changed
+    - name: copy frr configuration file
+      copy:
+        src: "{{ host_dir }}/frr.conf"
+        dest: /etc/frr/frr.conf
+      notify: frr configuration changed
+
+- name: configure SNMP monitoring for BGP
+  block:
+    - name: copy bgppeertable pass persist script
+      copy:
+        src: bgppeertable_pp.py
+        dest: /usr/share/snmp/bgppeertable_pp.py
+        mode: '0755'
+      notify: SNMP configuration changed
+    - name: authorize SNMP user to call vtysh
+      user:
+        name: snmp
+        groups: frrvty
+        append: true
+      notify: SNMP configuration changed
+    - name: configure NetSNMP to server bgpPeerTable
+      lineinfile:
+        path: /etc/snmp/snmpd.conf.cumulus
+        regexp: "^pass_persist 1\\.3\\.6\\.1\\.2\\.1\\.15 "
+        line: "pass_persist 1.3.6.1.2.1.15 /usr/share/snmp/bgppeertable_pp.py frr"
+        insertafter: "^pass_persist "
+      notify: SNMP configuration changed
+
+- name: configure lldpd
+  block:
+    - name: configure lldpd for SNMP monitoring
+      copy:
+        content: |
+          DAEMON_ARGS="-M 4 -x"
+        dest: /etc/default/lldpd
+      notify: lldpd configuration changed
+    - name: reduce lldpd timer interval
+      copy:
+        content: |
+          configure lldp tx-interval 10
+        dest: /etc/lldpd.d/timer.conf
+      notify: lldpd configuration changed
+
+- name: configure rsyslog with mgmt vrf
+  copy:
+    src: "{{ host_dir }}/rsyslog.conf"
+    dest: /etc/rsyslog.d/11-remotesyslog.conf
+  notify: rsyslog configuration changed
+
+- block:
+    - name: stop non-VRF-aware NTP daemon
+      systemd:
+        name: ntp.service
+        state: stopped
+        enabled: false
+    - name: start VRF-aware NTP daemon
+      systemd:
+        name: ntp@mgmt.service
+        state: started
+        enabled: true
+
+- import_tasks: dhcp.yaml
+  when: "'tor-bgp' in group_names"
+- import_tasks: acl.yaml

@@ -1,0 +1,7 @@
+ports:
+  server:
+    compute: 1-48
+    admin: 1-12
+uplinks:
+  spine1: 53
+  spine2: 54

@@ -1,0 +1,9 @@
+ansible-vars:
+  ansible_user: cumulus
+  ansible_become: "yes"
+  ansible_password: CumulusLinux!
+  ansible_become_password: CumulusLinux!
+
+image: cumulus-linux-3.7.14.2-bcm-amd64.bin
+license: "..."
+in-sync: true

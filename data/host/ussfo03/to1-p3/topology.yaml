@@ -1,0 +1,5 @@
+addresses:
+  main: 172.30.24.41/21
+  bmc: 172.30.24.75/21
+mac: 00:90:FB:5B:B6:8E
+mac-bmc: 8C:EA:1B:36:76:DE

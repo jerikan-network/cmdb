@@ -1,0 +1,57 @@
+{% from "bgptth.j2" import iterate with context %}
+{% macro netiface(iface, local_params, remote_params, provnet, kind=none, uplink=false) %}
+auto {{ iface }}
+iface {{ iface }}
+  {% if not iface|regex_search("^swp\\d+s\\d") and not ("tor-bgp-storage" in groups and not uplink) %}
+    link-autoneg on
+  {% endif %}
+  {% if "tor-bgp" in groups and not uplink %}
+    address {{ local_params.provisioning|store("addresses", "{}".format(iface)) }}
+    vrf private
+  {% endif %}
+    mtu 9000
+
+  {% for instance in ("private", "public") -%}
+    {% if instance == "private" %}
+      {% set vlan = "10" %}
+      {% set mtu = "9000" %}
+    {% elif instance == "public" %}
+      {% set vlan = "100" %}
+      {% set mtu = "1500" %}
+    {% endif %}
+    {% if (kind != "storage" or instance != "public") and (kind != "edge" or instance != "private") %}
+auto {{ iface }}.{{ vlan }}
+iface {{ iface }}.{{ vlan }}
+    address {{ local_params[instance]|store("addresses", "{}.{}".format(iface, vlan)) }}
+    {% if instance == "public" %}
+    address {{ local_params[instance]|ipv4toipv6()|store("addresses", "{}.{}".format(iface, vlan)) }}
+    {% endif %}
+    mtu {{ mtu }}
+    vrf {{ instance }}
+
+    {% endif %}
+  {%- endfor %}
+{% endmacro %}
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0
+    address {{ lookup("topology", "addresses").main|store("addresses", "oob") }}
+    gateway {{ lookup("topology", "addresses").main|ipaddr("last_usable") }}
+    vrf mgmt
+
+{{ iterate(netiface) }}
+
+auto mgmt
+iface mgmt
+    address 127.0.0.1/8
+    vrf-table auto
+
+auto private
+iface private
+    vrf-table auto
+
+auto public
+iface public
+    vrf-table auto

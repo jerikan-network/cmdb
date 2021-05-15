@@ -1,0 +1,9 @@
+/output/
+/.venv/
+/.cache~/
+/.pytest_cache/
+/master.zip
+
+*.pyc
+.DS_Store
+__pycache__/

@@ -1,0 +1,8 @@
+- name: add current host to done group
+  changed_when: false
+  tags: always
+  add_host:
+    name: "{{ item }}"
+    groups:
+      - done
+  loop: "{{ ansible_play_hosts }}"

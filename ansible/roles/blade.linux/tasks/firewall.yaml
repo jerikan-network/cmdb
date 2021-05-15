@@ -1,0 +1,13 @@
+- block:
+  - name: check if nftables rules are present
+    local_action:
+      module: stat
+      path: "{{ host_dir }}/nftables.conf"
+    register: nftablesconf
+    check_mode: false
+  - name: copy nftables rule file
+    copy:
+      src: "{{ host_dir }}/nftables.conf"
+      dest: /etc/nftables.conf
+    notify: nftables rules changed
+    when: nftablesconf.stat.exists

@@ -1,0 +1,49 @@
+{% from "bgptth.j2" import iterate with context %}
+{% macro netiface(iface, local_params, remote_params, provnet, kind=none, uplink=false) %}
+{% if "tor-bgp-compute" in groups and not uplink %}
+        {{ iface }} {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address {{ local_params.provisioning|store("addresses", "{}".format(iface)) }};
+              }
+          }
+{% elif uplink %}
+        {{ iface }} {
+          vlan-tagging;
+          mtu 9018;
+{% endif %}
+{% for instance in ("private", "public") -%}
+  {% if instance == "private" %}
+      {% set vlan = "10" %}
+      {% set mtu = "9000" %}
+  {% elif instance == "public" %}
+      {% set vlan = "100" %}
+      {% set mtu = "1500" %}
+  {% endif %}
+  {% if (kind != "storage" or instance != "public") and (kind != "edge" or instance != "private") %}
+          unit {{ vlan }} {
+              vlan-id {{ vlan }};
+              family inet {
+                  address {{ local_params[instance]|store("addresses", "{}.{}".format(iface, vlan)) }};
+                  mtu {{ mtu }};
+              }
+  {% if instance == "public" %}
+              family inet6 {
+                  address {{ local_params[instance]|ipv4toipv6|store("addresses", "{}.{}".format(iface, vlan)) }};
+                  mtu {{ mtu }};
+              }
+  {% endif %}
+          }
+  {% endif %}
+{%- endfor %}
+        }
+{% endmacro %}
+
+interfaces {
+    {{ iterate(netiface) }}
+}

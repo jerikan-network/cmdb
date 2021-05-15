@@ -1,0 +1,23 @@
+ipv4 access-list ACL-SSH
+{% if lookup("topology", "addresses").main is defined %}
+ permit ipv4 {{ lookup('topology', 'addresses').main | ipaddr('subnet') }} any
+{% endif %}
+{% for items, prefix in lookup('topology', 'acl-addresses').admin.items() %}
+ permit ipv4 {{ prefix }} any
+{% endfor %}
+!
+{% for user, value in lookup("system", "users").items() if  user != "blade" %}
+username {{ user }} group root-lr
+username {{ user }} group root-system
+username {{ user }} group cisco-support
+{% if value["ios-password"] is defined %}
+username {{ user }} secret {{ value["ios-password"] }}
+{% endif %}
+{% endfor %}
+!
+ssh server v2
+ssh server vrf default ipv4 access-list ACL-SSH
+ssh server netconf vrf default ipv4 access-list ACL-SSH
+ssh server vrf VRF-MANAGEMENT ipv4 access-list ACL-SSH
+ssh server netconf vrf VRF-MANAGEMENT ipv4 access-list ACL-SSH
+!

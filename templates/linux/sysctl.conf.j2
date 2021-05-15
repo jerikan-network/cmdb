@@ -1,0 +1,4 @@
+{% for group in groups %}
+  {% include ["linux/{}/sysctl.conf.j2".format(group),
+              "linux/sysctl-{}.conf.j2".format(group)] ignore missing %}
+{% endfor %}

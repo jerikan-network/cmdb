@@ -1,0 +1,3 @@
+{% for syslog in lookup("system", "syslog") %}
+action(type="omfwd" Target="{{ syslog }}" Device="mgmt" Port="514" Protocol="udp")
+{% endfor %}

@@ -1,0 +1,7 @@
+templates:
+  config.txt: ios/main.j2
+  config-base.txt: ios/base.j2
+  config-rescue.txt: ios/rescue.j2
+diff:
+  - config.txt
+  - config-rescue.txt

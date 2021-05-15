@@ -1,0 +1,9 @@
+# Settings for SSH are kept here instead of Ansible because some
+# modules (notably Python modules relying on Paramiko) will not care
+# about SSH arguments provided by Ansible.
+
+Host *
+ StrictHostKeyChecking no
+ UserKnownHostsFile /dev/null
+ Ciphers +aes128-cbc
+ KexAlgorithms +diffie-hellman-group1-sha1

@@ -1,0 +1,14 @@
+- name: configure ACLs
+  block:
+    - name: check if have ACLs to install
+      local_action:
+        module: stat 
+        path: "{{ host_dir }}/acl.rules"
+      register: aclrules
+      check_mode: false
+    - name: copy iptables configuration file
+      copy:
+        src: "{{ host_dir }}/acl.rules"
+        dest: "/etc/cumulus/acl/policy.d/000acl_public.rules"
+      notify: ACLs changed
+      when: aclrules.stat.exists

@@ -1,0 +1,20 @@
+# Special device to generate configuration not attached to a specific device
+templates:
+  dns.yaml: none/dns.j2
+  ansible-inventory: none/ansible-inventory.j2
+  netbox.yaml: none/netbox.j2
+  whois-ripe.txt: none/whois-ripe.j2
+  whois-arin.txt: none/whois-arin.j2
+  whois-apnic.txt: none/whois-apnic.j2
+  geofeed.csv: none/geofeed.j2
+  roas.yaml: none/roas.j2
+checks:
+  - description: "check dns.yaml"
+    script: checks/dns.yaml
+    cache: dns.yaml
+  - description: "check netbox.yaml"
+    script: checks/netbox.yaml
+    cache: netbox.yaml
+  - description: "check roas.yaml"
+    script: checks/roas.yaml
+    cache: roas.yaml

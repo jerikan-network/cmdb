@@ -1,0 +1,6 @@
+ports:
+  server:
+    storage: 1-12
+uplinks:
+  spine1: 29-30
+  spine2: 31-32

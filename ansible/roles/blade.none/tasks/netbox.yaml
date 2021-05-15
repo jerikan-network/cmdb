@@ -1,0 +1,5 @@
+- name: update Netbox
+  netbox_sync:
+    source: "{{ host_dir }}/netbox.yaml"
+    api: https://netbox.blade.sh
+    token: "{{ lookup('hashi_vault', 'secret=kv/infra/all/network/ci/netbox:token') }}"

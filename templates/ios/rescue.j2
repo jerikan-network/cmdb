@@ -1,0 +1,47 @@
+version 12.2
+no service pad
+no service password-encryption
+!
+hostname {{ host }}
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$eFML$kx7rcJVgO9jLGEFvfqERc0
+!
+username blade privilege 15 password 0 blade
+!
+{% set gateways = devices("environment", "location", "groups==adm-gateway") %}
+{% if gateways %}
+{% set tftp = lookup("topology", "addresses", gateways[0]).oob|ipaddr('address') %}
+{% set image = lookup("system", "image")|replace(".txt", ".tar") %}
+banner motd 
+
+To upgrade this system, use the following commands:
+
+write erase
+archive download-sw /force-reload /leave-old-sw tftp://{{ tftp }}/{{ image }}
+
+
+!
+{% endif %}
+{% if "oob" in groups %}
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+interface Vlan1
+{% set oob = lookup("topology", "addresses").main %}
+ ip address {{ oob | store("addresses", "oob") | ipaddr("address") }} {{ oob | ipaddr("netmask") }}
+!
+ip default-gateway {{ oob | ipaddr("last_usable") }}
+!
+{% endif %}
+line con 0
+line vty 0 4
+ login local
+ transport input telnet
+line vty 5 15
+ login local
+ transport input telnet
+!
+end

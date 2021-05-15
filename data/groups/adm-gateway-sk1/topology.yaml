@@ -1,0 +1,15 @@
+bgp-interfaces:
+  - eno1
+  - eno2
+oob-interfaces:
+  - eno3
+  - eno4
+subnets:
+  bmc-dynamic-range: 172.29.15.128/26
+
+# Rescue interface: default route is installed in both public and
+# rescue tables and we use the rescue table when traffic originate
+# from rescue IP address.
+rescue-interface: ens1f0
+interfaces:
+  ens1f0: "~{{ lookup('topology', 'interface-rescue') }}"

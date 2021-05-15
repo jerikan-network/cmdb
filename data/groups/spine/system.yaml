@@ -1,0 +1,2 @@
+netbox:
+  role: net_spine_switch

@@ -1,0 +1,90 @@
+interfaces:
+  GigabitEthernet0/0/0/0:
+    type: ix
+    provider: KINX-IX
+    contract: ...
+    connectivity: 1G-LX
+    address:
+      - 192.145.251.201/24
+      - 2001:7fa:8::49/64
+  GigabitEthernet0/0/0/1:
+    connectivity: 1G
+  GigabitEthernet0/0/0/2:
+    connectivity: 1G
+  GigabitEthernet0/0/0/3:
+    connectivity: 1G
+  GigabitEthernet0/0/0/4:
+    connectivity: 1G
+  GigabitEthernet0/0/0/5:
+    connectivity: 1G
+  GigabitEthernet0/0/0/6:
+    connectivity: 1G
+  GigabitEthernet0/0/0/7:
+    connectivity: 1G
+  GigabitEthernet0/0/0/8:
+    connectivity: 1G
+  GigabitEthernet0/0/0/9:
+    connectivity: 1G
+  GigabitEthernet0/0/0/10:
+    connectivity: 1G
+  GigabitEthernet0/0/0/11:
+    connectivity: 1G
+  GigabitEthernet0/0/0/12:
+    connectivity: 1G
+  GigabitEthernet0/0/0/13:
+    connectivity: 1G
+  GigabitEthernet0/0/0/14:
+    connectivity: 1G
+  GigabitEthernet0/0/0/15:
+    connectivity: 1G
+  GigabitEthernet0/0/0/16:
+    connectivity: 1G
+  GigabitEthernet0/0/0/17:
+    connectivity: 1G
+  GigabitEthernet0/0/0/18:
+    connectivity: 1G
+  GigabitEthernet0/0/0/19:
+    connectivity: 1G
+  TenGigE0/0/1/0:
+    remote: spine1
+    type: core
+    connectivity: 10G-SR
+  TenGigE0/0/1/1:
+    remote: spine2
+    type: core
+    connectivity: 10G-SR
+  TenGigE0/0/1/2:
+    connectivity: 10G
+  TenGigE0/0/1/3:
+    remote: edge2
+    type: core
+    connectivity: 10G-SR
+    address:
+      - 103.153.6.8/31
+      - ~^ip6
+    ospf: 10
+  TenGigE0/0/2/0:
+    type: transit
+    provider: KINX-DOM
+    contract: ...
+    connectivity: 10G-LR
+    address:
+      - 121.78.30.146/30
+      - 2401:2700::162/126
+  TenGigE0/0/2/1:
+    type: transit
+    provider: KINX-INT
+    contract: ...
+    connectivity: 10G-LR
+    address:
+      - 121.78.30.154/30
+      - 2401:2700::16a/126
+  TenGigE0/0/2/2:
+    connectivity: 10G
+  TenGigE0/0/2/3:
+    connectivity: 10G
+addresses:
+  loopback:
+    - 103.153.6.1
+    - ~^ip6
+  main: 172.29.15.28/21

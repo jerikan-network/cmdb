@@ -1,0 +1,107 @@
+{% set protectre = {"vrrp": false, "ospf": false, "bgp": false, "bfd": false, "dhcp": false, "rtr": false } %}
+
+{% include "junos/base.j2" %}
+
+routing-options {
+  forwarding-table {
+    export ecmp-default;
+  {% if "edge" in groups %}
+    ecmp-fast-reroute;
+    indirect-next-hop;
+  {% endif %}
+  }
+}
+
+policy-options {
+  policy-statement ecmp-default {
+    then {
+      load-balance per-packet;
+    }
+  }
+  policy-statement REJECT-ALL {
+    then reject;
+  }
+}
+
+{% if lookup("topology", "addresses").main is defined and "oob" not in groups %}
+  {% set oob = lookup('topology', 'addresses').main | store("addresses", "oob") %}
+  {% set ifname = lookup('system', 'oob-ifname') %}
+  {% if not lookup('system', 'dual-re') %}
+interfaces {
+  protect: {{ ifname }} {
+    unit 0 {
+      family inet address {{ oob }};
+    }
+  }
+}
+  {% else %}
+groups {
+    {% for re in ["re0", "re1"] %}
+  replace: {{ re }} {
+    system {
+      host-name {{ re }}.{{ host }};
+      backup-router {{ oob | ipaddr("last_usable") }} destination 0.0.0.0/0;
+    }
+    interfaces {
+      protect: {{ ifname }} {
+        unit 0 {
+          family inet {
+            address {{ oob | ipmath(loop.index) | store("addresses", "oob-{}".format(re)) }}/{{ oob | ipaddr('prefix') }};
+            address {{ oob }} master-only;
+          }
+        }
+      }
+    }
+  }
+    {% endfor %}
+}
+apply-groups [ re0 re1 ];
+routing-options {
+    nonstop-routing;
+}
+chassis {
+    redundancy {
+        routing-engine 0 master;
+        routing-engine 1 backup;
+        failover {
+            on-loss-of-keepalives;
+            on-disk-failure;
+        }
+        graceful-switchover;
+    }
+    network-services enhanced-ip;
+}
+system {
+    commit synchronize;
+}
+  {% endif %}
+{% endif %}
+
+chassis {
+  aggregated-devices {
+    ethernet {
+      device-count 64;
+    }
+  }
+{% if model == "qfx5200-32c" %}
+  fpc 0 auto-speed-detection disable;
+{% endif %}
+}
+
+routing-options {
+{% if lookup('topology', 'addresses').main is defined %}
+  static {
+    {% set nh = lookup('topology', 'addresses').main | ipaddr("last_usable") %}
+    route 172.16.0.0/12 next-hop {{ nh }};
+    route 10.0.0.0/8 next-hop {{ nh }};
+  }
+{% endif %}
+}
+
+{% for group in groups %}
+  {% include "junos/{}.j2".format(group) ignore missing %}
+{% endfor %}
+
+{% if lookup('system', 'protect-re') %} {# MUST BE THE LAST #}
+  {% include "junos/firewall.j2" %}
+{% endif %}

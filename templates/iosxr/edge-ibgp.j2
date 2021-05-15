@@ -1,0 +1,58 @@
+{% set asn = lookup("bgp", "local-asn") %}
+{% set routerid = lookup("topology", "addresses").loopback | tolist  | unique | ipv4 %}
+{% for loopback in lookup("topology", "addresses").loopback | tolist %}
+{% set version = loopback | ipv %}
+{% set peers = {} %}
+{% if lookup("topology", "man") %}
+{% for device in devices("environment", "groups==edge") if lookup("topology", "man", "device") %}
+{% for address in lookup("topology", "addresses", device).loopback | tolist if host not in device and (address | ipv)==version %}
+{% do peers.update({device: address}) %}
+{% endfor %}
+{% endfor %}
+{% else %}
+{% for device in devices("environment", "location", "groups==edge") %}
+{% for address in lookup("topology", "addresses", device).loopback | tolist if host not in device and (address | ipv)==version %}
+{% do peers.update({device: address}) %}
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+router {{ "ospf" if version == 4 else "ospfv3" }} {{ asn }}
+ router-id {{ routerid[0] }}
+ area 0
+  interface Loopback0
+   {{ "passive enable" if version == 4 else "passive" }}
+  !
+  {% for interface, value in lookup("topology", "interfaces").items() if value.ospf is defined %}
+  interface {{ interface }}
+   network point-to-point
+   cost {{ value.ospf }}
+   {# NEED TO IMPLEMENT MD5 #}
+  !
+  {% endfor %}
+ !
+!
+
+router bgp {{ asn }}
+ neighbor-group NBRGRP-IBGP-V{{ version }}
+  remote-as {{ asn }}
+  update-source Loopback0
+  address-family ipv{{ version }} unicast
+  {% if version == 4 %}
+  maximum-prefix 1048576 90
+  {% endif %}
+   next-hop-self
+   allowas-in 5
+   route-policy RPL-IBGP-IN-V{{ version }} in
+   route-policy RPL-IBGP-OUT-V{{ version }} out
+   soft-reconfiguration inbound always
+  !
+ !
+ {% for peer_name, peer in peers.items() if version==(peer | ipv) %}
+ neighbor {{ peer | ipaddr("address") }}
+  use neighbor-group NBRGRP-IBGP-V{{ version }}
+  description iBGP session to {{ peer_name }} [IPv{{ version }}]
+ !
+ {% endfor %}
+!
+{% endfor %}

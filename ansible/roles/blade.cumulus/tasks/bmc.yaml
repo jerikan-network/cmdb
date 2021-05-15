@@ -1,0 +1,35 @@
+- name: configure SSH access to BMC
+  blockinfile:
+    path: /home/cumulus/.ssh/config
+    create: true
+    mode: 0600
+    marker: "# {mark} BMC access"
+    owner: cumulus
+    block: |
+      Host bmc
+        Hostname {{ bmc_ipv6 }}%%eth0
+        User root
+
+- name: fix BMC DHCP
+  shell:
+    cmd: >-
+      sshpass -p0penBmc
+      ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -oLogLevel=ERROR
+      root@{{ bmc_ipv6 }}%eth0
+      bash -se
+    stdin: |
+      [ {{ ansible_check_mode }} = True ] || {
+        echo {{ inventory_hostname }} > /etc/hostname
+        echo {{ inventory_hostname }} > /mnt/data/hostname
+        hostname {{ inventory_hostname }}
+      }
+      if ! ip -4 a s dev eth0 | grep .; then
+        [ {{ ansible_check_mode }} = True ] || {
+          ifdown eth0
+          ifup eth0
+        }
+        echo FIXED
+      fi
+  register: result
+  check_mode: false
+  changed_when: "'FIXED' in result.stdout"

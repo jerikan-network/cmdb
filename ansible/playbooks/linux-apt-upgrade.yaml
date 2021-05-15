@@ -1,0 +1,11 @@
+# Example of use:
+#
+# ./run-ansible-gitlab playbooks/linux-apt-upgrade.yaml --limit='adm-gateway:&member-2'
+
+- hosts: os-linux
+  strategy: mitogen_linear
+  gather_facts: false
+  tasks:
+    - apt:
+        update_cache: true
+        upgrade: safe

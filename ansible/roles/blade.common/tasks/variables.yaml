@@ -1,0 +1,12 @@
+- name: populate host_dir and cmdb_data variables
+  set_fact:
+    host_dir: "/app/output/{{ inventory_hostname }}"
+    cmdb_data: "{{ lookup('file', '/app/output/' ~ inventory_hostname ~ '/data.yaml', errors='ignore') | from_yaml }}"
+  tags: always
+
+- name: retrieve blade password
+  no_log: true
+  set_fact:
+    ansible_password: "{{ lookup('hashi_vault', 'secret=kv/infra/all/network/accounts:blade') }}"
+  when: ansible_user|default == "blade" and ansible_password is not defined
+  tags: always

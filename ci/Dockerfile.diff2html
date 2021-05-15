@@ -1,0 +1,4 @@
+FROM node:12
+RUN npm install -g diff2html-cli
+ENTRYPOINT ["diff2html"]
+CMD ["--input=stdin", "--output=stdout", "--summary=open", "--highlightCode=false"]

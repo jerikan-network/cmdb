@@ -1,0 +1,467 @@
+{% macro max_prefixes(version, type, peer) %}
+{# Configure max prefixes for the current group/neighbor #}
+  {% set max = peer["max-prefixes-{}".format(version)]|default(None) %}
+  {% if max != False %}
+    {% if not max and type != "transit" %}
+      {% set max = peeringdb(peer.asn)["info_prefixes{}".format(version)] %}
+    {% endif %}
+  {% endif %}
+  {% if max %}
+family {{ 'inet' if version == 4 else 'inet6' }} {
+  unicast {
+    prefix-limit {
+      maximum {{ max }};
+      teardown 80 idle-timeout 15;
+    }
+  }
+}
+  {% endif %}
+{% endmacro %}
+
+{% macro policy_name(peer) %}
+{{ peer["policy-name"] | default("AS{}".format(peer.asn)) }}
+{%- endmacro -%}
+
+{% macro policies(version, peer, type) %}
+import {{ policy_name(peer) }}-{{ type | upper }}-IN-V{{ version }};
+export {{ policy_name(peer) }}-{{ type | upper }}-OUT-V{{ version }};
+{% endmacro %}
+
+routing-instances internet {
+{% set already_seen = [] %}
+{% for type, peers in lookup("bgp", "peers").items() %}
+  {% for name, peer in peers.items() %}
+    {% for neighbor in peer.remote|tolist %}
+      {% set version = neighbor|ipv %}
+      {% set group_name = "ipv{}-{}".format(version, name|slugify) %}
+   protocols {
+      bgp {
+        group {{ group_name }} {
+      {% if group_name not in already_seen %}
+        {% do already_seen.append(group_name) %}
+          type external;
+          multipath;
+          description "{{ name }} AS{{ peer.asn }}";
+          local-as {{ lookup("bgp", "local-asn") }};
+          peer-as {{ peer.asn }};
+          remove-private;
+        {% if name.split("-")[0] != "rs" %}
+          enforce-first-as;
+        {% endif %}
+        {% if peer.authentication is defined %}
+          authentication-key "{{ peer.authentication }}"; ## SECRET-DATA
+        {% endif %}
+        {% if type == "transit" %}
+          family {{ 'inet' if version == 4 else 'inet6' }} {
+            unicast loops 5;
+          }
+        {% endif %}
+          {{ max_prefixes(version, type.split("-")[0], peer) | indent(10) }}
+          {{ policies(version, peer, type) | indent(10) }}
+      {% endif %}
+
+      {% set multihop = False %}
+      {% if peer.interface is defined %}
+        {% set local_addr = lookup("topology", "interfaces").get(peer.interface, []).address %}
+        {% set local_addr = local_addr | ipaddr(version=version) | first %}
+        {% set multihop = not (neighbor | ipaddr(local_addr)) %}
+      {% endif %}
+      {% if multihop %}
+          neighbor {{ neighbor }} {
+            multihop ttl 64;
+            local-address {{ local_addr | ipaddr("address") }};
+          }
+      {% else %}
+          neighbor {{ neighbor }};
+      {% endif %}
+        }
+      }
+   }
+      {% if peer.interface is defined %}
+   routing-options {{ "rib internet.inet6.0" if neighbor | ipv6 }} static route {{ neighbor }} next-hop {{ local_addr | ipaddr("first_usable") }};
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+{% endfor %}
+   protocols {
+      bgp {
+        traceoptions {
+          file bgplog size 10k files 10;
+        }
+        log-updown;
+      }
+   }
+
+   routing-options {
+      generate {
+        route 0.0.0.0/0 {
+           policy DEFAULT-ROUTE-GENERATE-V4;
+           discard;
+        }
+      }
+      rib internet.inet6.0 {
+        generate {
+          route ::0/0 {
+             policy DEFAULT-ROUTE-GENERATE-V6;
+             discard;
+          }
+        }
+      }
+  {% for route, data in lookup('bgp', 'supernets').items() if data.originate|default(True) %}
+    {% if route | ipv6 %}rib internet.inet6.0 {% endif -%}
+         static {
+             route {{ route }} {
+                discard;
+                preference 200;
+                no-install;
+                community 64476:64476;
+             }
+         }
+  {% endfor %}
+   }
+}
+
+{% set asn = lookup("bgp", "local-asn") %}
+{% macro ACCEPT_DEFAULT_V(version) %}
+term ACCEPT-DEFAULT-V{{ version }} {
+  apply-flags omit;
+  from route-filter-list DEFAULT-V{{ version }};
+  then accept;
+}
+{% endmacro %}
+{% macro REJECT_DEFAULT_V(version) %}
+term REJECT-DEFAULT-V{{ version }} {
+  apply-flags omit;
+  from route-filter-list DEFAULT-V{{ version }};
+  then reject;
+}
+{% endmacro %}
+{% macro REJECT_BOGON_V(version) %}
+term REJECT-BOGON-V{{ version }} {
+  apply-flags omit;
+  from route-filter-list BOGON-V{{ version }};
+  then reject;
+}
+{% endmacro %}
+{% macro REJECT_TOO_SPECIFIC_V(version) %}
+term REJECT-TOO-SPECIFIC-V{{ version }} {
+  apply-flags omit;
+  from route-filter-list TOO-SPECIFIC-V{{ version }};
+  then reject;
+}
+{% endmacro %}
+{% macro ACCEPT_BLADE_SUPERNET_V(version) %}
+term ACCEPT-BLADE-SUPERNET-V{{ version }} {
+  apply-flags omit;
+  from route-filter-list BLADE-SUPERNET-V{{ version }};
+  then accept;
+}
+{% endmacro %}
+{% macro REJECT_BLADE_SUPERNET_V(version) %}
+term REJECT-BLADE-SUPERNET-V{{ version }} {
+  apply-flags omit;
+  from route-filter-list BLADE-SUPERNET-V{{ version }};
+  then reject;
+}
+{% endmacro %}
+{% macro ACCEPT_BLADE_SUPERNET_ORLONGER_V(version) %}
+term ACCEPT-BLADE-SUPERNET-ORLONGER-V{{ version }} {
+  apply-flags omit;
+  from route-filter-list BLADE-SUPERNET-ORLONGER-V{{ version }};
+  then accept;
+}
+{% endmacro %}
+{% macro REJECT_NOT_BLADE_SUPERNET_V(version) %}
+term REJECT-NOT-BLADE-SUPERNET-V{{ version }} {
+  apply-flags omit;
+  from policy NOT-BLADE-SUPERNET-V{{ version }};
+  then reject;
+}
+{% endmacro %}
+{% macro REJECT_NOT_BLADE_SUPERNET_ORLONGER_V(version) %}
+term REJECT-NOT-BLADE-SUPERNET-ORLONGER-V{{ version }} {
+  apply-flags omit;
+  from policy NOT-BLADE-SUPERNET-ORLONGER-V{{ version }};
+  then reject;
+}
+{% endmacro %}
+{% macro REJECT_NOT_AS_IRR_V(version, asn) %}
+term REJECT-NOT-AS{{ asn }}-IRR-V{{ version }} {
+  apply-flags omit;
+  from policy NOT-AS{{ asn }}-IRR-V{{ version }};
+  then reject;
+}
+{% endmacro %}
+{% macro REJECT_BOGON_ASN() %}
+term REJECT-BOGON-ASN {
+  apply-flags omit;
+  from as-path-group AS-GROUP-BOGON-ASN;
+  then reject;
+}
+{% endmacro %}
+{% macro REJECT_LONG_AS_PATH() %}
+term REJECT-LONG-AS-PATH {
+  apply-flags omit;
+  from as-path AS-PATH-TOO-MANY-HOPS;
+  then reject;
+}
+{% endmacro %}
+{% macro REJECT_RPKI_INVALID() %}
+term REJECT-RPKI-INVALID {
+  apply-flags omit;
+  from validation-database invalid;
+  then {
+    validation-state invalid;
+    reject;
+  }
+}
+{% endmacro %}
+{% macro ACCEPT_BGP() %}
+term ACCEPT-BGP {
+  apply-flags omit;
+    from protocol bgp;
+    then accept;
+}
+{% endmacro %}
+{% macro SET_NEXT_HOP_SELF() %}
+term SET-NEXT-HOP-SELF {
+  apply-flags omit;
+  from protocol bgp;
+  then next-hop self;
+}
+{% endmacro %}
+
+{% macro policy_name(peer) %}
+{{ peer["policy-name"] | default("AS{}".format(peer.asn)) }}
+{%- endmacro -%}
+
+groups disable-bgp routing-instances <*> protocols bgp group <*> neighbor <*> export REJECT-ALL;
+policy-options {
+  route-filter-list DEFAULT-V4 0.0.0.0/0 exact;
+  route-filter-list DEFAULT-V6 ::0/0 exact;
+  route-filter-list TOO-SPECIFIC-V4 0.0.0.0/0 prefix-length-range /25-/32;
+  route-filter-list TOO-SPECIFIC-V6 ::/0 prefix-length-range /49-/128;
+{% set supernets = lookup("bgp","supernets") or {} %}
+{% set man = lookup("topology", "man") %}
+{% for edge in devices("environment", "groups==edge") if scope(edge).location == location
+  or (man and lookup("topology", "man", edge) == man) %}
+  {% do supernets.update(lookup("bgp", "supernets", edge)) %}
+{% endfor %}
+{% if not supernets %}
+  {% error "supernets must exist on edge device" %}
+{% endif %}
+{% for version in [4, 6] %}
+  route-filter-list BLADE-SUPERNET-V{{ version }} {
+    {{ supernets.keys() | unique | ipaddr(version=version) | join(" exact;\n") | indent(4) }} exact;
+  }
+  route-filter-list BLADE-SUPERNET-ORLONGER-V{{ version }} {
+    {{ supernets.keys() | unique | ipaddr(version=version) | join(" orlonger;\n") | indent(4) }} orlonger;
+  }
+  route-filter-list BOGON-V{{ version }} {
+    {{ lookup("bgp", "bogon-prefixes") | unique | ipaddr(version=version) | join(" orlonger;\n") | indent(4) }} orlonger;
+  }
+{% endfor %}
+
+  as-path AS-PATH-TOO-MANY-HOPS ".{64,}";
+  as-path AS-PATH-MODERATE ".{3,}";
+  as-path-group AS-GROUP-BOGON-ASN {
+{% for asn in lookup("bgp", "bogon-asns") %}
+    as-path bogon{{ loop.index }} ".* {{ "[" ~ asn | first ~ "-" ~ asn | last ~ "]" if asn is iterable else asn  }} .*";
+{% endfor %}
+  }
+{% for name, community in lookup("bgp", "communities").items() %}
+  community COMM-{{ name | upper }}-IN-OUT members {{ community }};
+{% endfor %}
+}
+
+{% for version in [4, 6] %}
+policy-options {
+  policy-statement DEFAULT-ROUTE-GENERATE-V{{ version }} {
+        term TRANSIT-V{{ version }} {
+            from {
+                protocol bgp;
+                as-path AS-PATH-MODERATE;
+                route-filter {{ "0.0.0.0/0" if version == 4 else "::0/0" }} prefix-length-range {{ "/8-/12" if version == 4 else "/32-/32" }};
+            }
+            then accept;
+        }
+        then reject;
+  }
+  policy-statement IBGP-IN-V{{ version }} {
+    then accept;
+  }
+  policy-statement IBGP-OUT-V{{ version }} {
+    {{ SET_NEXT_HOP_SELF() | indent(4) }}
+    {{ ACCEPT_BLADE_SUPERNET_V(version) | indent(4) }}
+    term ACCEPT-BGP {
+      from protocol bgp;
+      then accept;
+    }
+    term ACCEPT-CONNECTED {
+      from protocol direct;
+      then accept;
+    }
+    then reject;
+  }
+  policy-statement CORE-IN-V{{ version }} {
+    {{ REJECT_NOT_BLADE_SUPERNET_ORLONGER_V(version) | indent(4) }}
+    then {
+      local-preference {{ lookup("bgp", "local-preference").core }};
+      community add COMM-CORE-IN-OUT;
+      accept;
+    }
+  }
+  policy-statement CORE-OUT-V{{ version }} {
+    {{ ACCEPT_DEFAULT_V(version) | indent(4) }}
+    then reject;
+  }
+  {% if lookup('system', 'sampling').type %}
+  policy-statement KENTIK-OUT-V{{ version }} {
+    {{ REJECT_DEFAULT_V(version) | indent(4) }}
+    {{ ACCEPT_BGP() | indent(4) }}
+    then reject;
+  }
+  policy-statement KENTIK-IN-V{{ version }} {
+    then reject;
+  }
+  {% endif %}
+  policy-statement NOT-BLADE-SUPERNET-V{{ version }} {
+    term REJECT-BLADE-SUPERNET {
+      from {
+        route-filter-list BLADE-SUPERNET-V{{ version }};
+      }
+      then reject; # -> false
+    }
+    then accept; # -> true
+  }
+  policy-statement NOT-BLADE-SUPERNET-ORLONGER-V{{ version }} {
+    term REJECT-BLADE-SUPERNET {
+      from {
+        route-filter-list BLADE-SUPERNET-ORLONGER-V{{ version }};
+      }
+      then reject; # -> false
+    }
+    then accept; # -> true
+  }
+  {% for type, peers in lookup("bgp", "peers").items() %}
+    {% for name, peer in peers.items() if peer.irr is defined %}
+  policy-statement NOT-AS{{ peer.asn }}-IRR-V{{ version }} {
+    term REJECT-VALID {
+      from {
+        route-filter-list AS{{ peer.asn }}-IRR-V{{ version }};
+      }
+      then reject; # -> false
+    }
+    then accept; # -> true
+  }
+    {% endfor %}
+  {% endfor %}
+}
+{% endfor %}
+
+{% if lookup("bgp", "peers") %}
+policy-options {
+  {% for type, peers in lookup("bgp", "peers").items() %}
+    {% for name, peer in peers.items() %}
+      {% set already_seen = [] %}
+      {% set public_peering = lookup("bgp", "local-preference")["public-peering"] %}
+      {% set private_peering = lookup("bgp", "local-preference")["private-peering"] %}
+      {% set core = lookup("bgp", "local-preference").core %}
+      {% set local_pref = {"ix": public_peering,
+                     "pni": private_peering,
+                     "core": core}.get(type.split("-")[0], False) %}
+      
+      {% for remote in peer.remote | tolist %}
+        {% set version = remote | ipv %}
+        {% if version not in already_seen %}
+  policy-statement {{ policy_name(peer) }}-{{ type | upper }}-IN-V{{ version }} {
+          {% if peer["raw-import-{}".format(version)] is defined %}
+    {{ peer["raw-import-{}".format(version)] | indent(4) }}
+          {% else %}
+    {{ REJECT_DEFAULT_V(version) | indent(4) }}
+    {{ REJECT_BLADE_SUPERNET_V(version) | indent(4) }}
+    {{ REJECT_LONG_AS_PATH() | indent(4) }}
+    {{ REJECT_TOO_SPECIFIC_V(version) | indent(4) }}
+    {{ REJECT_BOGON_V(version) | indent(4) }}
+    {{ REJECT_BOGON_ASN() | indent(4) }}
+            {% if lookup("bgp", "validators") %}
+    {{ REJECT_RPKI_INVALID() | indent(4) }}
+            {% endif %}
+            {% if peer.irr is defined %}
+    {{ REJECT_NOT_AS_IRR_V(version, peer.asn)  | indent(4) }}
+            {% endif %}
+    term SET-ATTRIBUTES {
+      then {
+            {% for key, community in lookup("bgp", "communities").items() %}
+              {% if key in (type, name) %}
+        community add COMM-{{ key | upper }}-IN-OUT;
+              {% endif %}
+            {% endfor %}
+            {% if local_pref %}
+        local-preference {{ local_pref }};
+            {% endif %}
+      }
+    }
+            {% for term in peer["specific-import"]|default([]) %}
+    term ACCEPT-SPECIFIC-{{ term.name | slugify | upper }} {
+              {% if term["as-path"] is defined %}
+      from as-path AS-PATH-{{ term.name | slugify | upper }};
+              {% endif %}
+      then {
+              {% if term["lp-delta"] is defined %}
+                {% if term["lp-delta"] < 0 %}
+        local-preference subtract {{ term["lp-delta"] | abs }};
+                  {% else %}
+        local-preference add {{ term["lp-delta"] }};
+                {% endif %}
+              {% endif %}
+              {% if term.metric is defined %}
+        metric {{ term.metric }};
+              {% endif %}
+        accept;
+      }
+    }
+            {% endfor %}
+    then accept;
+          {% endif %}
+  }
+
+  policy-statement {{ policy_name(peer) }}-{{ type | upper }}-OUT-V{{ version }} {
+          {% if peer["raw-export-{}".format(version)] is defined %}
+    {{ peer["raw-export-{}".format(version)] |indent(4) }}
+          {% else %}
+    term ACCEPT-BLADE-ONLY {
+      from {
+        route-filter-list BLADE-SUPERNET-V{{ version }};
+      }
+      then {
+            {% if peer["specific-export"].prepend is defined %}
+        as-path-prepend "{{ ([asn]*peer["specific-export"].prepend)|join(" ") }}";
+            {% endif %}
+            {% for key, community in lookup("bgp", "communities").items() %}
+              {% if key in (type, name) %}
+        community add COMM-{{ key | upper }}-IN-OUT;
+              {% endif %}
+            {% endfor %}
+            {% if peer["specific-export"].community is defined %}
+        community add COMM-SPECIFIC-{{ policy_name(peer) }}-OUT;
+            {% endif %}
+        accept;
+      }
+    }
+    then reject;
+          {% endif %}
+  }
+          {% do already_seen.append(version) %}
+        {% endif %}
+	    {% endfor %}
+	    {% for term in peer["specific-import"]|default([]) if term['as-path'] is defined %}
+	as-path AS-PATH-{{ term.name | slugify | upper }} "{{ term["as-path"] }}";
+      {% endfor %}
+      {% for community in peer["specific-export"].community |tolist %}
+  community COMM-SPECIFIC-{{ policy_name(peer) }}-OUT members {{ community }};
+      {% endfor %}
+    {% endfor %}
+  {% endfor %}
+}
+{% endif %}

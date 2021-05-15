@@ -1,0 +1,31 @@
+- name: prepare Cisco for NAPALM
+  tags: always
+  when: not ansible_check_mode
+  block:
+    - name: enable scp
+      cisco.ios.ios_config:
+        lines:
+          - ip scp server enable
+    - name: enable archive
+      cisco.ios.ios_config:
+        lines:
+          - path flash:archive
+          - write-memory
+        parents: archive
+
+# Full configuration
+- name: apply full configuration
+  napalm.napalm.install_config:
+    config_file: "{{ host_dir }}/config.txt"
+    commit_changes: true
+    replace_config: true
+  register: full_configuration
+
+# Only base configuration
+- name: update base configuration
+  when: full_configuration is not defined
+  napalm.napalm.install_config:
+    config_file: "{{ host_dir }}/config-base.txt"
+    commit_changes: true
+  register: base_configuration
+  tags: base

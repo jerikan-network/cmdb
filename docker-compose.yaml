@@ -1,0 +1,85 @@
+version: '3.4'
+services:
+  junoser:
+    image: registry.gitlab.com/blade-group/infra/network/junoser:latest
+    expose:
+      - 4567
+
+  # IRRd
+  irrd:
+    image: registry.gitlab.com/blade-group/infra/network/irrd-legacy:latest
+    expose:
+      - 43
+
+  # Image to run Jerikan using the deployed version in git
+  jerikan: &jerikan
+    build: 
+      context: .
+      dockerfile: ci/jerikan/Dockerfile
+      args:
+        uid: ${oUID}
+        gid: ${oGID}
+    volumes:
+      - .:/app/jerikan:ro,z
+      - ./output:/app/jerikan/output:rw,z
+      - ./.cache~:/app/jerikan/.cache~:rw,z
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      - junoser
+    environment:
+      JUNOSER_URL: http://junoser:4567
+
+  jerikan-ci:
+    <<: *jerikan
+    depends_on:
+      - junoser
+      - irrd
+    environment:
+      JUNOSER_URL: http://junoser:4567
+      IRRD_SERVER: irrd
+
+  # Tool to convert a diff to HTML
+  diff2html:
+    build:
+      context: ci
+      dockerfile: Dockerfile.diff2html
+
+  # Ansible
+  ansible:
+    build:
+      context: ci/ansible
+      dockerfile: Dockerfile
+      target: ansible-only
+      args:
+        uid: ${oUID}
+        gid: ${oGID}
+    environment: &ansible-env
+      VAULT_ADDR: https://vault.gcp.blade-group.net/
+      VAULT_TOKEN:                  # to be provided
+      # Several ansible variables that can be useful to set
+      ANSIBLE_LOG_PATH: /tmp/ansible.log
+      ANSIBLE_DEBUG:                # Set to "True"
+      ANSIBLE_ENABLE_TASK_DEBUGGER: # Set to "True"
+    volumes:
+      - ./output:/app/output:ro,z
+      - ./ansible:/app/ansible:ro,z
+      - ./data:/app/data:rw,z
+      - ./ci/ansible/ssh_config:/etc/ssh/ssh_config:ro,z
+      - $SSH_AUTH_SOCK:/app/ssh-agent.sock:z
+
+  # Ansible with data from generated output by CI
+  ansible-gitlab:
+    build:
+      context: ci/ansible
+      dockerfile: Dockerfile
+      target: ansible-and-data
+      args:
+        uid: ${oUID}
+        gid: ${oGID}
+        sha: ${SHA:-nothing}
+    environment: *ansible-env
+    volumes:
+      - ./ansible:/app/ansible:ro,z
+      - ./ci/ansible/ssh_config:/etc/ssh/ssh_config:ro,z
+      - $SSH_AUTH_SOCK:/app/ssh-agent.sock:z

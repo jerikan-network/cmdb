@@ -1,0 +1,41 @@
+interface Vlan1
+ description OOB
+{% set oob = lookup("topology", "addresses").main | store("addresses", "Vlan1") %}
+ ip address {{ oob | store("addresses", "oob") | ipaddr("address") }} {{ oob | ipaddr("netmask") }}
+!
+ip default-gateway {{ oob | ipaddr("last_usable") }}
+!
+{% set ports = lookup("topology", "ports") %}
+{% for i in range(1, 49) %}
+interface GigabitEthernet{% if model == "c2960s" %}1/{% endif %}0/{{ i }}
+{% if i in ports.uplink | torange %}
+ description Uplink
+{% if lookup("system", "spanning-tree") %}
+ spanning-tree portfast disable
+{% endif %}
+{% endif %}
+{% if i in ports.trunk | default("") | torange %}
+ switchport trunk allowed vlan 1,102
+ switchport mode trunk
+ switchport nonegotiate
+{% else %}
+ switchport mode access
+{% endif %}
+{% if i in ports.storage | default("") | torange %}
+ switchport access vlan 102
+{% endif %}
+{% endfor %}
+!
+{% if not lookup("system", "spanning-tree") %}
+no spanning-tree vlan 1
+no spanning-tree vlan 102
+{% else %}
+spanning-tree mode mst
+spanning-tree portfast default
+spanning-tree portfast bpduguard default
+spanning-tree extend system-id
+{% set priority = lookup("system", "spanning-tree").priority | default(0) %}
+{% if priority %}
+spanning-tree mst 0 priority {{ priority }}
+{% endif %}
+{% endif %}

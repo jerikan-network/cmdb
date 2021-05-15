@@ -1,0 +1,3 @@
+ports-personality:
+  10G: 1-48
+  40G: 49-54

@@ -1,0 +1,132 @@
+system {
+{% if not lookup("system", "dual-re") %}
+  host-name {{ host }};
+{% endif %}
+  domain-name blade-group.net;
+  time-zone UTC;
+  location country-code {{ lookup('system', 'country') }};
+  ports {
+    console {
+      log-out-on-disconnect;
+      type vt100;
+    }
+  }
+}
+
+{% include "junos/ssh.j2" %}
+
+system {
+{% for license in lookup("system", "licenses") | tolist if license %}
+  replace: license {
+    keys {
+      key "{{ license }}";
+     }
+  }
+{% endfor %}
+  replace: ntp {
+{% for ntp in lookup("system", "ntp") %}
+    server {{ ntp }};
+{% endfor %}
+  }
+  replace: name-server {
+{% for dns in lookup("system", "dns") %}
+    {{ dns }};
+{% endfor %}
+  }
+  replace: syslog {
+    archive size 10m files 10 world-readable;
+    user * {
+      any emergency;
+    }
+{% for ip in lookup("system", "syslog") %}
+    host {{ ip }} {
+      any warning;
+      authorization notice;
+      firewall any;
+      interactive-commands any;
+      port 514;
+      source-address {{ lookup('topology', 'addresses').main | ipaddr("address") if lookup('topology', 'addresses').main is defined else lookup('topology', 'addresses').loopback }};
+      structured-data;
+    }
+{% endfor %}
+    file * {
+      user emergency;
+    }
+    file messages {
+      any any;
+      authorization none;
+      firewall none;
+      change-log notice;
+      interactive-commands none;
+      match "!({{ lookup('system', 'syslog-exclude') | join('|') }})";
+      archive size 1m files 10;
+      explicit-priority;
+    }
+    file interactive-commands {
+      interactive-commands any;
+    }
+    file updown {
+      any info;
+      match "LINK_DOWN|LINK_UP";
+    }
+    file interfaces {
+      any info;
+      daemon info;
+      match .*SNMP_TRAP_LINK.*;
+      archive size 1m files 10;
+      explicit-priority;
+    }
+    file security {
+      authorization info;
+      interactive-commands info;
+      explicit-priority;
+    }
+    file default-log-messages {
+      any any;
+      structured-data;
+    }
+    file filter {
+      firewall any;
+      explicit-priority;
+    }
+    file commands {
+      interactive-commands info;
+      explicit-priority;
+    }
+    file console {
+      any critical;
+      authorization info;
+    }
+    console {
+      authorization info;
+    }
+    time-format year millisecond;
+  }
+}
+chassis {
+  alarm {
+    management-ethernet {
+      link-down ignore;
+    }
+  }
+}
+
+snmp {
+  location "{{ lookup('system', 'datacenter') }}, {{ lookup('system', 'country') }}";
+  community {{ lookup('system', 'snmp')['ro-community'] }} authorization read-only;
+{% if "edge" in groups and lookup('system', 'sampling').type is not none %}
+  {% set sampling_community = lookup('system', 'sampling')['snmp-community'] %}
+  community {{ sampling_community }} authorization read-only;
+  community {{ sampling_community }} routing-instance internet;
+{% endif %}
+{% if "edge"  in groups %}
+  routing-instance-access;
+{% endif %}
+}
+
+protocols {
+    lldp {
+      port-id-subtype interface-name;
+      port-description-type interface-alias;
+    }
+}

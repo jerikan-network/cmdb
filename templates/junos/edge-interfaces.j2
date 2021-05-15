@@ -1,0 +1,128 @@
+{% for iface, infos in lookup('topology', 'interfaces').items() if infos %}
+  {% if infos.connectivity is defined and infos.connectivity is not none and infos.connectivity.endswith("G") and
+       (infos.address is defined or infos.aggregate is defined) %}
+    {% error "interface used as aggregate or with an address should provide the connectivity type" %}
+  {% endif %}
+  {% set ifd = iface.split(".")[0] %}
+  {% if (infos.connectivity is not none and infos | length > 1) or infos.address is defined %}
+    {% set unit = iface.split(".")[1] if "." in iface else 0 %}
+    {% set ifl = "{}.{}".format(ifd, unit) %}
+interfaces {
+    {% if infos.type is defined and infos.type in ("core", "man") and not infos.remote.startswith("ad1-n3") %}
+  {{ ifd }} {
+      mtu {{ infos.mtu | default("9216")}};
+  }
+      {% if not iface.startswith('ae') %}
+  {{ ifd }} {
+      hold-time up {{ infos.hold.up | default("3000")}} down {{ infos.hold.down | default("30")}};
+  }
+      {% else %}
+        {% for child, infos in lookup('topology', 'interfaces').items() if infos.aggregate is defined and infos.aggregate == ifd %}
+  {{ child }} {
+      hold-time up {{ infos.hold.up | default("3000")}} down {{ infos.hold.down | default("30")}};
+    }
+        {% endfor %}
+      {% endif %}
+    {% endif %}
+  {{ ifd }} {
+    {% if infos.mac is defined %}
+      mac {{ infos.mac }};
+    {% endif %}
+    {% if iface.startswith('ae') %}
+      aggregated-ether-options {
+          lacp {
+              active;
+              periodic fast;
+          }
+      }
+    {% endif %}
+    {% set description = interface_description(iface) %}
+    {% if description %}
+      description "{{ description }}";
+    {% endif %}
+    {% if infos.aggregate is defined %}
+      gigether-options 802.3ad {{ infos.aggregate }};
+    {% elif infos.address is defined %}
+      {% if '.' in iface %}
+      vlan-tagging;
+      unit {{ unit }} {
+        vlan-id {{ unit }};
+      {% else %}
+      unit {{ unit }} {
+      {% endif %}
+      {% for address in infos.address | tolist %}
+        family {{ "inet" if address | ipv4 else "inet6" }} {
+          address {{ address | store("addresses", ifl) }};
+        }
+      {% endfor %}
+      }
+    {% endif %}
+    }
+}
+    {% if infos.address is defined %}
+routing-instances {
+  internet {
+      instance-type virtual-router;
+      interface {{ ifl }};
+  }
+}
+      {% if not "ix" in infos.type | default %}
+protocols lldp interface {{ ifd }};
+      {% endif %}
+    {% endif %}
+    {% elif  infos.connectivity is not none %}
+interfaces {{ ifd }} disable;
+  {% endif %}
+{% endfor %}
+{% for address in lookup('topology', 'addresses').loopback | tolist %}
+interfaces {
+  lo0 {
+    description "Loopback:";
+    unit 0;
+    unit 666 {
+      family {{ "inet" if address | ipv4 else "inet6" }} {
+        address {{ address | ipaddr("cidr") | store("addresses", "lo0.666") }};
+      }
+    }
+  }
+}
+{% endfor %}
+{% if lookup('topology', 'addresses').loopback is defined %}
+routing-instances {
+  internet {
+      instance-type virtual-router;
+      interface lo0.666;
+  }
+}
+{% endif %}
+
+{% set sspines = devices("environment","location","groups==sspine-bgp") %}
+{% for sspine in sspines %}
+  {% for port, device in lookup("topology", "ports", sspine).items() if device == shorthost %}
+    {% for interface, infos in lookup("topology", "interfaces").items() if infos.remote is defined and "{}.{}.blade-group.net".format(infos.remote, location) == sspine %}
+      {% set prefix = lookup('bgptth', ':{} whatever'.format(port), sspine).public %}
+interfaces {
+    {{ interface }} {
+        vlan-tagging;
+        unit 100 {
+            vlan-id 100;
+            family inet {
+                address {{ prefix|ippeer|store("addresses", "{}".format(interface)) }}/{{ prefix|ipaddr("prefix") }};
+            }
+      {% set prefix = prefix |ipv4toipv6() %}
+            family inet6 {
+                address {{ prefix|ippeer|store("addresses", "{}".format(interface)) }}/{{ prefix|ipaddr("prefix") }};
+            }
+        }
+    }
+}
+routing-instances {
+  internet {
+      instance-type virtual-router;
+      interface {{ interface }}.100;
+  }
+}
+protocols lldp interface {{ interface }};
+    {% endfor %}
+  {% endfor %}
+{% endfor %}

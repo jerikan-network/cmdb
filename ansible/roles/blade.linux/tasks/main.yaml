@@ -1,0 +1,14 @@
+- import_tasks: base.yaml
+  tags: base
+
+- block:
+    - name: check if we need to configure sysctl
+      local_action: stat path="{{ host_dir }}/sysctl.conf"
+      register: sysctlconf
+      check_mode: false
+    - name: configure sysctl
+      copy:
+        src: "{{ host_dir }}/sysctl.conf"
+        dest: /etc/sysctl.d/cmdb.conf
+      notify: sysctl values changed
+      when: sysctlconf.stat.exists

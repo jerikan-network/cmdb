@@ -1,0 +1,49 @@
+{% if lookup('topology', 'addresses').loopback is defined %}
+interface Loopback0
+ description "Loopback:"
+ {% for address in lookup('topology', 'addresses').loopback | tolist %}
+ ipv{{ address|ipv }} address {{ address|store("addresses", "Loopback0")|ipaddr("address") if address|ipv4 else address|store("addresses", "Loopback0")|ipaddr("cidr") }} {{ address|ipaddr("netmask") if address|ipv4 }}
+ {% endfor %}
+!
+{% endif %}
+{% for interface, value in lookup("topology", "interfaces").items() if value %}
+{% if value.connectivity is defined and value.connectivity is not none and value.connectivity.endswith("G") and
+     (value.address is defined or value.aggregate is defined) %}
+  {% error "interface used as aggregate or with an address should provide the connectivity type" %}
+{% endif %}
+{% if (value.connectivity is not none and value | length > 1) or value.address is defined %}
+interface {{ interface }}
+ {% if value.type is defined and value.type in ("core", "man") %}
+ mtu {{ value.mtu | default("9216")}}
+ {% endif %}
+ {% set description = interface_description(interface) %}
+ description {{ description }}
+ {% if value.aggregate is defined %}
+ bundle id {{ value.aggregate | regex_replace("^.*(\\d+)$", "\\1") }} mode active
+ {% endif %}
+ load-interval 30
+ {% for address in value.get("address", []) | tolist %}
+ ipv{{ address|ipv }} address {{ address|store("addresses", interface)|ipaddr("address") if address|ipv4 else address|store("addresses", interface)|ipaddr("cidr") }} {{ address|ipaddr("netmask") if address|ipv4 }}
+ {% if address | ipaddr("prefix") == 64 | default %}
+ ipv6 nd suppress-ra
+ {% endif %}
+ {% endfor %}
+ {% if interface.startswith("Bundle") %}
+ bundle minimum-active links 1
+ {% endif %}
+ {% if value.type is defined and value.type not in ("core", "man") and value.get("address", [])|ipv4 %}
+ ipv4 access-group ACL-INTERNET-IN-V4 ingress
+ {% endif %}
+ {% if "ix" in value.type | default %}
+ lldp
+   receive disable
+   transmit disable
+ !
+ {% endif %}
+ {% if value.aggregate is not defined %}
+ flow ipv4 monitor FLOW-IPv4 sampler FLOW-SAMPLER ingress
+ flow ipv6 monitor FLOW-IPv6 sampler FLOW-SAMPLER ingress
+ {% endif %}
+!
+{% endif %}
+{% endfor %}

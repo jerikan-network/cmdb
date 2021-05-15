@@ -1,0 +1,61 @@
+#!/bin/bash
+function error() {
+    echo -e "\e[0;33mERROR: The Zero Touch Provisioning script failed while running the command $BASH_COMMAND at line $BASH_LINENO.\e[0m" >&2
+    exit 1
+}
+
+# Waiting for NCLU to finish starting up
+last_code=1
+while [ "1" == "$last_code" ]; do
+    net show interface &> /dev/null
+    last_code=$?
+done
+
+{% if model == "wedge100" %}
+# BMC: {{ lookup("topology", "addresses").bmc|store("addresses", "bmc") }}
+{% endif %}
+
+{# RESET THE DEFAULT CONF #}
+net show configuration commands \
+     | grep -E "^net add (dns|time ntp|snmp-server) " \
+     | sed -e 's/net add/net del/' -e 's/^\(net del dns .*\) vrf mgmt$/\1/' -e 's/ iburst$//' \
+     | sh -x
+
+# HOSTNAME
+net add hostname {{ host }}.blade-group.net
+
+# DNS
+{% for dns in lookup('system', 'dns') %}
+  {% if "adm-agg" in groups %}
+net add dns nameserver {{ dns }}
+  {% else %}
+net add dns nameserver {{ dns }} vrf mgmt
+  {% endif %}
+{% endfor %}
+
+# NTP
+{% for ntp in lookup('system', 'ntp') %}
+net add time ntp server {{ ntp }} iburst
+{% endfor %}
+{% if "adm-agg" in groups %}
+net add time ntp source lo
+{% else %}
+net add time ntp source eth0
+{% endif %}
+net add time zone Etc/UTC
+
+# SNMP
+{% if "adm-agg" in groups %}
+net add snmp-server listening-address {{ lookup('topology', 'addresses').main | ipaddr('address') }}
+{% else %}
+net add snmp-server listening-address {{ lookup('topology', 'addresses').main | ipaddr('address') }} vrf mgmt
+{% endif %}
+net add snmp-server system-name {{ host }}
+net add snmp-server system-location location {{ lookup('system', 'datacenter') }}, {{ lookup('system', 'country') }};
+net add snmp-server system-contact noc@home.local
+net del snmp-server listening-address localhost
+
+net commit
+
+# CUMULUS-AUTOPROVISIONING
+exit 0

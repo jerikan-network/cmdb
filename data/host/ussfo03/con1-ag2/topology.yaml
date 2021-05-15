@@ -1,0 +1,15 @@
+interfaces:
+  wan:
+    address: 172.30.24.19/21
+  lan:
+    address: 172.30.24.20/21
+ports:
+  1: spine2
+  2: ob1-ag2
+  3: to2-p1
+  4: to2-p2
+  5: to2-p3
+  7: to2-p5
+  10: to2-p8
+  14: to2-sp2
+  15: to2-sp3

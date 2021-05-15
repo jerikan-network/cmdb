@@ -1,0 +1,20 @@
+---
+roles: {}
+collections:
+- name: https://github.com/ansible-collections/ansible.netcommon.git
+  type: git
+  version: fcb59c85bced7de799c2597135940174a8b49266 # 2.0.3 when available
+- name: community.crypto
+  version: 1.1.0
+- name: community.general
+  version: 1.1.0
+- name: junipernetworks.junos
+  version: 2.0.1
+- name: cisco.ios
+  version: 0.0.2
+- name: cisco.iosxr
+  version: 1.0.2
+- name: netbox.netbox
+  version: 1.0.2
+- name: napalm.napalm
+  version: 0.9.13

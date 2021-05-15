@@ -1,0 +1,49 @@
+addresses:
+  anycast-provisioning: 10.127.0.0
+  prometheus: "~{{ lookup('topology', 'base-admin') | ipoffset('0.0.0.12') | ipaddr('address') }}"
+
+virtual-router-id: 1
+interfaces:
+  # Loopbacks
+  lo:1:
+    address: "~{{ lookup('topology', 'addresses').main }}/32"
+    up:
+      - sysctl -qw net.ipv4.icmp_errors_use_inbound_ifaddr=1
+      - sysctl -qw net.ipv4.conf.all.accept_redirects=0
+      - sysctl -qw net.ipv4.conf.all.send_redirects=0
+      - sysctl -qw net.ipv4.conf.default.send_redirects=0
+      - sysctl -qw net.ipv6.conf.all.disable_ipv6=1
+      - sysctl -qw net.ipv4.conf.all.forwarding=1
+      - ip route add blackhole default metric 4278198272
+      - ip route add blackhole 10.0.0.0/8
+      - ip route add blackhole 172.16.0.0/12
+      - ip route add blackhole 192.168.0.0/16
+      - ip rule add iif lo to 192.168.0.0/16 table main priority 12
+      - ip rule add iif lo to 10.0.0.0/8     table main priority 12
+      - ip rule add iif lo to 172.16.0.0/12  table main priority 12
+      - ip rule add iif lo to 169.254.0.0/16 table main priority 12
+      - ip rule add iif lo to 100.64.0.0/10  table main priority 12
+      - ip rule add fwmark 0x2/0x2           table main priority 15
+  public:
+    address: "~{{ lookup('topology', 'addresses').public }}/32"
+    mtu: 1500
+    pre-up: ip link add public type dummy
+    up:
+      - ip route add blackhole default metric 4278198272 table public
+      - ip rule add iif lo table public priority 13
+      - ip rule add fwmark 0x1/0x1 table public priority 15
+      - >-
+        ~{% for iface in lookup('topology', 'bgp-interfaces') -%}
+        ip rule add iif {{ iface }}.{{ lookup('topology', 'vlans').public }} table public priority 100 &&
+        {% endfor -%}
+        :
+
+# Rescue interface: default route is installed in both public and
+# rescue tables and we use the rescue table when traffic originate
+# from rescue IP address.
+interface-rescue:
+  address: "~{{ lookup('topology', 'addresses').rescue }}"
+  up:
+    - "~ip route add default via {{ lookup('topology', 'addresses').rescue|ipaddr('first_usable') }} metric 4278198271 table public"
+    - "~ip route add default via {{ lookup('topology', 'addresses').rescue|ipaddr('first_usable') }} table rescue"
+    - "~ip rule add from {{ lookup('topology', 'addresses').rescue|ipaddr('address') }} table rescue priority 10"

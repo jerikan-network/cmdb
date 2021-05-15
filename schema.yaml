@@ -1,0 +1,35 @@
+system:
+  users:
+    merge: hash
+  sampling:
+    merge: hash
+  ansible-vars:
+    merge: hash
+  netbox:
+    merge: hash
+
+topology:
+  interfaces:
+    merge: hash
+  vlans:
+    merge: hash
+  addresses:
+    merge: hash
+  subnets:
+    merge: hash
+  ports:
+    merge: hash
+  variants:
+    merge: array
+
+bgp:
+  peers:
+    merge: hash
+  communities:
+    merge: hash
+
+build:
+  templates:
+    merge: hash
+  checks:
+    merge: array

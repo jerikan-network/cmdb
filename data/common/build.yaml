@@ -1,0 +1,10 @@
+templates:
+  data.yaml: data.j2
+
+checks:
+  - description: "check YAML data"
+    script: checks/data.yaml
+    cache: data.yaml
+
+diff:
+  - "*"

@@ -1,0 +1,4 @@
+typeset -aU path
+for p in {/usr/local,/usr,}/{s,}bin /usr/cumulus/bin; do
+    [[ -d $p ]] && path+=($p)
+done

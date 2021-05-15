@@ -1,0 +1,8 @@
+{# Arbitrary data in YAML format #}
+{% if groups is defined and os is defined %}
+{% for group in groups %}
+  {% include ["{}/{}/data.j2".format(os, group),
+              "{}/data-{}.j2".format(os, group)] ignore missing %}
+{% endfor %}
+{% include "{}/data.j2".format(os) ignore missing %}
+{% endif %}

@@ -1,0 +1,75 @@
+{% set interfaces = lookup('topology', 'interfaces') %}
+auto lo
+iface lo inet loopback
+
+source /etc/network/interfaces.d/*
+
+{# Bond devices #}
+{% set bond_devices = [] %}
+{% for iface, conf in interfaces.items() if conf.aggregate|default %}
+  {% do bond_devices.append(conf.aggregate) %}
+{% endfor %}
+{% set bond_devices = bond_devices|unique %}
+
+{# Bond devices without a declaration #}
+{% for iface in bond_devices if iface not in interfaces %}
+auto {{ iface }}
+iface {{ iface }} inet manual
+    bond-slaves none
+    bond-mode 802.3ad
+    bond-miimon 100
+
+{% endfor %}
+
+{# Other interfaces #}
+{% for iface, conf in interfaces.items() if conf %}
+auto {{ iface }}
+iface {{ iface }} inet {{ "static" if conf.address|default else "dhcp" if conf.dhcp|default else "manual" }}
+    {% if conf.aggregate|default %}
+    bond-master {{ conf.aggregate }}
+    {% endif %}
+    {% if iface in bond_devices %}
+    bond-slaves none
+    bond-mode 802.3ad
+    bond-miimon 100
+    {% endif %}
+    {% if conf.mtu|default %}
+    mtu {{ conf.mtu }}
+    {% endif %}
+    {% for address in conf.address|default([])|tolist %}
+      {% if loop.first %}
+    address {{ address|store("addresses", iface) }}
+      {% else %}
+    up ip addr add {{ address|store("addresses", iface) }} dev $IFACE
+    down ip addr del {{ address }} dev $IFACE
+      {% endif %}
+    {% endfor %}
+    {% if conf.gateway|default %}
+    gateway {{ conf.address | ipaddr("last_usable") }}
+    {% endif %}
+    {% for up in conf["pre-up"]|default([])|tolist %}
+    pre-up {{ up }}
+    {% endfor %}
+    {% for up in conf.up|default([])|tolist %}
+    up {{ up }}
+    {% endfor %}
+    {% for down in conf.down|default([])|tolist %}
+    down {{ down }}
+    {% endfor %}
+    {% for down in conf["post-down"]|default([])|tolist %}
+    post-down {{ down }}
+    {% endfor %}
+    {% if conf.driver|default == "mlx4" %}
+    up ethtool -C $IFACE adaptive-rx off rx-usecs 0 tx-frames 64
+    up set_irq_affinity_bynode.sh 0 {% for iface,conf in interfaces.items() if conf.driver|default == "mlx4" %}{{ iface }} {%+ endfor %}
+    {% endif %}
+    {% if conf.extra is defined %}
+    {% include conf.extra %}
+    {% endif %}
+
+{% endfor %}
+
+{% for group in groups %}
+    {% include ["linux/{}/interfaces.j2".format(group),
+                "linux/interfaces-{}.j2".format(group)] ignore missing %}
+{% endfor %}

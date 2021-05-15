@@ -1,0 +1,29 @@
+routing-instances internet {
+    protocols {
+      bgp {
+{% set sspines = devices("environment","location","groups==sspine-bgp") %}
+{% for sspine in sspines %}
+  {% for port, device in lookup("topology", "ports", sspine).items() if device == shorthost %}
+    {% for interface, infos in lookup("topology", "interfaces").items() if infos.remote is defined and "{}.{}.blade-group.net".format(infos.remote, location) == sspine %}
+      {% set neighbor = lookup('bgptth', ':{} whatever'.format(port), sspine) %}
+      {% set shortsspine = scope(sspine).shorthost %}
+      {% for remote in (neighbor.public|ipaddr("address"), neighbor.public|ipaddr("address")|ipv4toipv6) %}
+        group ipv{{ remote|ipv }}-{{ shortsspine }} {
+          type external;
+          multipath multiple-as;
+          description "{{ shortsspine }} AS{{ neighbor.asn }}";
+          import CORE-IN-V{{ remote|ipv }};
+          export CORE-OUT-V{{ remote|ipv }};
+          neighbor {{ remote }} {
+              description {{ shortsspine }};
+              peer-as {{ neighbor.asn }};
+              local-as {{ lookup("bgptth", "").asn }};
+          }
+        }
+      {% endfor %}
+    {% endfor %}
+  {% endfor %}
+{% endfor %}
+    }
+  }
+}

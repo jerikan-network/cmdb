@@ -1,0 +1,48 @@
+{% for interface, value in lookup("topology", "interfaces").items() if value.remote is defined and value.remote.startswith("spine") %}
+  {% for fqdn in devices("environment", "location", "groups==spine-bgp") %}
+    {% for rport, me in lookup("topology", "ports", fqdn).items() if me == shorthost %}
+      {% set spine = fqdn.split(".")[0] %}
+      {% set address = lookup("bgptth", spine ~ ":" ~ rport).public %}
+      {% if value.remote == spine %}
+interface {{ interface }}.100
+ mtu 9216
+ ipv4 address {{ address|store("addresses", interface)|ipaddr("address") }} {{ address|ipaddr("netmask") }}
+ ipv6 address {{ address|ipv4toipv6|store("addresses", interface)|ipaddr("cidr") }}
+ load-interval 30
+ flow ipv4 monitor FLOW-IPv4 sampler FLOW-SAMPLER ingress
+ flow ipv6 monitor FLOW-IPv6 sampler FLOW-SAMPLER ingress
+ encapsulation dot1q 100
+!
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+{% endfor %}
+{% set already_seen = [] %}
+router bgp {{ lookup("bgp", "local-asn") }}
+{% for fqdn in devices("environment", "location", "groups==spine-bgp") %}
+  {% for rport, me in lookup("topology", "ports", fqdn).items() if me == shorthost %}
+    {% set spine = fqdn.split(".")[0] %}
+    {% set neighbor = lookup('bgptth', ':{} whatever'.format(rport), spine) %}
+      {% for remote in (neighbor.public|ipaddr("address"), neighbor.public|ipaddr("address")|ipv4toipv6) %}
+      {% set version = remote | ipv %}
+      {% if not version in already_seen %}
+ neighbor-group NBRGRP-SPINE-V{{ version }}
+  remote-as {{ neighbor.asn }}
+  local-as {{ lookup("bgptth", "").asn }}
+  address-family ipv{{ version }} unicast
+   route-policy RPL-CORE-IN-V{{ version }} in
+   route-policy RPL-CORE-OUT-V{{ version }} out
+   default-originate route-policy RPL-ACCEPT-DEFAULT-ORIGINATE-V{{ version }}
+   soft-reconfiguration inbound always
+  !
+ !
+      {% do already_seen.append(version) %}
+      {% endif %}
+ neighbor {{ remote }}
+  use neighbor-group NBRGRP-SPINE-V{{ version }}
+  description BGP Fabric: {{ me }} to {{ spine }} [IPv{{ version }}]
+ !
+    {% endfor %}
+  {% endfor %}
+{% endfor %}
+!

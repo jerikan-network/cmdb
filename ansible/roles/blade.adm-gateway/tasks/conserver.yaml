@@ -1,0 +1,38 @@
+- name: deploy configuration
+  copy:
+    src: "{{ host_dir }}/conserver.cf"
+    dest: /etc/conserver/
+  notify: conserver configuration changed
+
+- name: install conserver
+  apt:
+    name:
+      - conserver-server
+      - conserver-client
+
+- block:
+    - name: create conserver ssh directory
+      file:
+        path: /etc/conserver/.ssh
+        owner: conservr
+        state: directory
+    - name: create conserver device log directory
+      file:
+        path: /var/log/conserver/devices
+        owner: conservr
+        state: directory
+    - name: copy ssh key
+      copy:
+        content: |
+          {{ lookup('hashi_vault', 'secret=kv/infra/all/network/conserver:private_key') }}
+        dest: /etc/conserver/.ssh/id_rsa
+        owner: conservr
+        mode: '0600'
+      no_log: true
+    - name: configure conserver ssh
+      copy:
+        content: |
+          Host *
+              StrictHostKeyChecking no
+        dest: /etc/conserver/.ssh/config
+        owner: conservr

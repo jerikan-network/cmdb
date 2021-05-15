@@ -1,0 +1,6 @@
+addresses:
+  main: 172.30.24.10/21
+mac: D4:A0:2A:91:76:C0
+
+ports:
+  uplink: 37-48

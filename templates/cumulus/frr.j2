@@ -1,0 +1,6 @@
+hostname {{ host }}.blade-group.net
+username cumulus nopassword
+{% for group in groups %}
+  {% include ["cumulus/{}/frr.j2".format(group),
+              "cumulus/frr-{}.j2".format(group)] ignore missing %}
+{% endfor %}

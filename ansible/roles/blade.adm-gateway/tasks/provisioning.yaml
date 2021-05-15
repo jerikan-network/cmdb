@@ -1,0 +1,110 @@
+- block:
+    - name: install nginx
+      apt:
+        pkg:
+          - nginx
+    - name: install nginx configuration file
+      copy:
+        src: "{{ host_dir }}/nginx.conf"
+        dest: "/etc/nginx/sites-enabled/gateway.conf"
+      notify: nginx configuration changed
+
+- name: check if DHCP server needs to be configured
+  local_action: stat path="{{ host_dir }}/dhcpd.conf"
+  register: dhcpdconfiguration
+- when: dhcpdconfiguration.stat.exists
+  block:
+    - name: install DHCP, TFTP
+      apt:
+        pkg:
+          - isc-dhcp-server
+          - tftpd-hpa
+          - rclone
+
+    # TFTP configuration
+    - name: put tftpd configuration
+      copy:
+        dest: /etc/default/tftpd-hpa
+        content: |
+            TFTP_USERNAME="tftp"
+            TFTP_DIRECTORY="/srv/provisioning"
+            TFTP_ADDRESS="{{ cmdb_data.tftp }}:69"
+            TFTP_OPTIONS="--secure -v"
+      notify: tftpd configuration changed
+
+    # Copy device configurations
+    - name: create provisioning directories
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /srv/provisioning
+        - /srv/provisioning/cfg
+        - /srv/provisioning/images
+    - name: deploy device configurations
+      diff: false
+      copy:
+        # On Cisco, the ZTP configuration needs to be tweaked to generate crypto keys
+        dest: "/srv/provisioning/cfg/{{ item.key }}"
+        content: |
+          {% if item.value == "ios" %}
+          {% filter replace("\nend\n", "\n") %}
+          {{ lookup('file', host_dir ~ '/../' ~ item.key ~ '/config.txt') }}
+          {% endfilter %}
+          crypto key generate rsa usage-keys label blade modulus 1024
+          end
+          {% else %}
+          {{ lookup('file', host_dir ~ '/../' ~ item.key ~ '/config.txt') }}
+          {% endif %}
+      loop: "{{ cmdb_data.devices|dict2items }}"
+    - name: deploy rescue configurations for IOS
+      diff: false
+      copy:
+        dest: "/srv/provisioning/cfg/{{ item.key }}-12.2"
+        src: "{{ host_dir }}/../{{ item.key }}/config-rescue.txt"
+      loop: "{{ cmdb_data.devices|dict2items }}"
+      when: "item.value == 'ios'"
+
+    # Sync GCP bucket for network images
+    - name: deploy images from GCP bucket
+      environment:
+        GCP_SA: "{{ lookup('hashi_vault', 'secret=kv/infra/all/network/ci/gcp-service-account:images')|b64encode }}"
+      shell: |
+        set -e
+        config=$(mktemp)
+        trap "rm -f $config" EXIT
+        cat <<EOF > $config
+        [gcp]
+        type = google cloud storage
+        EOF
+        old="$(du /srv/provisioning/images)"
+        set -x
+        rclone --config=$config \
+               --gcs-service-account-credentials="$(echo "$GCP_SA"|base64 -d)" \
+            sync gcp:blade-network-images/ /srv/provisioning/images/
+        # Cisco are unable to grab images from directories
+        find /srv/provisioning -type l -maxdepth 1 -print0 | xargs -r0 rm
+        (cd /srv/provisioning ; for h in images/*; do ln -s $h ; done)
+        [ "$old" = "$(du /srv/provisioning/images)" ] || echo CHANGED
+      register: result
+      changed_when: "'CHANGED' in result.stdout"
+
+    # DHCP configuration
+    - name: copy DHCP configuration file
+      copy:
+        content: |
+          {{ lookup("file", host_dir ~ "/dhcpd.conf") }}
+          {% for iface in cmdb_data.get("additional-dhcp-interfaces", []) if iface in ansible_facts %}
+
+          # Dummy subnet for {{ iface }} (for relayed requests)
+          subnet {{ ansible_facts[iface]['ipv4']['network'] }} netmask {{ ansible_facts[iface]['ipv4']['netmask'] }} {
+          }
+          {% endfor %}
+        dest: "/etc/dhcp/dhcpd.conf"
+      notify: DHCP configuration changed
+    - name: configure DHCP server to listen to OOB
+      copy:
+        dest: "/etc/default/isc-dhcp-server"
+        content: |
+          INTERFACESv4="oob {{ cmdb_data.get('additional-dhcp-interfaces', [])|join(' ') }}"
+      notify: DHCP configuration changed

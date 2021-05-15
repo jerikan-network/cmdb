@@ -1,0 +1,4 @@
+netbox:
+  model: Catalyst 2960S-48TS-L
+
+image: c2960s-universalk9-tar.150-2.SE12.txt

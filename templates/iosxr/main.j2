@@ -1,0 +1,22 @@
+{% include "iosxr/base.j2" %}
+
+{% set oob = lookup('topology', 'addresses').main|store("addresses", "oob") %}
+{% if not lookup('system', 'dual-re') %}
+interface MgmtEth0/RSP0/CPU0/0
+ vrf VRF-MANAGEMENT
+ ipv4 address {{ oob|store("addresses", "oob")|ipaddr("address") if oob|ipv4 else oob|store("addresses", "oob")|ipaddr("cidr") }} {{ oob|ipaddr("netmask") if oob|ipv4 }}
+!
+router static
+ vrf VRF-MANAGEMENT
+  address-family ipv4 unicast
+   0.0.0.0/0 {{ oob|ipaddr('last_usable') }}
+  !
+ !
+!
+{% else %}
+  {# TODO #}
+{% endif %}
+
+{% for group in groups %}
+  {% include "iosxr/{}.j2".format(group) ignore missing %}
+{% endfor %}

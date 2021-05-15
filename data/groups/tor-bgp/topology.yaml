@@ -1,0 +1,2 @@
+addresses:
+  pxe: "~{{ lookup('topology', 'base-admin') | ipoffset('0.0.0.87') | ipaddr('address') }}"

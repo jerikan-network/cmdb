@@ -1,0 +1,12 @@
+roas:
+{% set already_seen = [] %}
+{% for edge in devices("environment==prod", "groups==edge") %}
+{% for net in lookup("bgp", "supernets", edge) %}
+{% if net not in already_seen %}
+  {{ net }}:
+    asn: {{ lookup("bgp", "local-asn", edge) }}
+    max: {{ net | ipaddr("prefix") }}
+{% do already_seen.append(net) %}
+{% endif %}
+{% endfor %}
+{% endfor %}

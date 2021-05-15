@@ -1,0 +1,60 @@
+{% from "bgptth.j2" import iterate with context %}
+{% set provnets = [] %}
+{% set neighbors4 = {"public": [], "private": []} %}
+{% set neighbors6 = {"public": [], "private": []} %}
+{% macro bgp(iface, local_params, remote_params, provnet, kind=none, uplink=false, instance=none) %}
+  {% if (kind != "storage" or instance != "public") and (kind != "edge" or instance != "private") %}
+ neighbor {{ local_params[instance]|ippeer }} remote-as {{ remote_params.asn }}
+    {% do neighbors4[instance].append(local_params[instance]|ippeer) %}
+    {% if instance == "public" %}
+ neighbor {{ local_params[instance]|ippeer|ipv4toipv6 }} remote-as {{ remote_params.asn }}
+      {% do neighbors6[instance].append(local_params[instance]|ippeer|ipv4toipv6) %}
+    {% endif %}
+  {% endif %}
+  {% if "tor-bgp" in groups and not uplink %}
+ neighbor {{ local_params[instance]|ippeer }} passive
+    {% if instance == "public" %}
+ neighbor {{ local_params[instance]|ippeer|ipv4toipv6 }} passive
+    {% endif %}
+    {% if instance == "private" %}
+      {% do provnets.append(local_params.provisioning) %}
+    {% endif %}
+  {% endif %}
+{% endmacro %}
+
+log syslog informational
+{% for instance in ("private", "public") %}
+  {% if "tor-bgp-storage" not in groups or instance == "private" %}
+router bgp {{ lookup("bgptth", "").asn }} vrf {{ instance }}
+ no bgp default ipv4-unicast
+ bgp router-id {{ lookup("topology", "addresses").main|ipaddr("address") }}
+ bgp bestpath as-path multipath-relax
+{{ iterate(bgp, instance=instance) }}
+  {% endif %}
+  {% if neighbors4[instance]|length %}
+ address-family ipv4 unicast
+    {% for neighbor4 in neighbors4[instance] %}
+  neighbor {{ neighbor4 }} activate
+    {% endfor %}
+    {% if provnets|length and instance == "private" %}
+      {% for provnet in provnets|cidr_merge %}
+  network {{ provnet }}
+      {% endfor %}
+    {% endif %}
+ exit-address-family
+  {% endif %}
+  {% if neighbors6[instance]|length and instance == "public" %}
+ address-family ipv6 unicast
+    {% for neighbor6 in neighbors6[instance] %}
+  neighbor {{ neighbor6 }} activate
+    {% endfor %}
+ exit-address-family
+  {% endif %}
+{% endfor %}
+{% if "tor-bgp" in groups %}
+vrf private
+  {% for provnet in provnets|cidr_merge %}
+ ip route {{ provnet|ipaddr("network/prefix") }} blackhole
+  {% endfor %}
+exit-vrf
+{% endif %}

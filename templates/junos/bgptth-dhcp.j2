@@ -1,0 +1,59 @@
+{% set pxe = [] %}
+{% set bootfile = [] %}
+
+{% if "tor-bgp" in groups %}
+  {# option domain-search "{{ location }}.blade-group.net";#}
+
+{% set pxe = lookup("topology", "addresses").pxe %}
+{% set bootfile = lookup("system", "boot-file", device) %}
+
+groups {
+   provisioning-dhcp-attributes {
+       routing-instances {
+           private {
+               access {
+                   address-assignment {
+                       pool <*> {
+                           family inet {
+                               dhcp-attributes {
+                                   maximum-lease-time 7200;
+                                   domain-name {{ location }}.blade-group.net;
+                                   name-server {
+                                      {% for dns in lookup('system', 'dns') %}
+                                        {{ dns }};
+                                      {% endfor %}                                     }
+                                   tftp-server {{ pxe }};
+                                   boot-server {{ pxe }};
+                                   boot-file {{ bootfile }};
+                                   {% set fqdn = "{}.blade-group.net".format(scope(device).location) %}
+                                   option 119 hex-string {{ fqdn|dhcp_option119 }};
+                                   }
+                               }
+                       }
+                   }
+               }
+           }
+       }
+   }
+}
+
+{% for odevice, iface, provisioning, private, public, lasn, rasn, member in store("bgptth-configuration-" ~ location)
+if odevice == device %}
+routing-instances private {
+    system services dhcp-local-server group provisioning interface {{ iface }}.70;
+    access address-assignment pool {{ iface|replace("/", "-") }} {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network {{ provisioning | ipaddr('network')}}/{{ provisioning | ipaddr('prefix') }};
+                       range provisioning {
+                           low  {{ provisioning | ipaddr('address') }};
+                           high {{ provisioning | ipaddr('address') }};
+                       }
+                       dhcp-attributes {
+                           router {{ provisioning | ippeer }};
+                       }
+                   }
+               }
+  }
+{% endfor %}
+{% endif %}

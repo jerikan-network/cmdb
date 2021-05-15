@@ -1,0 +1,4 @@
+{% for group in groups %}
+  {% include ["cumulus/{}/interfaces.j2".format(group),
+              "cumulus/interfaces-{}.j2".format(group)] ignore missing %}
+{% endfor %}

@@ -1,0 +1,24 @@
+- name: sign {{ who }} records
+  shell:
+    cmd: |
+        gpg --batch --local-user someone@example.com --clearsign
+    stdin: "{{ content }}"
+  register: signed
+  check_mode: false
+  changed_when: false
+  when: "who != 'ARIN'"
+
+- name: update {{ who }} records by email
+  delegate_to: gateway1.ams1.blade-group.net
+  community.general.mail:
+    subject: "DIFF: CMDB update for {{ who }}"
+    from: someone@example.com
+    to: "{{ email }}"
+    cc: someone@example.com
+    headers:
+      - Reply-To=someone@example.com
+    host: localhost
+    port: 25
+    charset: us-ascii
+    body: |
+      {{ signed.stdout|default or content }}

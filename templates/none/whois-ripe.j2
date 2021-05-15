@@ -1,0 +1,218 @@
+{% import "none/whois.j2" as whois %}
+{# inetnum/inet6num #}
+{% set alreadyseen = [] %}
+{% set allnets = {} %}
+{% set ripenets = lookup("bgp", "irr").ripe %}
+{% macro inetnum(net, country=None, toplevel=False) %}
+  {% if net not in alreadyseen %}
+    {% do alreadyseen.append(net) %}
+    {% for ripenet, ripedetails in ripenets.items() if net|ipaddr(ripenet) %}
+      {% set toplevel = (toplevel or
+                         net == ripenet and ripedetails.netname is defined and ripedetails.range is not defined) %}
+% RIPE: {{ ripedetails.range|default(ripenet) }}
+
+      {% if ripedetails.range is defined %}
+inetnum:        {{ ripedetails.range }}
+      {% else %}
+        {% if net|ipv4 %}
+inetnum:        {{ net|ipaddr('network') }} - {{ net|ipaddr('broadcast') }}
+        {% else %}
+inet6num:       {{ net }}
+        {% endif %}
+      {% endif %}
+      {% if toplevel %}
+netname:        {{ ripedetails.netname }}
+      {% else %}
+netname:        FR-BLADE-CUSTOMERS-{{ country }}
+      {% endif %}
+country:        {{ country or "FR" }}
+      {% if country %}
+geoloc:         {{ lookup("bgp", "geoloc")[country].coords }}
+      {% endif %}
+      {% if toplevel %}
+org:            ORG-BS318-RIPE
+      {% endif %}
+admin-c:        BN2763-RIPE
+tech-c:         BN2763-RIPE
+      {# Status #}
+      {% if toplevel %}
+status:         {{ "ALLOCATED PA" if net|ipv4 else "ALLOCATED-BY-RIR" }}
+      {% elif allnets.keys()|list|reject("equalto", net)|ipaddr(net) %}
+status:         {{ "SUB-ALLOCATED PA" if net|ipv4 else "ALLOCATED-BY-LIR" }}
+      {% else %}
+status:         {{ "ASSIGNED PA" if net|ipv4 else "ASSIGNED" }}
+      {% endif %}
+      {% if toplevel %}
+mnt-by:         RIPE-NCC-HM-MNT
+      {% endif %}
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+{# nets from nat devices #}
+{% for nat in devices("environment==prod", "groups==nat-gateway") %}
+  {% do allnets.update(lookup("bgp", "ip-blocks", nat)) %}
+{% endfor %}
+{# nets originated from edge devices #}
+{% for edge in devices("environment==prod", "groups==edge") %}
+  {% do allnets.update(lookup("bgp", "supernets", edge)) %}
+{% endfor %}
+{# allocated by RIR but declared previously #}
+{% for net in ripenets if ripenets[net].netname is defined %}
+{{ inetnum(net, toplevel=True) }}
+{% endfor %}
+{% for net, data in allnets.items() if data.country is defined %}
+{{ inetnum(net, data.country) }}
+{% endfor %}
+
+{# route/route6 #}
+{% set alreadyseen = [] %}
+{% macro route(net, asn, descr) %}
+  {% if net not in alreadyseen %}
+    {% do alreadyseen.append(net) %}
+    {% for ripenet in ripenets if net|ipaddr(ripenet) %}
+      {% if net|ipv4 %}
+route:          {{ net }}
+      {% else %}
+route6:         {{ net }}
+      {% endif %}
+descr:          Blade IPv{{ net|ipv }} - {{ descr }}
+origin:         AS{{ asn }}
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+{% for edge in devices("environment==prod", "groups==edge") %}
+  {% for net in lookup("bgp", "supernets", edge) %}
+{{ route(net, lookup("bgp", "local-asn", edge), scope(edge).location|upper) }}
+  {% endfor %}
+{% endfor %}
+
+{# aut-num #}
+aut-num:        AS64476
+as-name:        BLADE
+org:            ORG-BS318-RIPE
+remarks:
+remarks:        -----------
+remarks:        - TRANSIT -
+remarks:        -----------
+remarks:
+{% set alreadyseen = [] %}
+{% for edge in devices("environment==prod", "groups==edge") %}
+  {% for transit, data in lookup("bgp", "peers", edge).get("transit", {}).items() if transit not in alreadyseen %}
+    {% do alreadyseen.append(transit) %}
+remarks:        {{ transit|upper }}
+import:         from AS{{data.asn}} accept ANY
+export:         to AS{{data.asn}} announce AS-BLADE
+remarks:
+  {% endfor %}
+{% endfor %}
+remarks:        ------------
+remarks:        - PEERINGS -
+remarks:        ------------
+remarks:
+remarks:        Blade has a 'mostly-open' peering policy, mainly
+remarks:        targeting at ISPs & available at:
+remarks:
+remarks:        http://as64476.peeringdb.com
+remarks:
+member-of:      AS3320:AS-AUTH-PILOT-ROUTEPRIO-FROM-AS44530
+admin-c:        BN2763-RIPE
+tech-c:         BN2763-RIPE
+status:         ASSIGNED
+mnt-by:         RIPE-NCC-END-MNT
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+as-set:         AS-BLADE
+descr:          Blade group routed ASNs
+{% set asns = [] %}
+{% for edge in devices("environment==prod", "groups==edge") %}
+  {% do asns.append(lookup("bgp", "local-asn", edge)) %}
+{% endfor %}
+{% for asn in asns|unique %}
+members:        AS{{ asn }}
+{% endfor %}
+tech-c:         BN2763-RIPE
+admin-c:        BN2763-RIPE
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+{# domain #}
+
+{# org, role, person #}
+{% macro address() %}
+address:        151 rue Saint Denis
+address:        75002
+address:        Paris
+address:        FRANCE
+{%- endmacro %}
+organisation:   ORG-BS318-RIPE
+org-name:       Blade SAS
+org-type:       LIR
+{{ address() }}
+country:        FR
+e-mail:         someone@example.com
+admin-c:        BN2827-RIPE
+tech-c:         BN2827-RIPE
+abuse-c:        AR37032-RIPE
+mnt-ref:        fr-blade-1-mnt
+mnt-by:         RIPE-NCC-HM-MNT
+mnt-by:         fr-blade-1-mnt
+phone:          +33145750790
+remarks:        synced with cmdb
+source:         RIPE
+
+role:           Abuse-C Role
+{{ address() }}
+e-mail:         someone@example.com
+nic-hdl:        AR37032-RIPE
+abuse-mailbox:  someone@example.com
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+role:           Blade NOC
+{{ address() }}
+e-mail:         someone@example.com
+nic-hdl:        BN2763-RIPE
+admin-c:        TOF-RIPE
+tech-c:         TOF-RIPE
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+person:         Blade NOC
+{{ address() }}
+phone:          +33145750790
+nic-hdl:        BN2827-RIPE
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+{# mntner #}
+key-cert:       {{ whois.keycert }}
+{{ whois.gpgkey() }}
+remarks:        synced with cmdb
+mnt-by:         fr-blade-1-mnt
+source:         RIPE
+
+mntner:         fr-blade-1-mnt
+descr:          BLADE RIPE maintainer
+admin-c:        BN2763-RIPE
+tech-c:         BN2763-RIPE
+upd-to:         someone@example.com
+auth:           SSO someone@example.com
+auth:           SSO someone@example.com
+auth:           SSO someone@example.com
+auth:           SSO someone@example.com
+auth:           {{ whois.keycert }}
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE

@@ -1,0 +1,56 @@
+---
+ttl: 7186 # magic value to detect records we set ourselves
+zones:
+  direct:
+{% set locations = {} %}
+{% for device in devices("environment==prod") %}
+  {% set base = lookup("topology", "base", device) %}
+  {% if base %}
+    {% do locations.update({scope(device).location|default(False): base}) %}
+  {% endif %}
+{% endfor %}
+{% for location in locations if location %}
+    {{ location }}.blade-group.net: powerdns
+{% endfor %}
+    shadow.guru: route53
+  reverse:
+{% for nets in lookup("bgp", "irr").values() %}
+  {% for net in nets %}
+    {{ net }}: route53
+  {% endfor %}
+{% endfor %}
+{% set nets = [] %}
+{% for net in locations.values() %}
+  {% do nets.append(net|ipaddr('network')|ipsubnet(16)) %}
+{% endfor %}
+{% for net in nets|unique %}
+    {{ net }}: powerdns
+{% endfor %}
+
+{# Collect all DNS registered through the datastore #}
+entries:
+{% for device, ip, interface in store("addresses") %}
+  {% set name = "{}.{}".format(interface|replace(".", "-")|replace("/", "-")|replace(":","-")|lower, device) %}
+  {% if ip|ipaddr("public") %}
+    {% set name = name|replace(".blade-group.net", ".shadow.guru") %}
+  {% endif %}
+  {% if interface == "bmc" %}
+    {# Swap bmc and short hostname #}
+    {% set name = name|regex_replace("^bmc\\.([^.]+)\\.", "\\1.bmc.") %}
+  {% endif %}
+  - name: {{ name }}.
+    type: {{ "A" if ip|ipv4 else "AAAA" }}
+    value: {{ ip|ipaddr("address") }}
+  {% if scope(device).environment == "prod" %}
+  - name: {{ ip|ipaddr("address")|ipaddr('revdns') }}
+    type: PTR
+    value: {{ name }}.
+  {% endif %}
+{% endfor %}
+{% for device in devices() %}
+  {% for ip in lookup("topology", "addresses", device).main|tolist %}
+  - name: {{ device }}.
+    type: {{ "A" if ip|ipv4 else "AAAA" }}
+    value: {{ ip|ipaddr("address") }}
+  {% endfor %}
+{% endfor %}

@@ -1,0 +1,27 @@
+communities:
+  telia: "64476:101"
+  cogent: "64476:102"
+  comcast: "64476:103"
+  comcast-transit: "64476:104"
+  hurricane: "64476:105"
+  inap: "64476:106"
+  bso: "64476:107"
+  google: "64476:108"
+  akamai: "64476:109"
+  twitch: "64476:110"
+  proximus: "64476:111"
+  hopus-paris-fr: "64476:201"
+  hopus-paris-all: "64476:202"
+  ix-franceix-paris: "64476:203"
+  ix-equinix-paris: "64476:204"
+  ix-equinix-paoalto: "64476:206"
+  ix-equinix-sanjose: "64476:207"
+  hopus-amsterdam: "64476:208"
+  core: "64476:1"
+
+local-preference:
+  public-peering: 200
+  private-peering: 300
+  core: 1000
+
+supernets: {}

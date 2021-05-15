@@ -1,0 +1,24 @@
+- import_role: name=blade.linux handlers_from=none tasks_from=interfaces
+- import_role: name=blade.linux handlers_from=none tasks_from=firewall
+- import_tasks: conserver.yaml
+- import_tasks: provisioning.yaml
+
+- name: install more packages
+  apt:
+    pkg:
+      - keepalived
+
+# Keepalived
+- block:
+    - name: check if we need keepalived
+      local_action:
+        module: stat
+        path: "{{ host_dir }}/keepalived.conf"
+      register: keepalivedconf
+      check_mode: false
+    - name: copy keepalived.conf
+      copy:
+        src: "{{ host_dir }}/keepalived.conf"
+        dest: /etc/keepalived/keepalived.conf
+      when: keepalivedconf.stat.exists
+      notify: keepalived configuration changed

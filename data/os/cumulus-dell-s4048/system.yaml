@@ -1,0 +1,6 @@
+netbox:
+  manufacturer: Dell
+  model: S4048-ON
+
+console:
+  speed: 115200

@@ -1,0 +1,8 @@
+ports:
+  server:
+    compute: 1-12,17-28
+    storage: 1-28
+    admin: 1-6 ,29-30  # 12 servers / 4 (breakout) * 2 (2 racks) + NAT-Gateway * 2 (2 racks)
+ports-personality:
+  4x: 1-28
+  100G: 29-32

@@ -1,0 +1,360 @@
+{% set asn = lookup("bgp", "local-asn") %}
+{% if lookup("bgp", "supernets") %}
+{% set supernets = lookup("bgp", "supernets") %}
+{% for version in [4, 6] %}
+prefix-set PFX-BLADE-SUPERNET-V{{ version }}
+ {{ supernets.keys() | unique | ipaddr(version=version) | join(",\n ") }}
+end-set
+!
+{% set subnets = supernets.keys() | unique | ipaddr(version=version) %}
+prefix-set PFX-BLADE-SUPERNET-ORLONGER-V{{ version }}
+ {% for subnet in subnets %}
+ {{ subnet }} ge {{ subnet | ipaddr("prefix") }}{{ "," if not loop.last else "" }}
+ {% endfor %}
+end-set
+!
+{% endfor %}
+{% endif %}
+{% set bogons = lookup("bgp", "bogon-prefixes") %}
+{% for version in [4, 6] %}
+prefix-set PFX-BOGON-V{{ version }}
+{% for subnet in bogons | unique | ipaddr(version=version) %}
+ {{ subnet }} le {{ "32" if version == 4 else "128" }}{{ "," if not loop.last else "" }}
+{% endfor %}
+end-set
+!
+{% endfor %}
+{% for version in [4, 6] %}
+prefix-set PFX-DEFAULT-V{{ version }}
+ {{ "0.0.0.0/0" if version == 4 else "::/0" }}
+end-set
+!
+prefix-set PFX-TOO-SPECIFIC-V{{ version }}
+ {{ "0.0.0.0/0 ge 25" if version == 4 else "::/0 ge 49" }}
+end-set
+!
+{% endfor %}
+as-path-set AS-SET-BOGON-ASN
+{% for bogons in lookup("bgp", "bogon-asns") %}
+  {% if bogons == 0 %}
+ ios-regex '_0_'
+  {%- else %}
+ passes-through '{{ "[" ~ bogons | first ~ ".." ~ bogons | last ~ "]" if bogons is iterable else bogons  }}'
+  {%- endif %}{{ "," if not loop.last else "" }}
+{% endfor %}
+end-set
+!
+{# STATIC PART OF THE CONFIGURATION #}
+route-policy RPL-REJECT-BOGON-ASN
+ if as-path in AS-SET-BOGON-ASN then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-LONG-AS-PATH
+ if as-path length ge 65 then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-RPKI-INVALID
+ if validation-state is invalid then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-ACCEPT
+ done
+end-policy
+!
+route-policy RPL-REJECT
+ drop
+end-policy
+!
+{% for version in [4, 6] %}
+route-policy RPL-ACCEPT-DEFAULT-V{{ version }}
+ if destination in PFX-DEFAULT-V{{ version }} then
+   done
+ endif
+end-policy
+!
+route-policy RPL-REJECT-DEFAULT-V{{ version }}
+ if destination in PFX-DEFAULT-V{{ version }} then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-BOGON-V{{ version }}
+ if destination in PFX-BOGON-V{{ version }} then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-TOO-SPECIFIC-V{{ version }}
+ if destination in PFX-TOO-SPECIFIC-V{{ version }} then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-SET-ORIGIN-V{{ version }}
+ if destination in PFX-BLADE-SUPERNET-V{{ version }} then
+   set origin igp
+   set community (64476:64476)
+ endif
+end-policy
+!
+route-policy RPL-ACCEPT-BLADE-SUPERNET-V{{ version }}
+ if destination in PFX-BLADE-SUPERNET-V{{ version }} then
+   done
+ endif
+end-policy
+!
+route-policy RPL-ACCEPT-BLADE-SUPERNET-ORLONGER-V{{ version }}
+ if destination in PFX-BLADE-SUPERNET-ORLONGER-V{{ version }} then
+   done
+ endif
+end-policy
+!
+route-policy RPL-SET-CORE-COMM-V{{ version }}
+ if destination in PFX-BLADE-SUPERNET-ORLONGER-V{{ version }} then
+   set community ({{ lookup("bgp", "communities").core }})
+   done
+ endif
+end-policy
+!
+route-policy RPL-CORE-IN-V{{ version }}
+ apply RPL-SET-CORE-COMM-V{{ version }}
+ apply RPL-ACCEPT-BLADE-SUPERNET-ORLONGER-V{{ version }}
+ drop
+end-policy
+!
+route-policy RPL-CORE-OUT-V{{ version }}
+ apply RPL-ACCEPT-DEFAULT-V{{ version }}
+ drop
+end-policy
+!
+route-policy RPL-ACCEPT-DEFAULT-ORIGINATE-V{{ version }}
+ if rib-has-route in {{ "(0.0.0.0/1 le 12, 128.0.0.0/1 le 12)" if version == 4 else
+                        "(::/1 le 32, 8000::/1 le 32)" }} then
+   done
+ endif
+ drop
+end-policy
+!
+route-policy RPL-IBGP-IN-V{{ version }}
+ done
+end-policy
+!
+route-policy RPL-IBGP-OUT-V{{ version }}
+ done
+end-policy
+!
+route-policy RPL-COLLECTOR-OUT-V{{ version }}
+ apply RPL-REJECT-DEFAULT-V{{ version }}
+ done
+end-policy
+!
+{% endfor %}
+{# END OF THE STATIC PART OF THE CONFIGURATION #}
+
+{% for type, peers in lookup("bgp", "peers").items() %}
+{% for name, peer in peers.items() %}
+{% set already_seen = [] %}
+{% for version in [4, 6] %}
+route-policy RPL-REJECT-NOT-AS{{ peer.asn }}-IRR-V{{ version }}
+ if destination in PFX-AS{{ peer.asn }}-IRR-V{{ version }} then
+  pass
+ else
+  drop
+ endif
+end-policy
+!
+{% endfor %}
+{% endfor %}
+{% endfor %}
+{% for type, peers in lookup("bgp", "peers").items() %}
+{% for name, peer in peers.items() %}
+{% set already_seen = [] %}
+{% set public_peering = lookup("bgp", "local-preference")["public-peering"] %}
+{% set private_peering = lookup("bgp", "local-preference")["private-peering"] %}
+{% set core = lookup("bgp", "local-preference").core %}
+{% set local_pref = {"ix": public_peering,
+                     "pni": private_peering,
+                     "core": core}.get(type.split("-")[0], False) %}
+{% for remote in peer.remote | tolist %}
+{% set version = remote | ipv %}
+{% if version not in already_seen %}
+route-policy RPL-AS{{ peer.asn }}-{{ type | upper }}-IN-V{{ version }}
+ apply RPL-REJECT-DEFAULT-V{{ version }}
+ apply RPL-REJECT-LONG-AS-PATH
+ apply RPL-REJECT-TOO-SPECIFIC-V{{ version }}
+ apply RPL-REJECT-BOGON-V{{ version }}
+ apply RPL-REJECT-BOGON-ASN
+ {% if lookup("bgp", "validators") %}
+ apply RPL-REJECT-RPKI-INVALID
+ {% endif %}
+ {% if peer.irr is defined %}
+ apply RPL-REJECT-NOT-AS{{ peer.asn }}-IRR-V{{ version }}
+ {% endif %}
+ {% for key, community in lookup("bgp", "communities").items() %}
+    {% if key in (type, name) %}
+ set community ({{ community }})
+    {% endif %}
+ {% endfor %}
+ {% if local_pref %}
+ set local-preference {{ local_pref }}
+ {% endif %}
+ {% if peer["specific-import"] is defined %}
+ {% for term in peer["specific-import"] %}
+ {% if term["as-path"] is defined %}
+ if as-path in (ios-regex '{{ term["as-path"] }}') then
+ {% if term["lp-delta"] is defined %}
+    {% if term["lp-delta"] < 0 %}
+   set local-preference {{ term["lp-delta"] }}
+    {% else %}
+   set local-preference +{{ term["lp-delta"] }}
+    {% endif %}
+ {% endif %}
+ endif
+ {% else %}
+ {% if term["lp-delta"] is defined %}
+    {% if term["lp-delta"] < 0 %}
+ set local-preference {{ term["lp-delta"] }}
+    {% else %}
+ set local-preference +{{ term["lp-delta"] }}
+    {% endif %}
+ {% endif %}
+ {% endif %}
+ {% endfor %}
+ {% endif %}
+ done
+end-policy
+!
+route-policy RPL-AS{{ peer.asn }}-{{ type | upper }}-OUT-V{{ version }}
+ if destination in PFX-BLADE-SUPERNET-V{{ version }} then
+   {% if peer["specific-export"] is defined %}
+   {% set export = peer["specific-export"] %}
+      {% if export["prepend"] is defined %}
+   prepend as-path {{ asn }} {{ export["prepend"] }}
+      {% endif %}
+   {% endif %}
+   {% for key, community in lookup("bgp", "communities").items() %}
+      {% if key in (type, name) %}
+   set community ({{ community }})
+      {% endif %}
+   {% endfor %}
+   done
+ endif
+ drop
+end-policy
+!
+{% endif %}
+{% do already_seen.append(version) %}
+{% endfor %}
+{% endfor %}
+{% endfor %}
+
+{% set asn = lookup("bgp", "local-asn") %}
+{% set supernets = lookup("bgp", "supernets") %}
+router static
+ {% for version in [4, 6] %}
+ address-family ipv{{ version }} unicast
+ {% for subnet in supernets | unique | ipaddr(version=version) %}
+   {{ subnet }} Null0
+ {% endfor %}
+ !
+ {% endfor %}
+!
+router bgp {{ asn }}
+ nsr
+ {% for loopback in lookup("topology", "addresses").loopback | tolist | unique | ipv4 %}
+ bgp router-id {{ loopback }}
+ {% endfor %}
+ bgp graceful-restart
+ bgp log neighbor changes detail
+ bgp origin-as validation time 30
+ {% if lookup("bgp", "validators") %}
+ {% for ip in lookup("bgp", "validators") %}
+ rpki server {{ ip }}
+  transport tcp port 3323
+  refresh-time 3600
+  response-time 600
+ !
+ {% endfor %}
+ {% endif %}
+ {% for version in [4, 6] %}
+ address-family ipv{{ version }} unicast
+  bgp origin-as validation enable
+  bgp bestpath origin-as allow invalid
+ {% for subnet in supernets | unique | ipaddr(version=version) %}
+  network {{ subnet }} route-policy RPL-SET-ORIGIN-V{{ version }}
+ {% endfor %}
+  redistribute connected
+ !
+ {% endfor %}
+ {% for type, peers in lookup("bgp", "peers").items() %}
+ {% for name, peer in peers.items() %}
+ {% set already_seen = [] %}
+ {% for remote in peer.remote | tolist %}
+ {% set version = remote | ipv %}
+ {% if version not in already_seen %}
+ neighbor-group NBRGRP-AS{{ peer.asn }}-{{ type | upper }}-V{{ version }}
+  {% if type == "transit" %}
+  remote-as {{ peer.asn }}
+  enforce-first-as
+  {% if peer.authentication is defined %}
+  password encrypted {{ peer.authentication }}
+  {% endif %}
+  address-family ipv{{ version }} unicast
+   {% if type.split("-")[0] == "transit" and version == 4 %}
+   maximum-prefix 1048576 90
+   {% endif %}
+   send-community-ebgp
+   allowas-in 5
+   remove-private-as
+   route-policy RPL-AS{{ peer.asn }}-{{ type | upper }}-IN-V{{ version }} in
+   route-policy RPL-AS{{ peer.asn }}-{{ type | upper }}-OUT-V{{ version }} out
+   soft-reconfiguration inbound always
+  !
+  {% else %}
+  remote-as {{ peer.asn }}
+  {% if name.split("-")[0] != "rs" %}
+  enforce-first-as
+  {% else %}
+  enforce-first-as disable
+  {% endif %}
+  {% if peer.authentication is defined %}
+  password encrypted {{ peer.authentication }}
+  {% endif %}
+  address-family ipv{{ version }} unicast
+   {% if type.split("-")[0] not in ["transit", "collector"] %}
+   {% set max = peeringdb(peer.asn)["info_prefixes{}".format(version)] %}
+   maximum-prefix {{ max }} 90
+   {% elif type.split("-")[0] == "transit" and version == 4 %}
+   maximum-prefix 1048576 90
+   {% endif %}
+   send-community-ebgp
+   remove-private-as
+   route-policy RPL-AS{{ peer.asn }}-{{ type | upper }}-IN-V{{ version }} in
+   route-policy RPL-AS{{ peer.asn }}-{{ type | upper }}-OUT-V{{ version }} out
+   soft-reconfiguration inbound always
+  !
+  {% endif %}
+ !
+ {% endif %}
+ {% do already_seen.append(version) %}
+ {% endfor %}
+ {% endfor %}
+ {% endfor %}
+ {% for type, peers in lookup("bgp", "peers").items() %}
+ {% for name, peer in peers.items() %}
+ {% for remote in peer.remote | tolist %}
+ {% set version = remote | ipv %}
+ neighbor {{ remote }}
+  use neighbor-group NBRGRP-AS{{ peer.asn }}-{{ type | upper }}-V{{ version }}
+  description {{ name | capitalize }} AS{{ peer.asn }}
+ !
+ {% endfor %}
+ {% endfor %}
+ {% endfor %}
+!

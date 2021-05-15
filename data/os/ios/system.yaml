@@ -1,0 +1,13 @@
+# On Cisco:
+#  - 5 is MD5 hashed and can be brute-forced easily
+#  - 7 is reversible, don't use it
+#  - 8 is PBKDF2 and is OK
+#  - 9 is scrypt and is good
+passwords:
+  root: "5 $1$................"
+ansible-vars:
+  ansible_user: blade
+  ansible_connection: network_cli
+  ansible_network_os: ios
+netbox:
+  manufacturer: Cisco

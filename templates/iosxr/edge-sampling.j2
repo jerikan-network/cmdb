@@ -1,0 +1,56 @@
+{% set sampling_type = lookup("system", "sampling").type %}
+{% if sampling_type %}
+flow exporter-map FLOW-EXPORT
+ version v9
+  options interface-table timeout 60
+  options sampler-table timeout 60
+  template timeout 30
+ !
+ transport udp 20013
+ source Loopback0
+ destination {{ lookup("system", "sampling").target }}
+!
+flow monitor-map FLOW-IPv4
+ record ipv4
+ exporter FLOW-EXPORT
+ cache entries 500000
+ cache timeout active 60
+ cache timeout inactive 15
+!
+flow monitor-map FLOW-IPv6
+ record ipv6
+ exporter FLOW-EXPORT
+ cache timeout active 60
+ cache timeout inactive 15
+!
+sampler-map FLOW-SAMPLER
+ random 1 out-of 1024
+!
+{% set asn = lookup("bgp", "local-asn") %}
+router bgp {{ asn }}
+{% for collectors in lookup("system", "sampling").collector | tolist %}
+{% for name, peers  in collectors.items() %}
+{% for remote in peers | tolist %}
+{% set version = remote | ipv %}
+ neighbor-group NBRGRP-{{ name | upper }}-COLLECTOR-V{{ version }}
+  remote-as {{ asn }}
+  {% for address in lookup("topology", "addresses").loopback | tolist | ipaddr(version=version) %}
+  cluster-id {{ lookup("topology", "addresses").loopback | tolist | ipv4 | first }}
+  {% endfor %}
+  update-source Loopback0
+  address-family ipv{{ version }} unicast
+   route-reflector-client
+   route-policy RPL-REJECT in
+   route-policy RPL-COLLECTOR-OUT-V{{ version }} out
+   soft-reconfiguration inbound always
+  !
+ !
+ neighbor {{ remote }}
+  use neighbor-group NBRGRP-{{ name | upper }}-COLLECTOR-V{{ version }}
+  description Route collector: {{ name | upper }} [IPv{{ version }}]
+ !
+{% endfor %}
+{% endfor %}
+{% endfor %}
+!
+{% endif %}

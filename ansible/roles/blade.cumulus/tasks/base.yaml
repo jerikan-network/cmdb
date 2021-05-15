@@ -1,0 +1,60 @@
+- apt_repository:
+    repo: deb http://deb.debian.org/debian jessie main
+    filename: jessie
+- apt_repository:
+    repo: deb http://security.debian.org/debian-security jessie/updates main
+    filename: jessie-security
+
+- name: install common packages
+  apt:
+    name:
+      - mg
+      - mtr-tiny
+      - oping
+      - sudo
+      - vim
+      - zsh
+      - sshpass
+
+- name: grant password-less sudo to "cumulus" user
+  copy:
+    content: |
+      cumulus ALL=(ALL:ALL) NOPASSWD: ALL
+    dest: "/etc/sudoers.d/cumulus"
+    mode: "0440"
+- include_role: name=blade.linux handlers_from=none tasks_from=shell
+  vars:
+    users:
+      - root
+      - cumulus
+
+- name: install SSH keys
+  copy:
+    src: "{{ host_dir }}/authorized_keys"
+    dest: "/home/cumulus/.ssh/"
+    owner: "cumulus"
+    mode: "0600"
+
+- name: secure SSH configuration
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regex: "^(# *)?{{ item.directive }}"
+    line: "{{ item.directive }} {{ item.value }}"
+  loop:
+    - directive: PasswordAuthentication
+      value: "no"
+    - directive: PermitRootLogin
+      value: "no" 
+  notify: SSH configuration changed
+
+- name: add aliases for cumulus user
+  ssh_user_alias:
+    user: cumulus
+    groups:
+      - adm
+      - systemd-journal
+      - frrvty
+- name: deploy motd
+  copy:
+    src: "{{ host_dir }}/motd"
+    dest: /etc/motd

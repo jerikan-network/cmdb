@@ -1,0 +1,38 @@
+#!/bin/sh
+
+# Check which service we want to run. By default, this is "jerikan".
+SERVICE=${SERVICE-"$(basename "$0")"}
+case $SERVICE in
+    run-*) SERVICE=${SERVICE##run-} ;;
+    run) SERVICE=jerikan ;;
+esac
+
+case $(uname -s) in
+    Linux)
+        export oUID=$(id -u)
+        export oGID=$(id -g)
+        ;;
+    Darwin)
+        # Adaptations for Docker for Mac
+        export oUID=0
+        export oGID=0
+        export SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock
+        ;;
+esac
+
+# Depending on the service, we may want to prepare some actions.
+case $SERVICE in
+    jerikan|jerikan-*)
+        mkdir -p .cache~ output
+        ;;
+    ansible-gitlab)
+        # Grab `output` from Gitlab. By default, latest master is
+        # used. Beware that local ansible/ content is still used.
+        remote=$(git for-each-ref --format='%(upstream:remotename)' refs/heads/master)
+        export SHA=${SHA:-$(git fetch -q ${remote} && git show-ref -s remotes/${remote}/master)}
+        docker-compose build ansible-gitlab
+        ;;
+esac
+
+# Run the service
+exec docker-compose run --rm ${SERVICE} "$@"

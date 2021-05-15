@@ -1,0 +1,123 @@
+interfaces:
+  et-0/0/0:
+    connectivity: null
+  et-0/0/1:
+    connectivity: 100G-LR4
+    type: transit
+    provider: Cogent
+    contract: ...
+    address:
+      - 38.140.30.234/29
+      - 2001:550:2:B::1F9:2/126
+  et-0/0/2:
+    connectivity: null
+  xe-0/0/3:0:
+    connectivity: 10G
+  xe-0/0/3:1:
+    connectivity: 10G-LR
+    type: ix
+    provider: SFMIX
+    address:
+      - 206.197.187.98/24
+      - 2001:504:30::ba39:6919:1/64
+  xe-0/0/3:2:
+    connectivity: 10G
+  xe-0/0/3:3:
+    connectivity: 10G
+  xe-0/0/4:0:
+    connectivity: 10G
+  xe-0/0/4:1:
+    connectivity: 10G
+  xe-0/0/4:2:
+    connectivity: 10G
+  xe-0/0/4:3:
+    connectivity: 10G
+  xe-0/0/5:0:
+    connectivity: 10G
+  xe-0/0/5:1:
+    connectivity: 10G
+  xe-0/0/5:2:
+    connectivity: 10G
+  xe-0/0/5:3:
+    connectivity: 10G
+  et-0/0/6:
+    connectivity: null
+  et-0/0/7:
+    connectivity: 100G
+  et-0/0/8:
+    connectivity: null
+  et-0/0/9:
+    connectivity: null
+  et-0/0/10:
+    connectivity: null
+  et-0/0/11:
+    connectivity: 100G
+  et-0/0/12:
+    connectivity: null
+  et-0/0/13:
+    connectivity: 100G
+  et-0/0/14:
+    connectivity: null
+  et-0/0/15:
+    connectivity: null
+  et-0/0/16:
+    connectivity: null
+  et-0/0/17:
+    connectivity: 100G
+  et-0/0/18:
+    connectivity: null
+  et-0/0/19:
+    connectivity: 100G
+  et-0/0/20:
+    connectivity: null
+  et-0/0/21:
+    connectivity: null
+  et-0/0/22:
+    connectivity: null
+  et-0/0/23:
+    connectivity: 100G
+  et-0/0/24:
+    connectivity: null
+  et-0/0/25:
+    connectivity: 100G-SR4
+    remote: s-spine2
+    type: core
+  et-0/0/26:
+    connectivity: null
+  et-0/0/27:
+    connectivity: null
+  et-0/0/28:
+    connectivity: null
+  et-0/0/29:
+    connectivity: 100G-SR4
+    remote: s-spine1
+    type: core
+  et-0/0/30:
+    connectivity: null
+  et-0/0/31:
+    connectivity: 100G-SR4
+    aggregate: ae0
+  et-0/0/32:
+    connectivity: null
+  et-0/0/33:
+    connectivity: null
+  et-0/0/34:
+    connectivity: null
+  et-0/0/35:
+    connectivity: 100G-SR4
+    aggregate: ae0
+  ae0:
+    type: core 
+    remote: edge1
+  ae0.100:
+    ospf: 10
+    address:
+      - 69.58.92.9/31
+      - ~^ip6
+    
+addresses:
+  loopback:
+    - 69.58.92.2
+    - ~^ip6
+  main: 172.30.24.2/21
+mac: 4C:6D:58:CB:E7:30

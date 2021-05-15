@@ -1,0 +1,5 @@
+- roas_sync:
+    url: https://rpki.blade.sh/api/v1
+    ca: Blade
+    token: "{{ lookup('hashi_vault', 'secret=kv/infra/all/network/ci/krill:token') }}"
+    source: "{{ host_dir }}/roas.yaml"

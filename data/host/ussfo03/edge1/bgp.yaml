@@ -1,0 +1,14 @@
+peers:
+  transit:
+    telia:
+      asn: 1299
+      remote:
+        - 62.115.33.74
+        - 2001:2000:3080:2256::1
+      specific-import:
+        - name: CHARTER-US
+          as-path: ".*7843.*"
+          lp-delta: 50
+        - name: CHARTER-AS20115-US
+          as-path: ".*20115$"
+          lp-delta: 50

@@ -1,0 +1,16 @@
+{% if lookup("bgp", "validators") %}
+{% do protectre.update({"rtr": True}) %}
+routing-options {
+    validation {
+        notification-rib [ internet.inet.0 internet.inet6.0 ];
+
+        group validators {
+            {% for ip in lookup("bgp", "validators") %}
+            session {{ ip }} {
+                port 3323;
+            }
+            {% endfor %}
+        }
+    }
+}
+{% endif %}

@@ -1,0 +1,13 @@
+templates:
+  config.txt: junos/main.j2
+  config-base.txt: junos/base.j2
+  config-irr.txt: junos/irr.j2
+checks:
+  - description: "syntax check with Junoser"
+    script: checks/junoser
+    cache:
+      input: config.txt
+      output: config-set.txt
+diff:
+  - config-set.txt
+  - config-irr.txt

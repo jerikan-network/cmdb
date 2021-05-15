@@ -1,0 +1,38 @@
+patchpanels:
+  "RackN1-U33":
+    ports:
+      1,2:
+        description: Gateway1/2
+        device: gateway1/2
+        port: ens1f0
+      3,4:
+        description: KINX-DOM
+        device: edge1
+        port: TenGigE0/0/2/0
+      5,6:
+        description: KINX-DOM
+        device: edge2
+        port: TenGigE0/0/2/0
+      7,8:
+        description: KINX-INT
+        device: edge1
+        port: TenGigE0/0/2/1
+      9,10:
+        description: KINX-INT
+        device: edge2
+        port: TenGigE0/0/2/1
+      11,12:
+        description: KINX-IX
+        device: edge1
+        port: GigabitEthernet0/0/0/0
+
+base: 172.29.0.0/16
+base-public: 103.153.6.0/24
+base-provisioning: 10.142.0.0/15
+vlans:
+  public: 100
+  private: 10
+
+addresses:
+  pxe: 172.29.64.88
+base-public-6: 2406:3bc0:100:b1:a:de::/96

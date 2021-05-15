@@ -1,0 +1,4 @@
+ssh:
+{% for user, value in lookup("system", "users").items() if value.ssh is defined and value.ssh.startswith("ssh-rsa ") %}
+  {{ user }}: "{{ value.ssh }} {{ user }}"
+{% endfor %}

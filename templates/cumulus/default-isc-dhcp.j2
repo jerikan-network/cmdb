@@ -1,0 +1,11 @@
+{% if "tor-bgp" in groups %}
+DHCPD_CONF="-cf /etc/dhcp/dhcpd.conf"
+DHCPD_PID="-pf /run/dhcpd.pid"
+OPTIONS=""
+{% set ifaces = [] %}
+{% for odevice, iface, provisioning, private, public, lasn, rasn, member in store("bgptth-configuration-" ~ location)
+     if odevice == device %}
+  {% do ifaces.append(iface) %}
+{% endfor %}
+INTERFACES="{{ ifaces | join(" ") }}"
+{% endif %}

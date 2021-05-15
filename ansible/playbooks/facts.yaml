@@ -1,0 +1,10 @@
+# This playbook is made to get all fact available from a device
+# --limit directive must be used
+
+- name: gather and display facts
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: display facts
+      debug:
+        var: ansible_facts

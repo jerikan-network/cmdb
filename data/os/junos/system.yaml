@@ -1,0 +1,24 @@
+# On JunOS:
+#  - $1$ are MD5 hashed but can be brute-forced easily
+#  - $5$ are SHA256 and mostly OK
+#  - $6$ are SHA512 and OK
+#  - $9$ are reversible, don't use them
+passwords:
+  root: "$5$......"
+syslog-exclude:
+  - "Virtual Chassis Fabric usage requires a license"
+  - "Receive FX craftd set alarm message"
+  - "color: 2 class: 50 object: 50 slot: 126 id=0 reason=168"
+  - "downward spike received from pfe for ibytes_reply"
+
+oob-ifname: em0
+dual-re: false
+protect-re: false
+
+ansible-vars:
+  ansible_user: blade
+  ansible_connection: netconf
+  ansible_network_os: junos
+netbox:
+  manufacturer: Juniper
+  model: "~{{ model|upper }}"

@@ -1,0 +1,121 @@
+## other
+config.ntp.enabled on
+{% for ntp in lookup("system", "ntp") |tolist %}
+config.ntp.servers.server{{ loop.index }}.address {{ ntp }}
+config.ntp.servers.server{{ loop.index }}.key_id 0
+{% endfor %}
+config.ntp.servers.total {{ lookup("system", "ntp")|length }}
+
+## Interfaces
+{% for interface,infos in lookup("topology", "interfaces").items() %}
+config.interfaces.{{ interface }}.address {{ infos.address | store("addresses", interface) | ipaddr("address") }}
+config.interfaces.{{ interface }}.gateway {{ infos.gateway | default(infos.address | ipaddr("last_usable")) }}
+config.interfaces.{{ interface }}.media Auto
+config.interfaces.{{ interface }}.mode static
+config.interfaces.{{ interface }}.netmask {{ infos.address | ipaddr("netmask") }}
+  {% if "lan" in interface %}
+config.interfaces.lan.device.type marvell
+  {% endif %}
+  {% if infos.public | default %} {#- Apply strict firewall policies #}
+
+config.interfaces.{{ interface }}.dns1 8.8.8.8
+config.interfaces.{{ interface }}.dns2 8.8.4.4
+config.firewall.portrules.portrule1.action accept
+config.firewall.portrules.portrule1.direction egress
+config.firewall.portrules.portrule1.interface lan
+config.firewall.portrules.portrule1.ipversion ipv4
+config.firewall.portrules.portrule1.name Established
+config.firewall.portrules.portrule1.protocol any
+config.firewall.portrules.portrule1.state established/related
+config.firewall.portrules.portrule2.action accept
+config.firewall.portrules.portrule2.direction ingress
+config.firewall.portrules.portrule2.interface lan
+config.firewall.portrules.portrule2.ipversion ipv4
+config.firewall.portrules.portrule2.name icmp
+config.firewall.portrules.portrule2.protocol icmp
+config.firewall.portrules.portrule2.state any
+      {% for items, prefix in lookup('topology', 'acl-addresses').admin.items() %}
+config.firewall.portrules.portrule{{ loop.index + 2 }}.action accept
+config.firewall.portrules.portrule{{ loop.index + 2 }}.direction ingress
+config.firewall.portrules.portrule{{ loop.index + 2 }}.interface {{ interface}}
+config.firewall.portrules.portrule{{ loop.index + 2 }}.ipversion ipv4
+config.firewall.portrules.portrule{{ loop.index + 2 }}.name {{ items }}
+config.firewall.portrules.portrule{{ loop.index + 2 }}.protocol any
+config.firewall.portrules.portrule{{ loop.index + 2 }}.src_ip {{ prefix }}
+config.firewall.portrules.portrule{{ loop.index + 2 }}.state any
+      {% endfor %}
+config.firewall.portrules.total {{ lookup('topology', 'acl-addresses').admin | length + 2 }}
+config.{{ interface }}.services.modified true
+
+  {% else %} {#- Configure DNS and firewall policies #}
+    {% for dns in lookup("system", "dns") | tolist %}
+config.interfaces.{{ interface }}.dns{{ loop.index }} {{ dns }}
+    {% endfor %}
+config.{{ interface }}.services.https.enabled on
+config.{{ interface }}.services.lldp.enabled on
+config.{{ interface }}.services.modified true
+config.{{ interface }}.services.ping.enabled on
+config.{{ interface }}.services.rfc2217_ports.enabled on
+config.{{ interface }}.services.snmp.enabled on
+config.{{ interface }}.services.ssh.enabled on
+config.{{ interface }}.services.ssh_ports.enabled on
+config.{{ interface }}.services.tcp_ports.enabled on
+      
+  {% endif %}
+{% endfor %}
+
+# Disable service on unused interfaces
+
+config.vpn.services.modified true
+config.dialin.services.modified true
+config.dialout.services.modified true
+
+## console ports
+{% for port,device in lookup("topology","ports").items() %}
+{% set custom_param = lookup("system","console","{}.{}.blade-group.net".format(device,location)) %}
+
+config.ports.port{{ port }}.charsize 8
+config.ports.port{{ port }}.dtrmode alwayson
+config.ports.port{{ port }}.flowcontrol None
+config.ports.port{{ port }}.label {{ device }}
+config.ports.port{{ port }}.loglevel 0
+config.ports.port{{ port }}.mode portmanager
+config.ports.port{{ port }}.parity None
+config.ports.port{{ port }}.pinout X2
+config.ports.port{{ port }}.protocol RS232
+config.ports.port{{ port }}.speed {{ custom_param.speed | default(9600) }}
+config.ports.port{{ port }}.ssh on
+config.ports.port{{ port }}.stop 1
+config.ports.port{{ port }}.syslog.facility Default
+config.ports.port{{ port }}.syslog.priority Default
+config.ports.port{{ port }}.terminal vt220
+config.ports.port{{ port }}.webshell on
+{% endfor %}
+
+## server services 
+
+config.services.http.enabled on
+config.services.https.enabled on
+config.services.lldp.enabled on
+config.services.snmp.enabled on
+config.services.snmp.protocol UDP
+config.services.snmp.roauthprotocol SHA
+config.services.snmp.rocommunity {{  lookup("system","snmp")["ro-community"]  }}
+config.services.snmp.roprivprotocol DES
+config.services.snmp.syscontact someone@example.com
+config.services.snmp.syslocation {{ lookup("system", "datacenter") }}, {{ lookup("system", "country") }}
+config.services.ssh.enabled on
+config.services.telnet.enabled off
+
+
+## global system
+
+config.system.name {{ host }}.blade-group.net
+config.system.timezone UTC
+
+
+## user
+config.users.user1.description Root User
+config.users.user1.username root
+config.users.user1.password {{ lookup("system","users").blade["opengear-password"] }}
+config.users.total 1

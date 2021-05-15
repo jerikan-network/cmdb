@@ -1,0 +1,42 @@
+system {
+  replace: root-authentication {
+    encrypted-password "{{ lookup('system', 'passwords').root }}"; ## SECRET-DATA
+  }
+  services {
+    replace: ssh {
+      authentication-order password;
+      root-login deny;
+      protocol-version v2;
+      connection-limit 10;
+      rate-limit 10;
+    }
+    replace: netconf {
+       ssh;
+    }
+  }
+  replace: login {
+    message "{{ lookup('system', 'motd') | replace('\\', '\\\\') | replace('"', '\\"') | replace('\n', '\\n') }}";
+    retry-options {
+      tries-before-disconnect 3;
+      backoff-threshold 3;
+      backoff-factor 5;
+      maximum-time 20;
+    }
+    class backup {
+      permissions [ secret view view-configuration ];
+    }
+{% for user, value in lookup("system", "users").items() %}
+    user {{ user }} {
+      class {{ value.class | default("super-user") }};
+      authentication {
+  {% if value.ssh is defined %}
+        ssh-rsa "{{ value.ssh }} {{ user }}";
+  {% endif %}
+  {% if value["junos-password"] is defined %}
+        encrypted-password "{{ value["junos-password"] }}"; ## SECRET-DATA
+  {% endif %}
+      }
+    }
+{% endfor %}
+  }
+}

@@ -1,0 +1,20 @@
+enable secret {{ lookup('system', 'passwords').root }}
+!
+{% for user, value in lookup("system", "users").items() %}
+{% filter replace("\n", " ") %}
+username {{ user }} privilege 15
+{% if value["ios-password"] is defined %}
+secret {{ value["ios-password"] }}
+{% endif %}
+{% endfilter %}
+
+{% endfor %}
+!
+ip ssh version 2
+ip ssh pubkey-chain
+{% for user, value in lookup("system", "users").items() if value.ssh is defined and value.ssh.startswith("ssh-rsa ") %}
+  username {{ user }}
+   key-hash ssh-rsa {{ value.ssh.split()[1] | b64decode | hash('md5') | upper }} {{ user }}
+{% endfor %}
+ip scp server enable
+!

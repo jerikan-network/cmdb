@@ -1,0 +1,52 @@
+- name: reload keepalived
+  service: name=keepalived state=reloaded
+  listen: keepalived configuration changed
+
+- name: reload ssh
+  service: name=ssh state=reloaded
+  listen: SSH configuration changed
+
+- name: restart ulogd
+  service: name=ulogd2 state=restarted
+  listen: ulogd configuration changed
+
+- name: restart nftables firewall
+  service: name=nftables.service state=reloaded
+  listen: nftables rules changed
+
+- name: reload sysctl
+  service: name=systemd-sysctl.service state=restarted
+  listen: sysctl values changed
+
+- name: restart dhcpd
+  service: name=isc-dhcp-server state=restarted
+  listen: DHCP configuration changed
+
+- name: reload nginx
+  service: name=nginx state=reloaded
+  listen: nginx configuration changed
+
+- name: restart snmpd
+  service: name=snmpd state=restarted
+  listen: snmpd configuration changed
+
+- name: restart tftpd-hpa
+  service: name=tftpd-hpa state=restarted
+  listen: tftpd configuration changed
+
+- name: write reboot required file
+  no_log: true
+  copy:
+    content: |
+      yes
+    dest: /run/reboot-required
+  listen: should reboot
+- name: tell user when reboot is needed
+  debug: msg="reboot needed !!!"
+  listen: should reboot
+  when: '"reboot" not in ansible_run_tags'
+  changed_when: true
+- name: reboot server
+  listen: should reboot
+  reboot:
+  when: '"reboot" in ansible_run_tags'

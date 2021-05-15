@@ -1,0 +1,3 @@
+spanning-tree: true
+netbox:
+  role: net_tor_oob_switch

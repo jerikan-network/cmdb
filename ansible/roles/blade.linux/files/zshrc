@@ -1,0 +1,255 @@
+# -*- sh -*-
+if [[ -o login ]]; then
+    for f in /etc/profile.d/*motd.sh(N); do
+        bash $f
+    done
+fi
+ZSH=${ZSH:-${ZDOTDIR:-$HOME}/.zsh}
+
+autoload compinit
+autoload -U is-at-least
+autoload -U complist
+autoload -U add-zsh-hook
+autoload -U zsh/terminfo
+
+() {
+    # Export HOSTNAME variable (fully qualified hostname)
+    integer step=1
+    while true; do
+        # Try various alternatives
+        case $step in
+            1) HOSTNAME=$(</etc/hostname) ;;
+            2) HOSTNAME="$(hostname -f)" ;;
+            3) HOSTNAME=${${(M)${${(ps: :)${:-"$(LOCALDOMAIN= RES_TIMEOUT=1 getent hosts $HOST)"}}[2,-1]}:#*.*}[1]} ;;
+            4) [[ $HOST != $(</etc/mailname) ]] && HOSTNAME=$HOST.$(</etc/mailname) ;;
+            5) HOSTNAME=$HOST.$(sed -n 's/domain //p' /etc/resolv.conf 2> /dev/null) ;;
+            *) HOSTNAME=$HOST ; break ;;
+        esac
+        $(( step++ ))
+        HOSTNAME=${HOSTNAME%%.}
+        [[ $HOSTNAME == *.* ]] && break
+    done
+    export HOSTNAME
+
+    # We put a short name in HOST. However, we may extend it by adding
+    # some additional information, like a site indicator. If there is
+    # only one dot in HOSTNAME, we assume this is already a short
+    # name.
+    case ${#${HOSTNAME//[^.]/}} in
+        0) HOST=$HOSTNAME ;;
+        1) HOST=${${HOSTNAME%.local}%.localdomain} ;;
+        2) HOST=${HOSTNAME%%.*} ;;
+        *)
+            local next=${${HOSTNAME#*.}%%.*}
+            local next0=${next%%[0-9]*}
+            (( ${#next0} >= 2 && ${#next0} <= 5 )) && HOST=${HOSTNAME%%.*}.$next
+            ;;
+    esac
+} 2> /dev/null
+
+(( $+commands[locale] )) && () {
+    local -a available
+    local -A locales
+    local locale
+    locales=( "LANG" "C en_US"
+	      "LC_MESSAGES" "en_US C"
+	      "LC_NUMERIC" "en_US C" )
+    available=("${(f)$(locale -a)}")
+    for locale in ${(k)locales}; do
+        export $locale=C        # default value
+	for l in $=locales[$locale]; do
+            for charset in UTF-8 utf8; do
+                if (( ${available[(i)$l.$charset]} <= ${#available} )); then
+		    export $locale=$l.$charset
+		    break 2
+	        fi
+            done
+	done
+    done
+    export LC_CTYPE=$LANG
+    unset LC_ALL
+} 2> /dev/null
+
+compinit -i
+setopt auto_menu
+setopt auto_remove_slash
+setopt complete_in_word
+setopt always_to_end
+setopt glob_complete
+setopt extended_history	        # save timestamps
+setopt share_history            # share history accross zsh sessions
+setopt hist_ignore_all_dups	# ignores duplicates
+setopt hist_ignore_space        # don't store commands starting with a space
+setopt rmstarsilent             # Don't ask for confirmation on rm *
+setopt interactivecomments	# Allow comments inside commands
+setopt autopushd		# Maintain directories in a heap
+setopt pushdignoredups          # Remove duplicates from directory heap
+setopt pushdminus               # Invert + and - meanings
+setopt autocd			# Don't need to use `cd`
+setopt extendedglob             # Enable extended globbing
+setopt longlistjobs             # Display PID when using jobs
+setopt nobeep                   # Never beep
+unsetopt list_beep
+zmodload -i zsh/complist
+bindkey -M menuselect "+" accept-and-menu-complete
+(( $+widgets[history-incremental-pattern-search-backward] )) &&	\
+    bindkey '^r' history-incremental-pattern-search-backward
+
+HISTFILE=~/.zsh_history
+HISTSIZE=30000
+SAVEHIST=30000
+zstyle ':completion:*' completer _expand_alias _complete _match _approximate
+zstyle ':completion:*' list-colors ''
+zstyle ':completion:*' list-prompt ''
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' menu yes=long select
+zstyle ':completion:*:descriptions' format '%B%d%b'
+zstyle ':completion:*:functions' ignored-patterns '_*'
+zstyle ':completion:*:match:*' original only
+zstyle ':completion::complete:*' use-cache 1
+zstyle ':completion:history-words:*' remove-all-dups true
+
+# Some generic aliases
+alias df='df -h'
+alias du='du -h'
+alias rm='rm -i'
+alias mv='mv -i'
+alias ll='ls -ltrh'
+alias chown='chown -h'
+alias chgrp='chgrp -h'
+alias tailf='tail -F'           # not shipped in util-linux anymore
+() {
+  local dmesg_version=${${${:-"$(dmesg --version 2> /dev/null)"}##* }:-0.0}
+  if is-at-least 2.23 $dmesg_version; then
+      alias dmesg='dmesg -H -P'
+  elif is-at-least 0.1 $dmesg_version; then
+    alias dmesg='dmesg -T'
+  fi
+}
+# ls colors
+(( ${terminfo[colors]:-0} >= 8 )) && {
+  if ls --color=auto -d . &>/dev/null; then
+      export LS_COLORS='ex=00:su=00:sg=00:ca=00:'
+      alias ls='ls --color=auto'
+  elif ls -G &> /dev/null; then
+      export LSCOLORS="Gxfxcxdxbxegedabagacad"
+      alias ls='ls -G'
+  fi
+}
+# ip aliases
+(( $+commands[ip] )) && {
+  (( ${terminfo[colors]:-0} >= 8 )) && ip -color -human rule &> /dev/null && \
+      alias ip='ip -color -human'
+  alias ip6='ip -6'
+  alias ipr='ip -resolve'
+  alias ip6r='ip -6 -resolve'
+  alias ipm='ip -resolve monitor'
+  alias ipb='ip -brief'
+  alias ip6b='ip -6 -brief'
+}
+# Simple calculator
+function \=() {
+  echo $(($@))
+}
+aliases[=]='noglob ='
+
+# Alter window title
+_title () {
+    [ -t 1 ] || return
+    emulate -L zsh
+    local title
+    title=${@//[^[:alnum:]\/>< ._~:=?@-]/ }
+    case $TERM in
+	screen*)
+	    print -n "\ek$title\e\\"
+	    print -n "\e]2;$title\a"
+	    ;;
+	rxvt*|xterm*)
+	    print -n "\e]2;$title\a"
+	    ;;
+    esac
+}
+# Display current running command
+_title_preexec() {
+    setopt extended_glob
+    local CMD=${1[(wr)^(=|sudo|-*),-1]}
+    _title $HOST \> $CMD
+}
+_title_precmd() {
+    _title "${(%):-%50<..<%~}" "${(%):-%20<..<%~}"
+}
+add-zsh-hook preexec _title_preexec
+add-zsh-hook precmd _title_precmd
+
+# Transient prompt handling: older prompts are minimized to one line
+_prompt_precmd () {
+    unset _short_prompt
+}
+add-zsh-hook precmd _prompt_precmd
+_prompt_accept-line () {
+    _short_prompt=1
+    zle reset-prompt
+    zle .accept-line            # builtin
+}
+zle -N accept-line _prompt_accept-line
+_prompt_zle-isearch-exit () {
+    [[ $KEYS != $'\r' ]] && return
+    _short_prompt=1
+    zle reset-prompt
+}
+zle -N zle-isearch-exit _prompt_zle-isearch-exit
+_prompt_exit () {
+    _short_prompt=1
+    zle reset-prompt
+    exit
+}
+setopt ignoreeof
+zle -N _prompt_exit
+bindkey '^D' _prompt_exit
+TRAPINT() {
+    zle && [[ $#zsh_eval_context == 1 ]] && {
+        _short_prompt=1
+        zle reset-prompt
+    }
+    return $((128+$1))
+}
+
+_prompt() {
+    if [[ -z $_short_prompt ]]; then
+        print -l \
+              "" \
+              "%(!.%F{red}.%F{green})%B%n@%M%b%f in %F{blue}%B%~%b%f" \
+              "%(?.%F{green}.%F{red})\u2771%f"
+    else
+        print "%F{cyan}%D{%H:%M}%f %(?.%F{green}.%F{red})\u2771%f"
+    fi
+}
+setopt prompt_subst
+PROMPT='$(_prompt) '
+unset RPROMPT
+unset RPS1
+
+__net_command () {
+    emulate -L zsh
+    setopt extendedglob
+    local -a completions
+    completions=(${(f)"$(_call_program commands net ${words} --completions $CURRENT 2>&1)"})
+    if (( $#completions > 1 )); then
+        # We have descriptions too
+        completions=(${(M)completions:#*  :  *})
+        completions=(${completions## #})
+        completions=(${completions/   #:  /:})
+        completions=(${completions:#<*})
+    else
+        # Trim spaces at end
+        completions=(${completions%% *})
+    fi
+    _describe -t net-command "net completion" completions "$@"
+}
+_net () {
+    local curcontext="$curcontext" state line
+
+    _arguments -C \
+        '(-)*::net command:__net_command'
+}
+compdef _net net

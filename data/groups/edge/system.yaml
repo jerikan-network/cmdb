@@ -1,0 +1,48 @@
+sampling:
+  type: ipfix
+  target: 208.76.14.241
+  flex: false
+  snmp-prefix: 209.50.158.0/23
+  snmp-community: gjkdhgjfhjgh-kentik
+  collector:
+    kentik:
+      - 208.76.14.223
+      - 2620:129:1:2::1
+
+netbox:
+  role: net_edge_router
+
+protect-re: true
+in-sync: true
+
+firewall:
+  - action: permit
+    protocol: udp
+    src: "~{{ lookup('system', 'sampling')['snmp-prefix'] }}"
+    dport: snmp
+  - action: deny
+    protocol: udp
+    dport: snmp
+  - action: deny
+    protocol: udp
+    dport: ntp
+  # Echo
+  - action: deny
+    protocol: udp
+    dport: 7
+  # Discard
+  - action: deny
+    protocol: udp
+    dport: 9
+  # QOTD
+  - action: deny
+    protocol: udp
+    dport: 17
+  # Chargen
+  - action: deny
+    protocol: udp
+    dport: 19
+  # SSDP
+  - action: deny
+    protocol: udp
+    dport: 1900

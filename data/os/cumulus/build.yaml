@@ -1,0 +1,18 @@
+templates:
+  config.txt: cumulus/main.j2
+  frr.conf: cumulus/frr.j2
+  interfaces.conf: cumulus/interfaces.j2
+  ports.conf: cumulus/ports.j2
+  dhcpd.conf: cumulus/dhcp.j2
+  default-isc-dhcp: cumulus/default-isc-dhcp.j2
+  authorized_keys: cumulus/authorized-keys.j2
+  motd: linux/motd.j2
+  acl.rules: cumulus/acl.j2
+  rsyslog.conf: cumulus/rsyslog.conf.j2
+checks:
+  - description: "dhcpd.conf syntax check"
+    script: checks/linux-dhcpd
+    cache: dhcpd.conf
+  - description: "frr.conf syntax check"
+    script: checks/linux-frr
+    cache: frr.conf

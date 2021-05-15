@@ -1,0 +1,8 @@
+supernets:
+  69.58.92.0/23:
+    country: US
+    region: CA
+  2605:940::/40:
+  2605:940:500::/40:
+    country: US
+    region: CA

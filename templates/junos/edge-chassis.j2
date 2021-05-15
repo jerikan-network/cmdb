@@ -1,0 +1,32 @@
+{% macro port_config(fpc,pic,port,speed) %}
+  fpc {{ fpc }} pic {{ pic }} port {{ port }} {
+{# Special case for QFX10k. Default port is 40g. When setting 10g, we need to use channel-speed at first port of interfaces block  #}
+  {% if model.startswith("qfx10") %}
+    {% if speed == "100g" %}
+    speed {{ speed }};
+    {% elif speed == "10g" %}
+    channel-speed {{ speed }};
+    {% endif %}
+  {% else %}
+    speed {{ speed }};
+  {% endif %}
+  }
+{% endmacro %}
+
+{% set ifaceregex = "^(?P<speed>xe|et)-(?P<fpc>\\d+)/(?P<pic>\\d+)/(?P<port>\\d+)(:(?P<logical>\\d+))?(.(?P<unit>\\d+))?$" %}
+{% for iface, infos in lookup('topology', 'interfaces').items()
+   if infos.get('connectivity') and iface | regex_search(ifaceregex) %}
+{% set speed = iface | regex_replace(ifaceregex, "\\g<speed>") %}
+{% set fpc = iface | regex_replace(ifaceregex, "\\g<fpc>") | int %}
+{% set pic = iface | regex_replace(ifaceregex, "\\g<pic>") | int%}
+{% set port = iface | regex_replace(ifaceregex, "\\g<port>") | int %}
+{% set logical = iface | regex_replace(ifaceregex, "\\g<logical>") %}
+{% set speed =  infos.connectivity | regex_replace("-.*", "") | lower %}
+chassis {
+  {% if speed =="10g" and model.startswith("qfx10") %}
+    {{ port_config(fpc,pic,3* (port // 3),speed) }}
+  {% else %}
+    {{ port_config(fpc,pic,port,speed) }}
+  {% endif %}
+}
+{% endfor %}

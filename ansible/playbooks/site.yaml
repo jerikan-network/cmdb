@@ -1,0 +1,62 @@
+# This playbook should not be used without a limit. When targetting a
+# group, it is important to include the environment. For example:
+#
+# --limit 'environment-prod:&location-tx1:&tor:&member-1'
+
+- name: common tasks
+  hosts: all
+  gather_facts: false
+  no_log: true
+  tasks:
+    - import_role: name=blade.common handlers_from=none tasks_from=check_limit
+    - import_role: name=blade.common handlers_from=none tasks_from=variables
+
+- hosts: adm-gateway:!done
+  strategy: mitogen_linear
+  roles:
+    - blade.linux
+    - blade.adm-gateway
+    - done
+
+- hosts: os-linux:!done
+  strategy: mitogen_linear
+  roles:
+    - blade.linux
+    - done
+
+- hosts: os-cumulus:!done
+  strategy: mitogen_linear
+  gather_facts: false
+  roles:
+    - blade.cumulus
+    - done
+
+- hosts: os-junos:!done
+  gather_facts: false
+  roles:
+    - blade.junos
+    - done
+
+- hosts: os-ios:!done
+  gather_facts: false
+  roles:
+    - blade.ios
+    - done
+
+- hosts: os-iosxr:!done
+  gather_facts: false
+  roles:
+    - blade.iosxr
+    - done
+
+- hosts: os-opengear:!done
+  gather_facts: false
+  roles:
+    - blade.opengear
+    - done
+    
+- hosts: none:!done
+  gather_facts: false
+  roles:
+    - blade.none
+    - done

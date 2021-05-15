@@ -1,0 +1,8 @@
+version 15.0
+{% include "ios/base.j2" %}
+!
+{% for group in groups %}
+  {% include "ios/{}.j2".format(group) ignore missing %}
+{% endfor %}
+!
+end

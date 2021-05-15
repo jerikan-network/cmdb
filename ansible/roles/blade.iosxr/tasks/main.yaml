@@ -1,0 +1,29 @@
+# mgbl (manageability) IOS-XR package must be present to activate xml agent
+# in "admin" mode do "install activate disk0:iosxr-mgbl-supp-6.7.1" and "install commit"
+- name: enable XML agent for NAPALM
+  cisco.iosxr.iosxr_config:
+    lines:
+      - xml agent tty iteration off
+  tags: always
+
+# Full configuration
+- name: apply full configuration
+  napalm.napalm.install_config:
+    config_file: "{{ host_dir }}/config.txt"
+    commit_changes: true
+    replace_config: true
+  register: full_configuration
+
+# Only base configuration
+- name: update base configuration
+  when: full_configuration is not defined
+  napalm.napalm.install_config:
+    config_file: "{{ host_dir }}/config-base.txt"
+    commit_changes: true
+  register: base_configuration
+  tags: base
+
+- name: "copy SSH keys"
+  copy_ssh_keys:
+    keys: "{{ cmdb_data.ssh }}"
+  tags: base

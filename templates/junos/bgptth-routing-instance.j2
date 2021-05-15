@@ -1,0 +1,113 @@
+{% from "bgptth.j2" import iterate with context %}
+
+{% macro ACCEPT_BGP() %}
+term ACCEPT-BGP {
+  apply-flags omit;
+    from protocol bgp;
+    then accept;
+}
+{% endmacro %}
+
+{% set provnets = [] %}
+{% set interfaces = {"public": [], "private": []} %}
+{% set iface = [] %}
+
+{% macro bgp(iface, local_params, remote_params, provnet, kind=none, uplink=false, instance=none) %}
+  {% if (kind != "storage" or instance != "public") and (kind != "edge" or instance != "private") %}
+               group v4-{{ instance }}-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    {% if instance == "private" %}
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    {% endif %}
+                    neighbor {{ local_params[instance]|ippeer }} {
+                        peer-as {{ remote_params.asn }};
+    {% if "tor-bgp" in groups and not uplink %}
+                        passive;
+    {% endif %}
+                    }
+                }
+    {% if instance == "public" %}
+               group v6-{{ instance }}-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor {{ local_params[instance]|ippeer|ipv4toipv6 }} {
+                        peer-as {{ remote_params.asn }};
+                        passive;
+                    }
+                }
+    {% endif %}
+  {% endif %}
+  {% if instance == "public" %}
+      {% set vlans = [100] %}
+  {% else %}
+      {% set vlans =[10,70] %}
+  {% endif %}
+  {%  for vlan in vlans %}
+    {% if "{}.{}".format(iface, vlan) not in interfaces[instance] %}
+      {% do interfaces[instance].append("{}.{}".format(iface, vlan)) %}
+    {% endif %}
+  {% endfor %}
+  {% if instance == "private" and not uplink %}
+      {% do provnets.append(local_params.provisioning) %}
+  {% endif %}
+{% endmacro %}
+
+{% for instance in ("private", "public") %}
+routing-instances {
+    {{ instance }} {
+        instance-type virtual-router;
+        protocols {
+            bgp {
+                log-updown;
+                local-as {{ lookup("bgptth", "").asn }};
+                    {{ iterate(bgp, instance=instance) }}
+            }
+        }
+        {% if provnets|length and instance == "private" %}
+        routing-options {
+        {% for provnet in provnets|cidr_merge %}
+            static route {{ provnet }} {
+                discard;
+                no-install;
+            }
+        {% endfor %}
+        }
+        {% endif %}
+    {% for interface in interfaces[instance] %}
+    interface {{ interface }};
+    {% endfor %}
+    }
+}
+
+policy-options {
+    policy-statement BGPTTH-OUT-V4 {
+        {% if provnets|length and instance == "private" %}
+        term ACCEPT-PROVISIONING {
+           from {
+              {% for provnet in provnets|cidr_merge %}
+                route-filter {{ provnet }} exact;
+              {% endfor %}
+            }
+            then accept;
+        }
+        {{ ACCEPT_BGP() }}
+        then reject;
+        {% endif %}
+    }
+}
+policy-options {
+    policy-statement BGPTTH-IN-V4 {
+        {{ ACCEPT_BGP() }}
+        then reject;
+    }
+}
+
+{% endfor %}

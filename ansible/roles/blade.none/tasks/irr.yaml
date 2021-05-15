@@ -1,0 +1,39 @@
+- name: prepare ARIN records
+  irr_sync:
+    irr: ARIN
+    mntner: MNT-BGC-107
+    source: "{{ host_dir }}/whois-arin.txt"
+    password: "{{ lookup('hashi_vault', 'secret=kv/infra/all/network/ARIN:MNT-BGC-107') }}"
+  register: irr
+- import_tasks: whois.yaml
+  vars:
+    who: ARIN
+    content: "{{ irr.records }}"
+    email: rr@arin.net
+  when: irr.changed
+
+- name: prepare RIPE records
+  irr_sync:
+    irr: RIPE
+    mntner: fr-blade-1-mnt
+    source: "{{ host_dir }}/whois-ripe.txt"
+  register: irr
+- import_tasks: whois.yaml
+  vars:
+    who: RIPE
+    content: "{{ irr.records }}"
+    email: auto-dbm@ripe.net
+  when: irr.changed
+
+- name: prepare APNIC records
+  irr_sync:
+    irr: APNIC
+    mntner: MAINT-BLADESAS-AP
+    source: "{{ host_dir }}/whois-apnic.txt"
+  register: irr
+- import_tasks: whois.yaml
+  vars:
+    who: APNIC
+    content: "{{ irr.records }}"
+    email: auto-dbm@apnic.net
+  when: irr.changed

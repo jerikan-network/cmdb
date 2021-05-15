@@ -1,0 +1,119 @@
+{% if lookup("topology", "addresses").oob is defined %}
+default-lease-time 3600;
+max-lease-time 7200;
+
+# Create option space for Cisco
+option space cisco code width 1 length width 1;
+option cisco.auto-update-image code 5 = text;
+
+# Package the Cisco namespace into option 125
+option space vivso code width 4 length width 1;
+option vivso.cisco code 9 = encapsulate cisco;
+option option-125 code 125 = encapsulate vivso;
+
+# Create option space for junos
+option space juniper;
+option juniper.image-file-name code 0 = text;
+option juniper.config-file-name code 1 = text;
+option juniper.image-file-type code 2 = text;
+option juniper.transfer-mode code 3 = text;
+option juniper.alt-image-file-name code 4 = text;
+option juniper.http-port code 5 = text;
+
+# Workaround: ensure we send the VIVSO option when requested. This
+# adds a bogus enterprise suboption.
+option vivso.iana code 0 = string;
+
+option domain-name-servers {{ lookup("system", "dns")|join(", ") }};
+option ntp-servers {{ lookup("system", "ntp")|join(", ") }};
+
+{% set dynamic = lookup("topology", "subnets")['bmc-dynamic-range']|default %}
+{% if dynamic %}
+# Failover configuration
+failover peer "dhcp-failover" {
+  {% set dhcprole = lookup("system", "dhcp-failover") %}
+  {{ dhcprole }};
+  address {{ lookup("topology", "addresses").main  }};
+  port 647;
+  {% for other in devices("environment", "location", "groups==adm-gateway") if device != other %}
+  peer address {{ lookup("topology", "addresses", other).main }};
+  {% endfor %}
+  peer port 647;
+  max-response-delay 60;
+  max-unacked-updates 10;
+  mclt 3600;
+  {% if dhcprole == "primary" %}
+  split 128;
+  {% endif %}
+  load balance max seconds 3;
+}
+{% endif %}
+
+class "ipmi-dell" {
+  match if option vendor-class-identifier = "iDRAC";
+}
+class "ipmi-gigabyte" {
+  match if substring(option vendor-class-identifier, 0, 5)  = "udhcp" and (substring(hardware, 1, 3) = 18:c0:4d or substring(hardware, 1, 3) = b4:2e:99);
+}
+class "beagle-board" {
+  match if substring(hardware, 1, 3) = 0c:b2:b7;
+}
+
+# Listen incoming packets on OOB
+{% set oob = lookup("topology", "addresses").oob %}
+{% set oobs = lookup("topology", "subnets")["more-oobs"]|tolist %}
+{% for net_oob in oobs + oob|tolist %}
+subnet {{ net_oob | ipaddr('network') }} netmask {{ net_oob | ipaddr('netmask') }} {
+  option routers {{ net_oob | ipaddr('last_usable') }};
+  option tftp-server-address {{ oob | ipaddr('address') }};
+
+  {% if dynamic %}
+  pool {
+    failover peer "dhcp-failover";
+    allow members of "ipmi-dell";
+    allow members of "ipmi-gigabyte";
+    allow members of "beagle-board";
+    range {{ dynamic|ipaddr('network') }} {{ dynamic|ipaddr('broadcast') }};
+  }
+  {% endif %}
+}
+{% endfor %}
+
+  {% for device in devices("environment", "location") %}
+    {% set mac = lookup("topology", "mac", device) %}
+    {% set mac_bmc = lookup("topology", "mac-bmc", device) %}
+    {% if mac %}
+host {{ device }} {
+  hardware ethernet {{ mac }};
+  fixed-address {{ lookup("topology", "addresses", device).main|ipaddr("address") }};
+  option host-name "{{ device }}";
+      {% if scope(device).os == "ios" %}
+  if suffix(option dhcp-parameter-request-list, 1) = 2b {
+    filename "cfg/{{ device }}-12.2";
+  } else {
+    filename "cfg/{{ device }}";
+  }
+  option vivso.iana = 01:01:01;
+  option cisco.auto-update-image = "{{ lookup("system", "image", device) }}";
+      {% elif scope(device).os == "cumulus" %}
+  option default-url = "http://{{ oob | ipaddr("address") }}/images/{{ lookup("system", "image", device) }}";
+      {% elif scope(device).os == "junos" and lookup("system", "image", device) is not none %}
+  vendor-option-space juniper;
+  option juniper.image-file-name "/images/{{ lookup("system", "image", device) }}";
+  option juniper.transfer-mode "http";
+  option juniper.config-file-name "/cfg/{{ device }}";
+      {% endif %}
+}
+    {% endif %}
+    {% if mac_bmc %}
+host bmc.{{ device }} {
+  hardware ethernet {{ mac_bmc }};
+  fixed-address {{ lookup("topology", "addresses", device).bmc|ipaddr("address") }};
+  option host-name "{{ device }}";
+  default-lease-time 86400;
+  max-lease-time 172800;
+}
+    {% endif %}
+  {% endfor %}
+
+{% endif %}

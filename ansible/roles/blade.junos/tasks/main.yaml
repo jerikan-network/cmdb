@@ -1,0 +1,56 @@
+# Upload full configuration
+- name: create temporary file for complete configuration
+  tempfile:
+    suffix: .txt
+    state: file
+  register: full_configuration
+  check_mode: false
+  changed_when: false
+- name: build complete configuration
+  assemble:
+    src: "{{ host_dir }}"
+    dest: "{{ full_configuration.path }}"
+    regexp: "^config(|-irr).txt$"
+  check_mode: false
+  changed_when: false
+- name: replace configuration
+  junipernetworks.junos.junos_config:
+    src: "{{ full_configuration.path }}"
+    comment: cmdb update of complete configuration
+    update: override
+    confirm: 2
+- name: wait a bit before confirming
+  when: not ansible_check_mode
+  pause:
+    seconds: 20
+- name: confirm configuration change
+  when: not ansible_check_mode
+  junipernetworks.junos.junos_config:
+    confirm_commit: true
+    check_commit: true
+
+# Only base configuration
+- name: update base configuration
+  when: full_configuration is not defined
+  tags: base
+  junipernetworks.junos.junos_config:
+    src: "{{ host_dir }}/config-base.txt"
+    comment: cmdb update of base configuration
+    update: replace
+
+# Only IRR configuration
+- when: full_configuration is not defined
+  tags: irr
+  block:
+    - name: check if we IRR configuration is present
+      local_action:
+        module: stat
+        path: "{{ host_dir }}/config-irr.txt"
+      register: configirr
+      check_mode: false
+    - name: update IRR configuration
+      when: configirr.stat.exists
+      junipernetworks.junos.junos_config:
+        src: "{{ host_dir }}/config-irr.txt"
+        comment: cmdb update of IRR configuration
+        update: replace

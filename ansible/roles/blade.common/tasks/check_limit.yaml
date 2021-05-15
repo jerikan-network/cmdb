@@ -1,0 +1,23 @@
+- name: check a limit was provided
+  fail:
+    msg: "use of --limit is mandatory"
+  when: ansible_limit is not defined
+  run_once: true
+  tags: always
+
+- name: check if target devices are in-sync
+  vars:
+    notinsync: |-
+      {% for host in ansible_play_hosts if host not in groups['in-sync'] %}
+      - {{ host }}
+      {% endfor %}
+  pause:
+    prompt: |-
+      Some devices are not in sync:
+      {{ notinsync }}
+
+      Press enter to continue
+  when: ansible_play_hosts|length > 2 and notinsync
+  run_once: true
+  no_log: false
+  tags: always

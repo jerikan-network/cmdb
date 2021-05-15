@@ -1,0 +1,50 @@
+peers:
+  transit:
+    cogent:
+      asn: 174
+      remote:
+        - 38.140.30.233
+        - 2001:550:2:B::1F9:1
+      specific-import:
+        - name: ATT-US
+          as-path: ".*7018$"
+          lp-delta: 50
+  ix-sfmix:
+    rs-sfmix:
+      asn: 63055
+      remote:
+        - 206.197.187.253
+        - 206.197.187.254
+        - 2001:504:30::ba06:3055:1
+        - 2001:504:30::ba06:3055:2
+      raw-import-4: |
+        then reject;
+      raw-import-6: |
+        then reject;
+      raw-export-4: |
+        then reject;
+      raw-export-6: |
+        then reject;
+    looking-glass-sfmix:
+      asn: 12276
+      remote:
+        - 206.197.187.1
+        - 2001:504:30::ba01:2276:1
+      max-prefixes-4: false
+      max-prefixes-6: false
+      raw-import-4: |
+        then reject;
+      raw-import-6: |
+        then reject;
+    blizzard:
+      asn: 57976
+      remote:
+        - 206.197.187.42
+        - 2001:504:30::ba05:7976:1
+      irr: AS-BLIZZARD
+    i3d.net:
+      asn: 49544
+      remote:
+        - 206.197.187.87
+        - 2001:504:30::ba04:9544:1
+      irr: AS-INTERACTIVE3D EXCEPT AS-CN

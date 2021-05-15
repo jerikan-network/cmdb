@@ -1,0 +1,25 @@
+peers:
+  transit:
+    kinx-dom:
+      asn: 9286
+      remote:
+        - 121.78.30.145
+        - 2401:2700::161
+    kinx-int:
+      asn: 9957
+      remote:
+        - 121.78.30.153
+        - 2401:2700::169
+  ix-kinx:
+    rs-kinx:
+      monitored: true
+      asn: 9957
+      remote:
+        - 192.145.251.2
+        - 192.145.251.3
+    google:
+      asn: 15169
+      remote:
+        - 192.145.251.168
+        - 192.145.251.169
+      authentication: "..."

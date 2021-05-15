@@ -1,0 +1,62 @@
+{# Ansible inventory #}
+{% for device in devices() %}
+{{ device }}{% for variable, value in lookup("system", "ansible-vars", device).items() if value %}
+  {{ variable }}={{ value }}
+{%- endfor %}
+
+{% endfor %}
+
+{# Build groups #}
+{% macro add(groups, group, device) %}
+  {% if group not in groups %}
+    {% do groups.update({group: []}) %}
+  {% endif %}
+  {% do groups[group].append(device) %}
+{% endmacro %}
+{% set groups = {} %}
+{% filter trim %}
+{% for device in devices() if "groups" in scope(device) %}
+  {% for group in scope(device).groups %}
+    {{ add(groups, group, device) }}
+  {% endfor %}
+{% endfor %}
+{% for info in ["os", "model", "location", "environment", "member"] %}
+  {% for device in devices() if info in scope(device) %}
+    {{ add(groups, "{}-{}".format(info, scope(device)[info]), device) }}
+  {% endfor %}
+{% endfor %}
+{% endfilter %}
+
+{% for group in groups %}
+[{{ group }}]
+  {% for device in groups[group] %}
+{{ device }}
+  {% endfor %}
+
+{% endfor %}
+
+[in-sync]
+{% for device in devices() if lookup("system", "in-sync", device) %}
+{{ device }}
+{% if loop.last %}
+# Count: {{ loop.index }}
+{% endif %}
+{% endfor %}
+
+[unclassified]
+{% for device in devices() if "groups" not in scope(device) and device != "none" %}
+{{ device }}
+{% if loop.last %}
+# Count: {{ loop.index }}
+{% endif %}
+{% endfor %}
+
+[model-unknown]
+{% for device in devices() if "model" not in scope(device) and scope(device).get('os') != "linux" and device != "none" %}
+{{ device }}
+{% if loop.last %}
+# Count: {{ loop.index }}
+{% endif %}
+{% endfor %}
+
+[done]

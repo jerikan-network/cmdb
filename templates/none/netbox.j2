@@ -1,0 +1,44 @@
+devices:
+{% for device in devices() if device != "none" %}
+  {{ device }}:
+    datacenter: {{ scope(device).location }}
+  {% set netbox = lookup("system", "netbox", device) or {} %}
+  {% if netbox.manufacturer is defined %}
+    manufacturer: {{ netbox.manufacturer }}
+    model: {{ netbox.model }}
+  {% endif %}
+  {% if netbox.role is defined %}
+    role: {{ netbox.role }}
+  {% endif %}
+{% endfor %}
+ips:
+{% set seen = [] %}
+{% for nat in devices("environment==prod", "groups==nat-gateway") %}
+  {% for net, data in lookup("bgp", "ip-blocks", nat).items() if data.ip not in seen %}
+  - device: {{ data.master }}.{{ scope(nat).location }}.blade-group.net
+    ip: {{ data.ip }}/32
+    interface: lo
+    tags:
+      - nat_country_gateway
+      - country_{{ data.country|lower }}
+    {% if data.gre is defined %}
+      - gre_{{ data.gre }}
+    {% endif %}
+    {% do seen.append(data.ip) %}
+  {% endfor %}
+{% endfor %}
+{% for device, ip, interface in store("addresses") if ip not in seen %}
+  - device: {{ device }}
+    ip: {{ ip|ipaddr('address') }}/{{ ip|ipaddr('prefix') }}
+    interface: {{ interface }}
+{% endfor %}
+{% for gateway in devices("groups==adm-gateway") %}
+  {% set dynamic = lookup("topology", "subnets", gateway)['bmc-dynamic-range']|default %}
+  {% if dynamic %}
+    {% for i in range(dynamic|ipaddr('size')) %}
+  - device: {{ gateway }}
+    ip: {{ dynamic|ipmath(i) }}/32
+    interface: reserved
+    {% endfor %}
+  {% endif %}
+{% endfor %}

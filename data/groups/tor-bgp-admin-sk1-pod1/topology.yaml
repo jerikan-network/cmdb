@@ -1,0 +1,3 @@
+ports:
+  server:
+    admin: 1-4,51,52 # 51,52 Storage

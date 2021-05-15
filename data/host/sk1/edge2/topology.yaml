@@ -1,0 +1,44 @@
+interfaces:
+  TenGigE0/0/1/0:
+    remote: spine1
+    type: core
+    connectivity: 10G-SR
+  TenGigE0/0/1/1:
+    remote: spine2
+    type: core
+    connectivity: 10G-SR
+  TenGigE0/0/1/2:
+    connectivity: 10G
+  TenGigE0/0/1/3:
+    remote: edge1
+    type: core
+    connectivity: 10G-SR
+    address:
+      - 103.153.6.9/31
+      - ~^ip6
+    ospf: 10
+  TenGigE0/0/2/0:
+    type: transit
+    provider: KINX-DOM
+    contract: ...
+    connectivity: 10G-LR
+    address:
+      - 121.78.30.150/30
+      - 2401:2700::166/126
+  TenGigE0/0/2/1:
+    type: transit
+    provider: KINX-INT
+    contract: ...
+    connectivity: 10G-LR
+    address:
+      - 121.78.30.158/30
+      - 2401:2700::16e/126
+  TenGigE0/0/2/2:
+    connectivity: 10G
+  TenGigE0/0/2/3:
+    connectivity: 10G
+addresses:
+  loopback:
+    - 103.153.6.2
+    - ~^ip6
+  main: 172.29.15.29/21

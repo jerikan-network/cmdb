@@ -1,0 +1,64 @@
+{% if model == "wedge100" %}
+# ports.conf --
+#
+# The Facebook Wedge100 has:
+#
+#     32 QSFP28 ports numbered 1-32
+#     These ports are configurable as 100G, 50G, 40G, 2x50G, 4x25G, 4x10G
+#     or disabled.
+#
+# If you make changes to this file, you must restart switchd for the
+# changes to take effect.
+
+# QSFP28 ports
+#
+# <port label 1-32> = [4x10G|4x25G|2x50G|40G|50G|100G|disabled]
+{% elif model == "dell-s4048" %}
+# ports.conf --
+#
+#   configure port speed, aggregation, and subdivision.
+#
+# The Dell S4000 has:
+#     48 SFP+ ports numbered 1-48
+#         These ports are configurable as 10G or 4 adjacent ports can be
+#         configured as 40G.
+#     6 QSFP ports numbered 49-54
+#         These ports are configurable as 40G or split into 4x10G ports.
+# SFP+ ports
+# <port label 1-48> = [10G|40G/4]
+# QSFP+ ports
+# <port label 49-54> = [4x10G|40G]
+{% elif model == "dell-s6010" %}
+# ports.conf --
+#
+# This file controls port aggregation and subdivision.  For example, QSFP+
+# ports are typically configurable as either one 40G interface or four
+# 10G/1000/100 interfaces.  This file sets the number of interfaces per port
+# while /etc/network/interfaces and ethtool configure the link speed for each
+# interface.
+#
+# You must restart switchd for changes to take effect.
+#
+# The DELL S6010 has:
+#     32 QSFP ports numbered 1-32
+#     These ports are configurable as 40G, split into 4x10G ports or
+#     disabled.
+#
+#     The X pipeline covers QSFP ports 1 through 16 and the Y pipeline
+#     covers QSFP ports 17 through 32.
+#
+#     The Trident2+ chip can only handle 52 logical ports per pipeline.
+#
+#     This means 13 is the maximum number of 40G ports you can ungang
+#     per pipeline, with the remaining three 40G ports set to
+#     "disabled". The 13 40G ports become 52 unganged 10G ports, which
+#     totals 52 logical ports for that pipeline.
+#
+# QSFP+ ports
+# <port label 1-32> = [4x10G|40G|disabled]
+{% endif %}
+{% for personality, ports in lookup("topology", "ports-personality").items() %}
+  {% for port in ports|torange %}
+{{ port }}={{ personality }}
+  {% endfor %}
+{% endfor %}

@@ -1,0 +1,9 @@
+ports:
+  swp1: spine1
+  swp2: spine1
+  swp3: spine2
+  swp4: spine2
+  swp29: to1-ap1
+  swp30: to2-ap1
+  swp31: edge1
+  swp32: edge2

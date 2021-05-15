@@ -1,0 +1,5 @@
+devices:
+  {% for device in devices("environment", "location") if scope(device).get('os') in ("ios", "junos") %}
+  {{ device }}: {{ scope(device).os }}
+  {% endfor %}
+tftp: {{ lookup("topology", "addresses").oob|ipaddr('address') }}

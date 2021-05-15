@@ -1,0 +1,4 @@
+{% for group in groups %}
+  {% include ["linux/{}/keepalived.j2".format(group),
+              "linux/keepalived-{}.j2".format(group)] ignore missing %}
+{% endfor %}

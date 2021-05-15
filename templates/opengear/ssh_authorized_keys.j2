@@ -1,0 +1,3 @@
+{% for user, value in lookup("system", "users").items() if value.ssh is defined %}
+{{ value.ssh }} {{ user }}
+{% endfor %}

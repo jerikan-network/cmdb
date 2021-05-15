@@ -1,0 +1,55 @@
+# Assignments from RIR
+irr:
+  ripe:
+    185.161.168.0/22:
+      netname: FR-BLADE-20160801
+    185.231.8.0/22:
+      netname: FR-BLADE-20171109
+    185.253.168.0/22:
+      netname: FR-BLADE-20180405
+    85.190.64.0/19:
+      netname: FR-BLADE-20160801
+    46.247.136.0/22:
+      netname: FR-BLADE-20110203
+      range: 46.247.136.0 - 46.247.141.255
+    46.247.140.0/23: {} # Included in range above
+    2a0a:e800::/29:
+      netname: FR-BLADE-20160812
+  apnic:
+    - 103.153.6.0/23
+    - 2406:3bc0::/32
+  arin:
+    - 162.213.48.0/21
+    - 170.249.92.0/22
+    - 216.180.128.0/20
+    - 69.58.92.0/23
+    - 2605:940::/32
+    - 2620:51:2000::/48
+geoloc:
+  FR:
+    city: Paris
+    coords: "48.8566 2.3522"
+  DE:
+    city: Frankfurt
+    coords: "50.1109 8.6821"
+  NL:
+    city: Amsterdam
+    coords: "52.3667 4.8945"
+  GB:
+    city: London
+    coords: "51.5074 -0.1278"
+  US-IL:
+    city: Chicago
+    coords: "41.8781 -87.6298"
+  US-CA:
+    city: San Francisco
+    coords: "37.7749, -122.4194"
+  US-NY:
+    city: New York
+    coords: "40.7128, -74.0060"
+  US-TX:
+    city: Dallas
+    coords: "32.7767 -96.7970"
+  KR:
+    city: Seoul
+    coords: "37.5635 126.6939"

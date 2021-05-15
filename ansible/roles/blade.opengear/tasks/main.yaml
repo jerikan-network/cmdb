@@ -1,0 +1,13 @@
+- name: push SSH keys and motd
+  raw_copy:
+    src_file: "{{ host_dir }}/{{ item }}"
+    dest_file: "/etc/config/{{ item }}"
+  loop:
+    - motd
+    - ssh_authorized_keys
+
+- name: update configuration
+  opengear_sync:
+    conf: "{{ host_dir }}/config.txt"
+    
+    

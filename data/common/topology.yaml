@@ -1,0 +1,28 @@
+acl-addresses:
+  admin:
+    blade-office: 203.0.113.11/32
+
+# Physical and logical nterfaces indexed by their names
+interfaces: {}
+
+# Physical ports indexed by their usage.
+ports: {}
+
+# VLANs indexed by their names
+vlans: {}
+
+# Arbitrary addresses
+addresses: {}
+
+# Arbitrary subnets
+subnets: {}
+
+# List of topology variations
+variants: []
+
+base-admin: >-
+  ~
+  {% set base = lookup('topology', 'base') %}
+  {% if base|ipaddr('prefix') == 16 %}{{ base | ipoffset('0.0.64.0/23') }}
+  {% else %}{{ base | ipoffset('0.0.20.0/23') }}
+  {% endif %}

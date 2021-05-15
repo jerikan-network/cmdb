@@ -1,0 +1,83 @@
+{% import "none/whois.j2" as whois %}
+{% macro address() %}
+descr:          Blade Global Corporation
+descr:          67 E Evelyn Ave, #7
+descr:          Mountain View, CA 64041
+descr:          US
+{%- endmacro %}
+
+{# route/route6 #}
+{% set alreadyseen = [] %}
+{% macro route(net, asn) %}
+  {% if net not in alreadyseen %}
+    {% do alreadyseen.append(net) %}
+    {% for arinnet in lookup("bgp", "irr").arin if net|ipaddr(arinnet) %}
+      {% if net|ipv4 %}
+route:          {{ net }}
+      {% else %}
+route6:         {{ net }}
+      {% endif %}
+{{ address() }}
+origin:         AS{{ asn }}
+mnt-by:         MNT-BGC-107
+remarks:        synced with cmdb
+changed:        someone@example.com
+source:         ARIN
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+{% for edge in devices("environment==prod", "groups==edge") %}
+  {% for net in lookup("bgp", "supernets", edge) %}
+{{ route(net, lookup("bgp", "local-asn", edge)) }}
+  {% endfor %}
+{% endfor %}
+
+{# aut-num #}
+aut-num:        AS396919
+as-name:        BLADE
+descr:          BLADE ARIN AS
+remarks:
+remarks:        -----------
+remarks:        - TRANSIT -
+remarks:        -----------
+remarks:
+{% set alreadyseen = [] %}
+{% for edge in devices("environment==prod", "groups==edge") %}
+  {% for transit, data in lookup("bgp", "peers", edge).get("transit", {}).items() if transit not in alreadyseen %}
+    {% do alreadyseen.append(transit) %}
+remarks:        {{ transit|upper }}
+import:         from AS{{data.asn}} accept ANY
+export:         to AS{{data.asn}} announce AS-BLADE
+remarks:
+  {% endfor %}
+{% endfor %}
+remarks:        ------------
+remarks:        - PEERINGS -
+remarks:        ------------
+remarks:
+remarks:        Blade has a 'mostly-open' peering policy, mainly
+remarks:        targeting at ISPs & available at:
+remarks:
+remarks:        http://as396919.peeringdb.com
+remarks:
+admin-c:        BERNA184-ARIN
+tech-c:         BERNA184-ARIN
+mnt-by:         MNT-BGC-107
+remarks:        synced with cmdb
+changed:        someone@example.com
+source:         ARIN
+
+mntner:         MNT-BGC-107
+descr:          Blade Global Corporation
+admin-c:        BERNA184-ARIN
+tech-c:         BERNA184-ARIN
+tech-c:         HASCO-ARIN
+upd-to:         someone@example.com
+mnt-nfy:        someone@example.com
+auth:           MD5-PW @MD5PASSWORD@
+notify:         someone@example.com
+mnt-by:         MNT-BGC-107
+referral-by:    MNT-BGC-107
+remarks:        synced with cmdb
+changed:        someone@example.com
+source:         ARIN

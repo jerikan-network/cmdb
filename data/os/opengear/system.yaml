@@ -1,0 +1,12 @@
+netbox:
+  manufacturer: Opengear
+  model: "~{{ model|upper }}"
+
+ansible-vars:
+  ansible_user: root
+  ansible_password: default
+
+in-sync: true
+users:
+  conserver:
+    ssh: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDFAD1OidYDR6N4S+j0Wwx8VZ0JsRaCG/UsEIE3iNu3KjOahuRyIp1fqPUZkqzb8j7FyqHi4ZtXd+RO6o0qaFy+ZkQVC3OysQxABmUCpFO8lpc8+qZYWBgSM9KiPe54Xku/djSuU+bYhu8Jq2fRTgPZ3ZLot4tG39K6MO+p5iWkeZK+QY23ms8bPVuJB9iJoFK6vyMRLqpa2lnjnroVFXlIdWcHRjP2EYdal0Mwep8uvC02u95O71/dJNBMNgLjFO/Nee5MozqaQ6RQC6beGi6BzZCGTh7FAJc7kT22LxKajQu5CP6lcAZdIJIRJceuUFBz/Ihsf2Dq2vVUZLmfwVGcQwMZNUVePWQcy+ITriC/KRWs3z1Rn19UHC7ePRv+l33ustiLcVwfSx8stu39CtWVXcwhh2bBUYcMiVQ0TrXvXjobydL3Uv8vks+h7BWAekVzjr8ZweSIzPLBnuVFa1D11UrLidK2ZtXwhYJUyJsWrI5rW1ECt2Jq1BhXejxNC28="

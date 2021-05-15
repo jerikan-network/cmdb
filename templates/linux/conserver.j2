@@ -1,0 +1,38 @@
+{% if "adm-gateway" in groups %}
+{% set alreadyseen = [] %}
+default * {
+        timestamp 1hab;
+        master localhost;
+        logfile /var/log/conserver/devices/&;
+        rw *;                           # allow all users
+}
+access * {
+        trusted 127.0.0.1;
+}
+default opengear {
+        portinc 1;
+        type exec;
+        exec /usr/bin/ssh -l root -p P H;
+        execsubst H=hs,P=Pd;
+        portbase 3000;
+}
+  {% if not devices("environment", "location", "os==opengear") %}
+console none { type exec; exec :; }
+  {% endif %}
+
+  {% for device in devices("environment", "location", "os==opengear") %}
+default {{ device }} {
+        include opengear ;
+        host {{ device }};
+}
+
+    {% for port,remote in lookup("topology","ports",device).items() %}
+console {{ remote }} { include {{ device }} ;port {{ port }}; }
+      {% if "." in remote and remote not in alreadyseen  %} {#- Create short host in case of dual re/fpc #}
+        {% set remote= remote.split(".")[1] %}
+console {{ remote }} { include {{ device }} ;port {{ port }}; }
+{% do alreadyseen.append(remote) %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+{% endif %}

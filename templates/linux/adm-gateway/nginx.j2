@@ -1,0 +1,66 @@
+server {
+  listen 80;
+  server_name bgptth.blade-group.net;
+  root /srv/provisioning;
+
+  location / {
+    return 404;
+  }
+
+  # BGPttH information
+{# To find the "other" port for each server, we index by local ASN #}
+{% set lasns = {} %}
+{% for device, iface, provisioning, private, public, lasn, rasn, member in store("bgptth-configuration-" ~ location) %}
+  {% set current = lasns.get(lasn, []) %}
+  {% do current.append((device, iface, private, public, rasn, member)) %}
+  {% do lasns.update({lasn: current}) %}
+{% endfor %}
+{% for lasn in lasns %}
+  # Local ASN {{ lasn }}
+  {% for device, iface, private, public, rasn, member in lasns[lasn] %}
+    {% set json = {
+        "asn": {
+          "local": lasn,
+          "remote": rasn,
+        },
+        "ip": {
+          "local": {
+            "public": public,
+            "private": private
+          },
+          "remote": {
+            "public": public|ippeer,
+            "private": private|ippeer
+          },
+          "local6": {
+            "public": public|ipv4toipv6,
+          },
+          "remote6": {
+            "public": public|ipv4toipv6|ippeer,
+          },
+        },
+        "vlan": {
+          "public": 100,
+          "private": 10
+        },
+        "member": member
+      } %}
+    {% if lasns[lasn]|length == 2 %}
+      {% do json.update({"other": "/v1/"~lasns[lasn][2-loop.index][:2]|join("/")}) %}
+    {% endif %}
+  location = /v1/{{ device }}/{{ iface }} {
+    types {}
+    default_type application/json;
+    return 200 '{{ json | to_json }}';
+  }
+  {% endfor %}
+{% else %}
+  {% error "no BGPttH information (don't generate gateway templates alone)" %}
+{% endfor %}
+}
+
+server {
+  listen {{ lookup("topology", "addresses").oob|ipaddr('address') }}:80;
+  server_name {{ lookup("topology", "addresses").oob|ipaddr('address') }};
+  root /srv/provisioning;
+}

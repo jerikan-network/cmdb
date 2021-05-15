@@ -1,0 +1,4 @@
+netbox:
+  model: Catalyst 2960G-48TC-L
+
+image: c2960-lanbasek9-tar.150-2.SE11.txt

@@ -1,0 +1,17 @@
+- name: configure interfaces
+  copy:
+    src: "{{ host_dir }}/network-interfaces"
+    dest: /etc/network/interfaces
+  notify: should reboot
+
+- name: configure additional routing tables
+  lineinfile:
+    path: /etc/iproute2/rt_tables
+    regex: " +{{ item.name }}"
+    line: "{{ item.number }} {{ item.name }}"
+  notify: should reboot
+  loop:
+    - name: public
+      number: 90
+    - name: rescue
+      number: 91

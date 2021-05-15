@@ -1,0 +1,5 @@
+bgptth-override:
+  # Ports to edge are using 40G→10G adapters, seen as a breakout port
+  # while everything else is not a breakout port
+  swp31s0: swp31
+  swp32s0: swp32

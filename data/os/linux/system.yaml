@@ -1,0 +1,2 @@
+ansible-vars:
+  ansible_user: root

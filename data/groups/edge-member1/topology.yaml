@@ -1,0 +1,4 @@
+addresses:
+  loopback:
+    - "~{{ lookup('topology', 'base-public') | ipoffset('0.0.0.1/32') | ipaddr('address') }}"
+    - ~^ip6

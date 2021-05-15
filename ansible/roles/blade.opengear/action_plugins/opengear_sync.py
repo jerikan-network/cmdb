@@ -36,7 +36,7 @@ class ActionModule(ActionBase):
             d = d.split(" ")[0]
             d = d.split(".")
             assert d[0] == "config"
-            if d[1] in ["ports", "ntp","users"]:
+            if d[1] in ["ports", "ntp", "users"]:
                 whitelist.append(f"config.{d[1]}.")
             elif len(d) > 3:
                 whitelist.append(".".join(d[:3]) + ".")

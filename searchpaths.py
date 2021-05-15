@@ -5,7 +5,7 @@ def searchpaths(scope):
     ['host/titi', 'common']
     >>> searchpaths(dict(host="titi.sk1", shorthost="titi", location="sk1"))
     ['host/titi.sk1', 'host/sk1/titi', 'groups/sk1', 'common']
-    >>> searchpaths(dict(groups=["tor","tor-bgp"], location="sk1", continent="oc"))
+    >>> searchpaths(dict(groups=["tor", "tor-bgp"], location="sk1", continent="oc"))
     ['groups/tor-bgp-sk1', 'groups/tor-sk1', 'groups/tor-bgp-oc', 'groups/tor-oc', 'groups/tor-bgp', 'groups/tor', 'groups/sk1', 'common']
     """
     paths = [

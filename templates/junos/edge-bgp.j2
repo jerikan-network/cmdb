@@ -241,7 +241,7 @@ policy-options {
   route-filter-list DEFAULT-V6 ::0/0 exact;
   route-filter-list TOO-SPECIFIC-V4 0.0.0.0/0 prefix-length-range /25-/32;
   route-filter-list TOO-SPECIFIC-V6 ::/0 prefix-length-range /49-/128;
-{% set supernets = lookup("bgp","supernets") or {} %}
+{% set supernets = lookup("bgp", "supernets") or {} %}
 {% set man = lookup("topology", "man") %}
 {% for edge in devices("environment", "groups==edge") if scope(edge).location == location
   or (man and lookup("topology", "man", edge) == man) %}

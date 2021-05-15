@@ -26,7 +26,7 @@ default {{ device }} {
         host {{ device }};
 }
 
-    {% for port,remote in lookup("topology","ports",device).items() %}
+    {% for port,remote in lookup("topology", "ports",device).items() %}
 console {{ remote }} { include {{ device }} ;port {{ port }}; }
       {% if "." in remote and remote not in alreadyseen  %} {#- Create short host in case of dual re/fpc #}
         {% set remote= remote.split(".")[1] %}

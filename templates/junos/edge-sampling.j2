@@ -30,7 +30,7 @@ groups {
 services {
   flow-monitoring {
     version-ipfix {
-  {% for version in ("ipv4","ipv6") %}
+  {% for version in ("ipv4", "ipv6") %}
         template {{ version }} {
             flow-active-timeout 10;
             flow-inactive-timeout 10;
@@ -57,7 +57,7 @@ forwarding-options {
                 max-packets-per-second 65535;
             }
 
-  {% for version in ("ipv4","ipv6") %}
+  {% for version in ("ipv4", "ipv6") %}
             family {{ "inet" if version == "ipv4" else "inet6" }} {
                 output {
                     flow-server {{ lookup('system', 'sampling').target }}{
@@ -128,7 +128,7 @@ protocols {
       {% do ifd_list.append(ifd) %}
     {% endif %}
 {% endfor %}
-{% set sspines = devices("environment","location","groups==sspine-bgp") %}
+{% set sspines = devices("environment", "location", "groups==sspine-bgp") %}
 {% for sspine in sspines %}
   {% for port, device in lookup("topology", "ports", sspine).items() if device == shorthost %}
     {% for interface, infos in lookup("topology", "interfaces").items() if infos.remote is defined and "{}.{}.blade-group.net".format(infos.remote, location) == sspine %}

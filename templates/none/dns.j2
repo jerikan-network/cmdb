@@ -30,7 +30,7 @@ zones:
 {# Collect all DNS registered through the datastore #}
 entries:
 {% for device, ip, interface in store("addresses") %}
-  {% set name = "{}.{}".format(interface|replace(".", "-")|replace("/", "-")|replace(":","-")|lower, device) %}
+  {% set name = "{}.{}".format(interface|replace(".", "-")|replace("/", "-")|replace(":", "-")|lower, device) %}
   {% if ip|ipaddr("public") %}
     {% set name = name|replace(".blade-group.net", ".shadow.guru") %}
   {% endif %}

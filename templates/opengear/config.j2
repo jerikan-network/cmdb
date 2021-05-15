@@ -60,7 +60,7 @@ config.{{ interface }}.services.snmp.enabled on
 config.{{ interface }}.services.ssh.enabled on
 config.{{ interface }}.services.ssh_ports.enabled on
 config.{{ interface }}.services.tcp_ports.enabled on
-      
+
   {% endif %}
 {% endfor %}
 
@@ -71,8 +71,8 @@ config.dialin.services.modified true
 config.dialout.services.modified true
 
 ## console ports
-{% for port,device in lookup("topology","ports").items() %}
-{% set custom_param = lookup("system","console","{}.{}.blade-group.net".format(device,location)) %}
+{% for port,device in lookup("topology", "ports").items() %}
+{% set custom_param = lookup("system", "console", "{}.{}.blade-group.net".format(device,location)) %}
 
 config.ports.port{{ port }}.charsize 8
 config.ports.port{{ port }}.dtrmode alwayson
@@ -100,7 +100,7 @@ config.services.lldp.enabled on
 config.services.snmp.enabled on
 config.services.snmp.protocol UDP
 config.services.snmp.roauthprotocol SHA
-config.services.snmp.rocommunity {{  lookup("system","snmp")["ro-community"]  }}
+config.services.snmp.rocommunity {{  lookup("system", "snmp")["ro-community"]  }}
 config.services.snmp.roprivprotocol DES
 config.services.snmp.syscontact someone@example.com
 config.services.snmp.syslocation {{ lookup("system", "datacenter") }}, {{ lookup("system", "country") }}
@@ -117,5 +117,5 @@ config.system.timezone UTC
 ## user
 config.users.user1.description Root User
 config.users.user1.username root
-config.users.user1.password {{ lookup("system","users").blade["opengear-password"] }}
+config.users.user1.password {{ lookup("system", "users").blade["opengear-password"] }}
 config.users.total 1

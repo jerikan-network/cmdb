@@ -1,7 +1,7 @@
 routing-instances internet {
     protocols {
       bgp {
-{% set sspines = devices("environment","location","groups==sspine-bgp") %}
+{% set sspines = devices("environment", "location", "groups==sspine-bgp") %}
 {% for sspine in sspines %}
   {% for port, device in lookup("topology", "ports", sspine).items() if device == shorthost %}
     {% for interface, infos in lookup("topology", "interfaces").items() if infos.remote is defined and "{}.{}.blade-group.net".format(infos.remote, location) == sspine %}

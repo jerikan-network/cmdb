@@ -61,7 +61,7 @@ table ip blade {
         map specific-ip-tcp-map {
                 type ipv4_addr . inet_service : verdict
                 elements = {
-  {% for other in devices("environment", "location", "groups==adm-gateway-l3") if device != other %}
+  {% for other in devices("environment", "location", "groups==adm-gateway") if device != other %}
                             {{ lookup("topology", "addresses", other).main }} . 647 : accept,
   {% endfor %}
                              {{ addresses.prometheus }} . 9100 : accept,

@@ -97,7 +97,7 @@ policy-options {
 {% set filter = 'accept-bgp' %}
 {% do ipv4_filter_list.append("ipv4-{}".format(filter)) %}
 {% do ipv6_filter_list.append("ipv6-{}".format(filter)) %}
-  {% for ipv in ["ipv4","ipv6"] %}
+  {% for ipv in ["ipv4", "ipv6"] %}
 firewall {
   family {{"inet" if ipv=="ipv4" else "inet6"}} {
     filter {{ ipv }}-{{ filter }} {

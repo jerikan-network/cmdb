@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   junoser:
-    image: registry.gitlab.com/blade-group/infra/network/junoser:latest
+    image: ghcr.io/jerikan-network/junoser:latest
     expose:
       - 4567
 

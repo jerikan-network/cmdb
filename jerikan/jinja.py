@@ -27,39 +27,29 @@ from .utils import TimeIt, wait_for
 
 logger = logging.getLogger(__name__)
 _registered_jinjafilters = []
+_imported_jinjafilters = [
+    (ansible.plugins.filter.core,
+     ["regex_search",
+      "regex_replace",
+      "to_json",
+      "to_yaml",
+      "to_nice_yaml",
+      "b64decode",
+      ("get_hash", "hash"),
+      ("get_encrypted_password", "password_hash")]),
+    (ansible_collections.ansible.netcommon.plugins.filter.ipaddr,
+     ["ipaddr",
+      "ipmath",
+      "ipsubnet",
+      "ipv4",
+      "ipv6",
+      "cidr_merge",
+      "hwaddr"])]
 
 
 def jinjafilter(f):
     _registered_jinjafilters.append(f)
     return f
-
-
-def recursion_detected(frame, keys):
-    """Detect if we have a recursion by finding if we have already seen a
-    call to this function with the same locals. Comparison is done
-    only for the provided set of keys.
-
-    """
-    current = frame
-    current_filename = current.f_code.co_filename
-    current_function = current.f_code.co_name
-    current_locals = {k: v
-                      for k, v in current.f_locals.items()
-                      if k in keys}
-    while frame.f_back:
-        frame = frame.f_back
-        fname = frame.f_code.co_filename
-        if not(fname.endswith(".py") or
-               fname == "<template>"):
-            return False
-        if fname != current_filename or \
-           frame.f_code.co_name != current_function:
-            continue
-        if ({k: v
-             for k, v in frame.f_locals.items()
-             if k in keys} == current_locals):
-            return True
-    return False
 
 
 @jinjafilter
@@ -326,6 +316,34 @@ def peeringdb(cache, asn):
     return result
 
 
+def recursion_detected(frame, keys):
+    """Detect if we have a recursion by finding if we have already seen a
+    call to this function with the same locals. Comparison is done
+    only for the provided set of keys.
+
+    """
+    current = frame
+    current_filename = current.f_code.co_filename
+    current_function = current.f_code.co_name
+    current_locals = {k: v
+                      for k, v in current.f_locals.items()
+                      if k in keys}
+    while frame.f_back:
+        frame = frame.f_back
+        fname = frame.f_code.co_filename
+        if not(fname.endswith(".py") or
+               fname == "<template>"):
+            return False
+        if fname != current_filename or \
+           frame.f_code.co_name != current_function:
+            continue
+        if ({k: v
+             for k, v in frame.f_locals.items()
+             if k in keys} == current_locals):
+            return True
+    return False
+
+
 # Stolen from https://stackoverflow.com/questions/21778252/how-to-raise-an-exception-in-a-jinja2-macro
 class ErrorExtension(Extension):
     """Extension providing {% error %} tag, allowing to raise errors
@@ -402,29 +420,17 @@ class TemplateRenderer(object):
             )
 
             # Use some filters from Ansible
-            for mod, fs in [(ansible.plugins.filter.core,
-                             ["regex_search",
-                              "regex_replace",
-                              "to_json",
-                              "to_yaml",
-                              "to_nice_yaml",
-                              "b64decode"]),
-                            (ansible_collections.ansible.netcommon.plugins.filter.ipaddr,
-                             ["ipaddr",
-                              "ipmath",
-                              "ipsubnet",
-                              "ipv4",
-                              "ipv6",
-                              "cidr_merge",
-                              "hwaddr"])]:
+            for mod, fs in _imported_jinjafilters:
                 for f in fs:
-                    env.filters[f] = getattr(mod, f)
+                    try:
+                        fn, name = f
+                    except ValueError:
+                        fn, name = f, f
+                    env.filters[name] = getattr(mod, fn)
 
             # Register our own filters
             for f in _registered_jinjafilters:
                 env.filters[f.__name__] = f
-            env.filters["hash"] = ansible.plugins.filter.core.get_hash
-            env.filters["password_hash"] = ansible.plugins.filter.core.get_encrypted_password
             env.filters["store"] = self._store_set
 
             # Register custom global functions
@@ -438,8 +444,8 @@ class TemplateRenderer(object):
             env.globals["scope"] = classifier.scope
             env.globals["lookup"] = self._lookup
             env.globals["devices"] = self._devices
-            env.globals["interface_description"] = self._interface_description
             env.globals["store"] = self._store_get
+            env.globals["interface_description"] = self._interface_description
             return env
 
         self.env = build_env(Environment)

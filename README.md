@@ -6,7 +6,9 @@ templates in `templates/`. It uses the list of devices in
 `classifier.yaml`. Ansible playbooks to deploy generated files are in
 `ansible/`.
 
-(point to the blog post with more details here)
+More details on use and rationale are available in a [blog post][].
+
+[blog post]: https://vincent.bernat.ch/en/blog/2021-cmdb-network "Jerikan: a configuration management system for network teams"
 
 # Get started
 

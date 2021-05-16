@@ -1,0 +1,269 @@
+% RIPE: 185.161.168.0/22
+
+inetnum:        185.161.168.0 - 185.161.171.255
+netname:        FR-BLADE-20160801
+country:        FR
+org:            ORG-BS318-RIPE
+admin-c:        BN2763-RIPE
+tech-c:         BN2763-RIPE
+status:         ALLOCATED PA
+mnt-by:         RIPE-NCC-HM-MNT
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+% RIPE: 185.231.8.0/22
+
+inetnum:        185.231.8.0 - 185.231.11.255
+netname:        FR-BLADE-20171109
+country:        FR
+org:            ORG-BS318-RIPE
+admin-c:        BN2763-RIPE
+tech-c:         BN2763-RIPE
+status:         ALLOCATED PA
+mnt-by:         RIPE-NCC-HM-MNT
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+% RIPE: 185.253.168.0/22
+
+inetnum:        185.253.168.0 - 185.253.171.255
+netname:        FR-BLADE-20180405
+country:        FR
+org:            ORG-BS318-RIPE
+admin-c:        BN2763-RIPE
+tech-c:         BN2763-RIPE
+status:         ALLOCATED PA
+mnt-by:         RIPE-NCC-HM-MNT
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+% RIPE: 85.190.64.0/19
+
+inetnum:        85.190.64.0 - 85.190.95.255
+netname:        FR-BLADE-20160801
+country:        FR
+org:            ORG-BS318-RIPE
+admin-c:        BN2763-RIPE
+tech-c:         BN2763-RIPE
+status:         ALLOCATED PA
+mnt-by:         RIPE-NCC-HM-MNT
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+% RIPE: 46.247.136.0 - 46.247.141.255
+
+inetnum:        46.247.136.0 - 46.247.141.255
+netname:        FR-BLADE-20110203
+country:        FR
+org:            ORG-BS318-RIPE
+admin-c:        BN2763-RIPE
+tech-c:         BN2763-RIPE
+status:         ALLOCATED PA
+mnt-by:         RIPE-NCC-HM-MNT
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+% RIPE: 2a0a:e800::/29
+
+inet6num:       2a0a:e800::/29
+netname:        FR-BLADE-20160812
+country:        FR
+org:            ORG-BS318-RIPE
+admin-c:        BN2763-RIPE
+tech-c:         BN2763-RIPE
+status:         ALLOCATED-BY-RIR
+mnt-by:         RIPE-NCC-HM-MNT
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+aut-num:        AS64476
+as-name:        BLADE
+org:            ORG-BS318-RIPE
+remarks:
+remarks:        -----------
+remarks:        - TRANSIT -
+remarks:        -----------
+remarks:
+remarks:        KINX-DOM
+import:         from AS9286 accept ANY
+export:         to AS9286 announce AS-BLADE
+remarks:
+remarks:        KINX-INT
+import:         from AS9957 accept ANY
+export:         to AS9957 announce AS-BLADE
+remarks:
+remarks:        TELIA
+import:         from AS1299 accept ANY
+export:         to AS1299 announce AS-BLADE
+remarks:
+remarks:        COGENT
+import:         from AS174 accept ANY
+export:         to AS174 announce AS-BLADE
+remarks:
+remarks:        ------------
+remarks:        - PEERINGS -
+remarks:        ------------
+remarks:
+remarks:        Blade has a 'mostly-open' peering policy, mainly
+remarks:        targeting at ISPs & available at:
+remarks:
+remarks:        http://as64476.peeringdb.com
+remarks:
+member-of:      AS3320:AS-AUTH-PILOT-ROUTEPRIO-FROM-AS44530
+admin-c:        BN2763-RIPE
+tech-c:         BN2763-RIPE
+status:         ASSIGNED
+mnt-by:         RIPE-NCC-END-MNT
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+as-set:         AS-BLADE
+descr:          Blade group routed ASNs
+members:        AS140894
+members:        AS396919
+tech-c:         BN2763-RIPE
+admin-c:        BN2763-RIPE
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+
+organisation:   ORG-BS318-RIPE
+org-name:       Blade SAS
+org-type:       LIR
+address:        151 rue Saint Denis
+address:        75002
+address:        Paris
+address:        FRANCE
+country:        FR
+e-mail:         someone@example.com
+admin-c:        BN2827-RIPE
+tech-c:         BN2827-RIPE
+abuse-c:        AR37032-RIPE
+mnt-ref:        fr-blade-1-mnt
+mnt-by:         RIPE-NCC-HM-MNT
+mnt-by:         fr-blade-1-mnt
+phone:          +33145750790
+remarks:        synced with cmdb
+source:         RIPE
+
+role:           Abuse-C Role
+address:        151 rue Saint Denis
+address:        75002
+address:        Paris
+address:        FRANCE
+e-mail:         someone@example.com
+nic-hdl:        AR37032-RIPE
+abuse-mailbox:  someone@example.com
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+role:           Blade NOC
+address:        151 rue Saint Denis
+address:        75002
+address:        Paris
+address:        FRANCE
+e-mail:         someone@example.com
+nic-hdl:        BN2763-RIPE
+admin-c:        TOF-RIPE
+tech-c:         TOF-RIPE
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+person:         Blade NOC
+address:        151 rue Saint Denis
+address:        75002
+address:        Paris
+address:        FRANCE
+phone:          +33145750790
+nic-hdl:        BN2827-RIPE
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE
+
+key-cert:       PGPKEY-F5C1A7AB
+certif:         -----BEGIN PGP PUBLIC KEY BLOCK-----
+certif:         
+certif:         mQGNBF8TLY8BDADEwP3a6/vRhEERBIaPUAFnr23zKCNt5YhWRZyt50mKq1RmQBBY
+certif:         IlzkwGAXIlpW6Dr24KA3zLbdVC0kzarn50sNvc4AFNfsj6wydKXTk+zGJPLJywrx
+certif:         jLDnh3Kor90pvEGULEm+AVfPMn+dbmYYzK56/JcBjOP3txobp3p4sinq/vahfYNj
+certif:         DvCuhbHIOyf/jQrbPnf46dIySXG+hXtG6jCkDD3aPEL5BGBDPY1zMUhlQfa59GuO
+certif:         m5LEeB9MlSVj/NT4XySm3iKdSFm7UbUZCt3qnV1FEQrZyOeMDFGXDbI5AUfSdeRQ
+certif:         wlIQRH6+hvsV92SG5FvAcT78ONMmNuS8H8aup8XtTHXl+un+mWREG85XdCE1jLqa
+certif:         vp1OKnHyREFMcxFPYjw5Kz4bmjESVbuKQogOjTuR9t8fMfYZ3cCEAkON9NTjD4mW
+certif:         AEcDImHSAHH5n0mAWo3Mcdg5pI8S6pMLx8CGCVsdjZsKAUFBdbtqzKkZKue7+7Vo
+certif:         TGNHwVga/9ooVHcAEQEAAbQfQmxhZGUgTk9DIDxub2NAYmxhZGUtZ3JvdXAuY29t
+certif:         PokB1AQTAQgAPhYhBPXBp6vhRJwMjGIG9hsRA+qP1D5lBQJfEy2PAhsDBQkDwmcA
+certif:         BQsJCAcDBRUKCQgLBRYCAwEAAh4BAheAAAoJEBsRA+qP1D5l7eQL+gKIgi9VWnHW
+certif:         Hxl/ZjuUbHABN4yeDBAmZHNlWsOp0ia/Wu6++f3MOXKLQ5KqDX6jyuRtMYj8d/Ap
+certif:         Mwbii/iXIyqyZavY77Iunm+O2x3xrIPrSu43VvpFXZHIwg6sm1xmfRiaWCgDdhku
+certif:         oO4JPsNTEBugkjdpWfAsDe4Qgl6tU20k+xldW27fPCDOotTCkr327mi0kBA0HGp9
+certif:         cnBmCLnRQJnCHp3LQGctShZPwjUmZYVGEJdzja9QGfld8o1unWaZdV0wfEeuOWEF
+certif:         +vZqNdJw54TADBCxk0O/KqpWLLzWK8AULA+4/1cTohoPM8CsR+z57wZrwf9Lsbli
+certif:         hyVamCn8UzEMClcEHIFTEfxN+yoSeQXMWIgqfn3EvAzvppJwxzx4Flt9A85M2eo9
+certif:         nmxCTM4kB/tcLFtpu2E7L6sz5bWbCeZntxRZp+Fbp7Vtkf/oQakev4Pw8V4TWlFj
+certif:         8uRT8vlPl5eDaWuc61gqkO5e6DMj3Gkj3Cq1zyilTk/iVLLsva7z37kBjQRfEy2P
+certif:         AQwAl9RNb9feRQzRb4kj14SF5xlJ4odJA68eEnmdPCxMKoMaF+M3H9SzgMvVXys2
+certif:         yLI6Jt0YMVwbXBWR0glmUi9JjWOYzxAN+tulCKK2mVeLRcLoD6JMzq1ruADpR06l
+certif:         0zBp/QJZXvMhtdcEAqDPebzWzUnWkJ2JmZj2/hKReaRHo2ghLA5iyNR8GIzIN5l7
+certif:         9F7N4xKV7meNPjTDHuMzNIGyPRxbbAJ7xhwUwFstFR/0LoivOD4GriXI7aio2cVa
+certif:         eh7D8/bfpzoXsD5J9mCZee8shSmX1ToGPQDrToQw84Wb21rXSm62omBuFM0DydVd
+certif:         2UJG9GovWTkZJMbyLok6dSmhJodlMu4FxNvSAajikNAJ2QhSCxNBqv8d0++qUY2u
+certif:         lKHD+ZjHRjyC/hJpGX3obDVomxc+nN+MTt8AG0NgkPKyaYzoKgPFYDcEQ07x/Aqk
+certif:         dLGmoxdLvJO3fO3LliRszcbyY79Nkw+8rLrxFuMhKeJWoF9K3uEuzDyoa5CzOHWg
+certif:         qZdHABEBAAGJAbwEGAEIACYWIQT1waer4UScDIxiBvYbEQPqj9Q+ZQUCXxMtjwIb
+certif:         DAUJA8JnAAAKCRAbEQPqj9Q+ZYBaC/9Fayy6GCMgdcM6D0DteCqzZMSug8rywyjJ
+certif:         14kR66fB4Qs0CV169faKNK4GyY2qwp6z9gM7ERAmiLs30QTiOsB3+LnFmIMabTKT
+certif:         N7CiYY9gBbFMe8nPzUVC1xlzSOP5jyk44ni753Dy4nA4VHnUDfm7zU0Tkze93wXQ
+certif:         oqJKmRvrMkun8oOAeZlcOlKMyTN5tylKCB4SCJUo9gxI3boSr/WfHGQP6QgnkQR0
+certif:         WrzbDZcSJqVkDaVQJz9FmM0AbZGoJ5c3K8rjAB9g5sruXs3HG8tjXwwQCusKajSV
+certif:         MD4PzJ4Urw5WMq3bNohhpUirWfA+4MsUAqatoxO43iKR7KOBD1b/WW4rVGCy82Bj
+certif:         AByj5UCBuxSThBrH+b84d9dpnkAAv1C2hAC0q5fpTPD9NeJ8B41bZojKHd1KVI0Z
+certif:         TYzvyUtpaLiWp+HbfX+OdYsRTBSQLqrvcCLzpKbbf6DY0cgBLJWh0xMBK98phm4X
+certif:         Ed9yDSdUZbzBTvUOnmzXpCKjHr9QYu4=
+certif:         =HsKM
+certif:         -----END PGP PUBLIC KEY BLOCK-----
+remarks:        synced with cmdb
+mnt-by:         fr-blade-1-mnt
+source:         RIPE
+
+mntner:         fr-blade-1-mnt
+descr:          BLADE RIPE maintainer
+admin-c:        BN2763-RIPE
+tech-c:         BN2763-RIPE
+upd-to:         someone@example.com
+auth:           SSO someone@example.com
+auth:           SSO someone@example.com
+auth:           SSO someone@example.com
+auth:           SSO someone@example.com
+auth:           PGPKEY-F5C1A7AB
+mnt-by:         fr-blade-1-mnt
+remarks:        synced with cmdb
+source:         RIPE

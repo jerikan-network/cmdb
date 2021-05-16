@@ -1,0 +1,70 @@
+hostname edge1.sk1
+clock timezone UTC 0
+banner motd C
+______ _           _
+| ___ \ |         | |
+| |_/ / | __ _  __| | ___      This is a private system.
+| ___ \ |/ _` |/ _` |/ _ \     Use by unauthorized persons is prohibited.
+| |_/ / | (_| | (_| |  __/     Go away.
+\____/|_|\__,_|\__,_|\___|
+
+C
+domain name blade-group.net
+domain vrf VRF-MANAGEMENT name-server 172.29.64.2
+domain vrf VRF-MANAGEMENT name-server 172.29.64.3
+!
+logging 172.29.64.9 vrf VRF-MANAGEMENT
+logging 172.29.64.10 vrf VRF-MANAGEMENT
+!
+vrf VRF-MANAGEMENT
+ address-family ipv4 unicast
+!
+line default
+ exec-timeout 0 0
+!
+ntp
+ server vrf VRF-MANAGEMENT 172.29.64.4
+ server vrf VRF-MANAGEMENT 172.29.64.5
+!
+xml agent tty
+ iteration off
+!
+lldp
+!
+ipv4 access-list ACL-INTERNET-IN-V4
+ permit udp 209.50.158.0/23  any  eq snmp
+ deny udp any  any  eq snmp
+ deny udp any  any  eq ntp
+ deny udp any  any  eq 7
+ deny udp any  any  eq 9
+ deny udp any  any  eq 17
+ deny udp any  any  eq 19
+ deny udp any  any  eq 1900
+ permit ipv4 any any
+!
+ipv4 access-list ACL-SNMP
+ permit ipv4 209.50.158.0/23 any
+!
+snmp-server vrf VRF-MANAGEMENT
+snmp-server community 67dskf8fds78fdn RO IPv4 ACL-SNMP
+snmp-server contact Blade Network team <someone@example.com>
+snmp-server location KINX Dogok-dong, KR
+snmp-server ifindex persist
+!
+ipv4 access-list ACL-SSH
+ permit ipv4 172.29.8.0/21 any
+ permit ipv4 203.0.113.11/32 any
+!
+username roger group root-lr
+username roger group root-system
+username roger group cisco-support
+username alfred group root-lr
+username alfred group root-system
+username alfred group cisco-support
+!
+ssh server v2
+ssh server vrf default ipv4 access-list ACL-SSH
+ssh server netconf vrf default ipv4 access-list ACL-SSH
+ssh server vrf VRF-MANAGEMENT ipv4 access-list ACL-SSH
+ssh server netconf vrf VRF-MANAGEMENT ipv4 access-list ACL-SSH
+!

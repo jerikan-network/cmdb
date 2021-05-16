@@ -1,0 +1,2395 @@
+set chassis aggregated-devices ethernet device-count 64
+set chassis alarm management-ethernet link-down ignore
+set groups provisioning-dhcp-attributes routing-instances private access address-assignment pool <*> family inet dhcp-attributes boot-file undionly.kpxe
+set groups provisioning-dhcp-attributes routing-instances private access address-assignment pool <*> family inet dhcp-attributes boot-server 172.30.20.87
+set groups provisioning-dhcp-attributes routing-instances private access address-assignment pool <*> family inet dhcp-attributes domain-name ussfo03.blade-group.net
+set groups provisioning-dhcp-attributes routing-instances private access address-assignment pool <*> family inet dhcp-attributes maximum-lease-time 7200
+set groups provisioning-dhcp-attributes routing-instances private access address-assignment pool <*> family inet dhcp-attributes name-server 172.30.20.2
+set groups provisioning-dhcp-attributes routing-instances private access address-assignment pool <*> family inet dhcp-attributes name-server 172.30.20.3
+set groups provisioning-dhcp-attributes routing-instances private access address-assignment pool <*> family inet dhcp-attributes option 119 hex-string 07757373666f30330b626c6164652d67726f7570036e657400
+set groups provisioning-dhcp-attributes routing-instances private access address-assignment pool <*> family inet dhcp-attributes tftp-server 172.30.20.87
+set interfaces em0 unit 0 family inet address 172.30.24.35/21
+set interfaces et-0/0/31 mtu 9018
+set interfaces et-0/0/31 unit 10 family inet address 10.72.238.5/31
+set interfaces et-0/0/31 unit 10 family inet mtu 9000
+set interfaces et-0/0/31 unit 10 vlan-id 10
+set interfaces et-0/0/31 unit 100 family inet address 100.72.238.5/31
+set interfaces et-0/0/31 unit 100 family inet mtu 1500
+set interfaces et-0/0/31 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:ee05/127
+set interfaces et-0/0/31 unit 100 family inet6 mtu 1500
+set interfaces et-0/0/31 unit 100 vlan-id 100
+set interfaces et-0/0/31 vlan-tagging
+set interfaces et-0/0/32 mtu 9018
+set interfaces et-0/0/32 unit 10 family inet address 10.72.238.133/31
+set interfaces et-0/0/32 unit 10 family inet mtu 9000
+set interfaces et-0/0/32 unit 10 vlan-id 10
+set interfaces et-0/0/32 unit 100 family inet address 100.72.238.133/31
+set interfaces et-0/0/32 unit 100 family inet mtu 1500
+set interfaces et-0/0/32 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:ee85/127
+set interfaces et-0/0/32 unit 100 family inet6 mtu 1500
+set interfaces et-0/0/32 unit 100 vlan-id 100
+set interfaces et-0/0/32 vlan-tagging
+set interfaces xe-0/0/0 flexible-vlan-tagging
+set interfaces xe-0/0/0 mtu 9022
+set interfaces xe-0/0/0 native-vlan-id 70
+set interfaces xe-0/0/0 unit 10 family inet address 10.72.2.32/31
+set interfaces xe-0/0/0 unit 10 family inet mtu 9000
+set interfaces xe-0/0/0 unit 10 vlan-id 10
+set interfaces xe-0/0/0 unit 100 family inet address 100.72.2.32/31
+set interfaces xe-0/0/0 unit 100 family inet mtu 1500
+set interfaces xe-0/0/0 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:220/127
+set interfaces xe-0/0/0 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/0 unit 100 vlan-id 100
+set interfaces xe-0/0/0 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/0 unit 70 family inet address 10.144.4.65/30
+set interfaces xe-0/0/0 unit 70 vlan-id 70
+set interfaces xe-0/0/1 flexible-vlan-tagging
+set interfaces xe-0/0/1 mtu 9022
+set interfaces xe-0/0/1 native-vlan-id 70
+set interfaces xe-0/0/1 unit 10 family inet address 10.72.2.34/31
+set interfaces xe-0/0/1 unit 10 family inet mtu 9000
+set interfaces xe-0/0/1 unit 10 vlan-id 10
+set interfaces xe-0/0/1 unit 100 family inet address 100.72.2.34/31
+set interfaces xe-0/0/1 unit 100 family inet mtu 1500
+set interfaces xe-0/0/1 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:222/127
+set interfaces xe-0/0/1 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/1 unit 100 vlan-id 100
+set interfaces xe-0/0/1 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/1 unit 70 family inet address 10.144.4.69/30
+set interfaces xe-0/0/1 unit 70 vlan-id 70
+set interfaces xe-0/0/10 flexible-vlan-tagging
+set interfaces xe-0/0/10 mtu 9022
+set interfaces xe-0/0/10 native-vlan-id 70
+set interfaces xe-0/0/10 unit 10 family inet address 10.72.2.52/31
+set interfaces xe-0/0/10 unit 10 family inet mtu 9000
+set interfaces xe-0/0/10 unit 10 vlan-id 10
+set interfaces xe-0/0/10 unit 100 family inet address 100.72.2.52/31
+set interfaces xe-0/0/10 unit 100 family inet mtu 1500
+set interfaces xe-0/0/10 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:234/127
+set interfaces xe-0/0/10 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/10 unit 100 vlan-id 100
+set interfaces xe-0/0/10 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/10 unit 70 family inet address 10.144.4.105/30
+set interfaces xe-0/0/10 unit 70 vlan-id 70
+set interfaces xe-0/0/11 flexible-vlan-tagging
+set interfaces xe-0/0/11 mtu 9022
+set interfaces xe-0/0/11 native-vlan-id 70
+set interfaces xe-0/0/11 unit 10 family inet address 10.72.2.54/31
+set interfaces xe-0/0/11 unit 10 family inet mtu 9000
+set interfaces xe-0/0/11 unit 10 vlan-id 10
+set interfaces xe-0/0/11 unit 100 family inet address 100.72.2.54/31
+set interfaces xe-0/0/11 unit 100 family inet mtu 1500
+set interfaces xe-0/0/11 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:236/127
+set interfaces xe-0/0/11 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/11 unit 100 vlan-id 100
+set interfaces xe-0/0/11 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/11 unit 70 family inet address 10.144.4.109/30
+set interfaces xe-0/0/11 unit 70 vlan-id 70
+set interfaces xe-0/0/12 flexible-vlan-tagging
+set interfaces xe-0/0/12 mtu 9022
+set interfaces xe-0/0/12 native-vlan-id 70
+set interfaces xe-0/0/12 unit 10 family inet address 10.72.2.56/31
+set interfaces xe-0/0/12 unit 10 family inet mtu 9000
+set interfaces xe-0/0/12 unit 10 vlan-id 10
+set interfaces xe-0/0/12 unit 100 family inet address 100.72.2.56/31
+set interfaces xe-0/0/12 unit 100 family inet mtu 1500
+set interfaces xe-0/0/12 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:238/127
+set interfaces xe-0/0/12 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/12 unit 100 vlan-id 100
+set interfaces xe-0/0/12 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/12 unit 70 family inet address 10.144.4.113/30
+set interfaces xe-0/0/12 unit 70 vlan-id 70
+set interfaces xe-0/0/13 flexible-vlan-tagging
+set interfaces xe-0/0/13 mtu 9022
+set interfaces xe-0/0/13 native-vlan-id 70
+set interfaces xe-0/0/13 unit 10 family inet address 10.72.2.58/31
+set interfaces xe-0/0/13 unit 10 family inet mtu 9000
+set interfaces xe-0/0/13 unit 10 vlan-id 10
+set interfaces xe-0/0/13 unit 100 family inet address 100.72.2.58/31
+set interfaces xe-0/0/13 unit 100 family inet mtu 1500
+set interfaces xe-0/0/13 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:23a/127
+set interfaces xe-0/0/13 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/13 unit 100 vlan-id 100
+set interfaces xe-0/0/13 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/13 unit 70 family inet address 10.144.4.117/30
+set interfaces xe-0/0/13 unit 70 vlan-id 70
+set interfaces xe-0/0/14 flexible-vlan-tagging
+set interfaces xe-0/0/14 mtu 9022
+set interfaces xe-0/0/14 native-vlan-id 70
+set interfaces xe-0/0/14 unit 10 family inet address 10.72.2.60/31
+set interfaces xe-0/0/14 unit 10 family inet mtu 9000
+set interfaces xe-0/0/14 unit 10 vlan-id 10
+set interfaces xe-0/0/14 unit 100 family inet address 100.72.2.60/31
+set interfaces xe-0/0/14 unit 100 family inet mtu 1500
+set interfaces xe-0/0/14 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:23c/127
+set interfaces xe-0/0/14 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/14 unit 100 vlan-id 100
+set interfaces xe-0/0/14 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/14 unit 70 family inet address 10.144.4.121/30
+set interfaces xe-0/0/14 unit 70 vlan-id 70
+set interfaces xe-0/0/15 flexible-vlan-tagging
+set interfaces xe-0/0/15 mtu 9022
+set interfaces xe-0/0/15 native-vlan-id 70
+set interfaces xe-0/0/15 unit 10 family inet address 10.72.2.62/31
+set interfaces xe-0/0/15 unit 10 family inet mtu 9000
+set interfaces xe-0/0/15 unit 10 vlan-id 10
+set interfaces xe-0/0/15 unit 100 family inet address 100.72.2.62/31
+set interfaces xe-0/0/15 unit 100 family inet mtu 1500
+set interfaces xe-0/0/15 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:23e/127
+set interfaces xe-0/0/15 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/15 unit 100 vlan-id 100
+set interfaces xe-0/0/15 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/15 unit 70 family inet address 10.144.4.125/30
+set interfaces xe-0/0/15 unit 70 vlan-id 70
+set interfaces xe-0/0/16 flexible-vlan-tagging
+set interfaces xe-0/0/16 mtu 9022
+set interfaces xe-0/0/16 native-vlan-id 70
+set interfaces xe-0/0/16 unit 10 family inet address 10.72.2.64/31
+set interfaces xe-0/0/16 unit 10 family inet mtu 9000
+set interfaces xe-0/0/16 unit 10 vlan-id 10
+set interfaces xe-0/0/16 unit 100 family inet address 100.72.2.64/31
+set interfaces xe-0/0/16 unit 100 family inet mtu 1500
+set interfaces xe-0/0/16 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:240/127
+set interfaces xe-0/0/16 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/16 unit 100 vlan-id 100
+set interfaces xe-0/0/16 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/16 unit 70 family inet address 10.144.4.129/30
+set interfaces xe-0/0/16 unit 70 vlan-id 70
+set interfaces xe-0/0/17 flexible-vlan-tagging
+set interfaces xe-0/0/17 mtu 9022
+set interfaces xe-0/0/17 native-vlan-id 70
+set interfaces xe-0/0/17 unit 10 family inet address 10.72.2.66/31
+set interfaces xe-0/0/17 unit 10 family inet mtu 9000
+set interfaces xe-0/0/17 unit 10 vlan-id 10
+set interfaces xe-0/0/17 unit 100 family inet address 100.72.2.66/31
+set interfaces xe-0/0/17 unit 100 family inet mtu 1500
+set interfaces xe-0/0/17 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:242/127
+set interfaces xe-0/0/17 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/17 unit 100 vlan-id 100
+set interfaces xe-0/0/17 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/17 unit 70 family inet address 10.144.4.133/30
+set interfaces xe-0/0/17 unit 70 vlan-id 70
+set interfaces xe-0/0/18 flexible-vlan-tagging
+set interfaces xe-0/0/18 mtu 9022
+set interfaces xe-0/0/18 native-vlan-id 70
+set interfaces xe-0/0/18 unit 10 family inet address 10.72.2.68/31
+set interfaces xe-0/0/18 unit 10 family inet mtu 9000
+set interfaces xe-0/0/18 unit 10 vlan-id 10
+set interfaces xe-0/0/18 unit 100 family inet address 100.72.2.68/31
+set interfaces xe-0/0/18 unit 100 family inet mtu 1500
+set interfaces xe-0/0/18 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:244/127
+set interfaces xe-0/0/18 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/18 unit 100 vlan-id 100
+set interfaces xe-0/0/18 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/18 unit 70 family inet address 10.144.4.137/30
+set interfaces xe-0/0/18 unit 70 vlan-id 70
+set interfaces xe-0/0/19 flexible-vlan-tagging
+set interfaces xe-0/0/19 mtu 9022
+set interfaces xe-0/0/19 native-vlan-id 70
+set interfaces xe-0/0/19 unit 10 family inet address 10.72.2.70/31
+set interfaces xe-0/0/19 unit 10 family inet mtu 9000
+set interfaces xe-0/0/19 unit 10 vlan-id 10
+set interfaces xe-0/0/19 unit 100 family inet address 100.72.2.70/31
+set interfaces xe-0/0/19 unit 100 family inet mtu 1500
+set interfaces xe-0/0/19 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:246/127
+set interfaces xe-0/0/19 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/19 unit 100 vlan-id 100
+set interfaces xe-0/0/19 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/19 unit 70 family inet address 10.144.4.141/30
+set interfaces xe-0/0/19 unit 70 vlan-id 70
+set interfaces xe-0/0/2 flexible-vlan-tagging
+set interfaces xe-0/0/2 mtu 9022
+set interfaces xe-0/0/2 native-vlan-id 70
+set interfaces xe-0/0/2 unit 10 family inet address 10.72.2.36/31
+set interfaces xe-0/0/2 unit 10 family inet mtu 9000
+set interfaces xe-0/0/2 unit 10 vlan-id 10
+set interfaces xe-0/0/2 unit 100 family inet address 100.72.2.36/31
+set interfaces xe-0/0/2 unit 100 family inet mtu 1500
+set interfaces xe-0/0/2 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:224/127
+set interfaces xe-0/0/2 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/2 unit 100 vlan-id 100
+set interfaces xe-0/0/2 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/2 unit 70 family inet address 10.144.4.73/30
+set interfaces xe-0/0/2 unit 70 vlan-id 70
+set interfaces xe-0/0/20 flexible-vlan-tagging
+set interfaces xe-0/0/20 mtu 9022
+set interfaces xe-0/0/20 native-vlan-id 70
+set interfaces xe-0/0/20 unit 10 family inet address 10.72.2.72/31
+set interfaces xe-0/0/20 unit 10 family inet mtu 9000
+set interfaces xe-0/0/20 unit 10 vlan-id 10
+set interfaces xe-0/0/20 unit 100 family inet address 100.72.2.72/31
+set interfaces xe-0/0/20 unit 100 family inet mtu 1500
+set interfaces xe-0/0/20 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:248/127
+set interfaces xe-0/0/20 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/20 unit 100 vlan-id 100
+set interfaces xe-0/0/20 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/20 unit 70 family inet address 10.144.4.145/30
+set interfaces xe-0/0/20 unit 70 vlan-id 70
+set interfaces xe-0/0/21 flexible-vlan-tagging
+set interfaces xe-0/0/21 mtu 9022
+set interfaces xe-0/0/21 native-vlan-id 70
+set interfaces xe-0/0/21 unit 10 family inet address 10.72.2.74/31
+set interfaces xe-0/0/21 unit 10 family inet mtu 9000
+set interfaces xe-0/0/21 unit 10 vlan-id 10
+set interfaces xe-0/0/21 unit 100 family inet address 100.72.2.74/31
+set interfaces xe-0/0/21 unit 100 family inet mtu 1500
+set interfaces xe-0/0/21 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:24a/127
+set interfaces xe-0/0/21 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/21 unit 100 vlan-id 100
+set interfaces xe-0/0/21 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/21 unit 70 family inet address 10.144.4.149/30
+set interfaces xe-0/0/21 unit 70 vlan-id 70
+set interfaces xe-0/0/22 flexible-vlan-tagging
+set interfaces xe-0/0/22 mtu 9022
+set interfaces xe-0/0/22 native-vlan-id 70
+set interfaces xe-0/0/22 unit 10 family inet address 10.72.2.76/31
+set interfaces xe-0/0/22 unit 10 family inet mtu 9000
+set interfaces xe-0/0/22 unit 10 vlan-id 10
+set interfaces xe-0/0/22 unit 100 family inet address 100.72.2.76/31
+set interfaces xe-0/0/22 unit 100 family inet mtu 1500
+set interfaces xe-0/0/22 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:24c/127
+set interfaces xe-0/0/22 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/22 unit 100 vlan-id 100
+set interfaces xe-0/0/22 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/22 unit 70 family inet address 10.144.4.153/30
+set interfaces xe-0/0/22 unit 70 vlan-id 70
+set interfaces xe-0/0/23 flexible-vlan-tagging
+set interfaces xe-0/0/23 mtu 9022
+set interfaces xe-0/0/23 native-vlan-id 70
+set interfaces xe-0/0/23 unit 10 family inet address 10.72.2.78/31
+set interfaces xe-0/0/23 unit 10 family inet mtu 9000
+set interfaces xe-0/0/23 unit 10 vlan-id 10
+set interfaces xe-0/0/23 unit 100 family inet address 100.72.2.78/31
+set interfaces xe-0/0/23 unit 100 family inet mtu 1500
+set interfaces xe-0/0/23 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:24e/127
+set interfaces xe-0/0/23 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/23 unit 100 vlan-id 100
+set interfaces xe-0/0/23 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/23 unit 70 family inet address 10.144.4.157/30
+set interfaces xe-0/0/23 unit 70 vlan-id 70
+set interfaces xe-0/0/24 flexible-vlan-tagging
+set interfaces xe-0/0/24 mtu 9022
+set interfaces xe-0/0/24 native-vlan-id 70
+set interfaces xe-0/0/24 unit 10 family inet address 10.72.2.80/31
+set interfaces xe-0/0/24 unit 10 family inet mtu 9000
+set interfaces xe-0/0/24 unit 10 vlan-id 10
+set interfaces xe-0/0/24 unit 100 family inet address 100.72.2.80/31
+set interfaces xe-0/0/24 unit 100 family inet mtu 1500
+set interfaces xe-0/0/24 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:250/127
+set interfaces xe-0/0/24 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/24 unit 100 vlan-id 100
+set interfaces xe-0/0/24 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/24 unit 70 family inet address 10.144.4.161/30
+set interfaces xe-0/0/24 unit 70 vlan-id 70
+set interfaces xe-0/0/25 flexible-vlan-tagging
+set interfaces xe-0/0/25 mtu 9022
+set interfaces xe-0/0/25 native-vlan-id 70
+set interfaces xe-0/0/25 unit 10 family inet address 10.72.2.82/31
+set interfaces xe-0/0/25 unit 10 family inet mtu 9000
+set interfaces xe-0/0/25 unit 10 vlan-id 10
+set interfaces xe-0/0/25 unit 100 family inet address 100.72.2.82/31
+set interfaces xe-0/0/25 unit 100 family inet mtu 1500
+set interfaces xe-0/0/25 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:252/127
+set interfaces xe-0/0/25 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/25 unit 100 vlan-id 100
+set interfaces xe-0/0/25 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/25 unit 70 family inet address 10.144.4.165/30
+set interfaces xe-0/0/25 unit 70 vlan-id 70
+set interfaces xe-0/0/26 flexible-vlan-tagging
+set interfaces xe-0/0/26 mtu 9022
+set interfaces xe-0/0/26 native-vlan-id 70
+set interfaces xe-0/0/26 unit 10 family inet address 10.72.2.84/31
+set interfaces xe-0/0/26 unit 10 family inet mtu 9000
+set interfaces xe-0/0/26 unit 10 vlan-id 10
+set interfaces xe-0/0/26 unit 100 family inet address 100.72.2.84/31
+set interfaces xe-0/0/26 unit 100 family inet mtu 1500
+set interfaces xe-0/0/26 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:254/127
+set interfaces xe-0/0/26 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/26 unit 100 vlan-id 100
+set interfaces xe-0/0/26 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/26 unit 70 family inet address 10.144.4.169/30
+set interfaces xe-0/0/26 unit 70 vlan-id 70
+set interfaces xe-0/0/27 flexible-vlan-tagging
+set interfaces xe-0/0/27 mtu 9022
+set interfaces xe-0/0/27 native-vlan-id 70
+set interfaces xe-0/0/27 unit 10 family inet address 10.72.2.86/31
+set interfaces xe-0/0/27 unit 10 family inet mtu 9000
+set interfaces xe-0/0/27 unit 10 vlan-id 10
+set interfaces xe-0/0/27 unit 100 family inet address 100.72.2.86/31
+set interfaces xe-0/0/27 unit 100 family inet mtu 1500
+set interfaces xe-0/0/27 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:256/127
+set interfaces xe-0/0/27 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/27 unit 100 vlan-id 100
+set interfaces xe-0/0/27 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/27 unit 70 family inet address 10.144.4.173/30
+set interfaces xe-0/0/27 unit 70 vlan-id 70
+set interfaces xe-0/0/28 flexible-vlan-tagging
+set interfaces xe-0/0/28 mtu 9022
+set interfaces xe-0/0/28 native-vlan-id 70
+set interfaces xe-0/0/28 unit 10 family inet address 10.72.2.88/31
+set interfaces xe-0/0/28 unit 10 family inet mtu 9000
+set interfaces xe-0/0/28 unit 10 vlan-id 10
+set interfaces xe-0/0/28 unit 100 family inet address 100.72.2.88/31
+set interfaces xe-0/0/28 unit 100 family inet mtu 1500
+set interfaces xe-0/0/28 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:258/127
+set interfaces xe-0/0/28 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/28 unit 100 vlan-id 100
+set interfaces xe-0/0/28 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/28 unit 70 family inet address 10.144.4.177/30
+set interfaces xe-0/0/28 unit 70 vlan-id 70
+set interfaces xe-0/0/29 flexible-vlan-tagging
+set interfaces xe-0/0/29 mtu 9022
+set interfaces xe-0/0/29 native-vlan-id 70
+set interfaces xe-0/0/29 unit 10 family inet address 10.72.2.90/31
+set interfaces xe-0/0/29 unit 10 family inet mtu 9000
+set interfaces xe-0/0/29 unit 10 vlan-id 10
+set interfaces xe-0/0/29 unit 100 family inet address 100.72.2.90/31
+set interfaces xe-0/0/29 unit 100 family inet mtu 1500
+set interfaces xe-0/0/29 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:25a/127
+set interfaces xe-0/0/29 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/29 unit 100 vlan-id 100
+set interfaces xe-0/0/29 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/29 unit 70 family inet address 10.144.4.181/30
+set interfaces xe-0/0/29 unit 70 vlan-id 70
+set interfaces xe-0/0/3 flexible-vlan-tagging
+set interfaces xe-0/0/3 mtu 9022
+set interfaces xe-0/0/3 native-vlan-id 70
+set interfaces xe-0/0/3 unit 10 family inet address 10.72.2.38/31
+set interfaces xe-0/0/3 unit 10 family inet mtu 9000
+set interfaces xe-0/0/3 unit 10 vlan-id 10
+set interfaces xe-0/0/3 unit 100 family inet address 100.72.2.38/31
+set interfaces xe-0/0/3 unit 100 family inet mtu 1500
+set interfaces xe-0/0/3 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:226/127
+set interfaces xe-0/0/3 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/3 unit 100 vlan-id 100
+set interfaces xe-0/0/3 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/3 unit 70 family inet address 10.144.4.77/30
+set interfaces xe-0/0/3 unit 70 vlan-id 70
+set interfaces xe-0/0/30 flexible-vlan-tagging
+set interfaces xe-0/0/30 mtu 9022
+set interfaces xe-0/0/30 native-vlan-id 70
+set interfaces xe-0/0/30 unit 10 family inet address 10.72.2.92/31
+set interfaces xe-0/0/30 unit 10 family inet mtu 9000
+set interfaces xe-0/0/30 unit 10 vlan-id 10
+set interfaces xe-0/0/30 unit 100 family inet address 100.72.2.92/31
+set interfaces xe-0/0/30 unit 100 family inet mtu 1500
+set interfaces xe-0/0/30 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:25c/127
+set interfaces xe-0/0/30 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/30 unit 100 vlan-id 100
+set interfaces xe-0/0/30 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/30 unit 70 family inet address 10.144.4.185/30
+set interfaces xe-0/0/30 unit 70 vlan-id 70
+set interfaces xe-0/0/31 flexible-vlan-tagging
+set interfaces xe-0/0/31 mtu 9022
+set interfaces xe-0/0/31 native-vlan-id 70
+set interfaces xe-0/0/31 unit 10 family inet address 10.72.2.94/31
+set interfaces xe-0/0/31 unit 10 family inet mtu 9000
+set interfaces xe-0/0/31 unit 10 vlan-id 10
+set interfaces xe-0/0/31 unit 100 family inet address 100.72.2.94/31
+set interfaces xe-0/0/31 unit 100 family inet mtu 1500
+set interfaces xe-0/0/31 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:25e/127
+set interfaces xe-0/0/31 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/31 unit 100 vlan-id 100
+set interfaces xe-0/0/31 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/31 unit 70 family inet address 10.144.4.189/30
+set interfaces xe-0/0/31 unit 70 vlan-id 70
+set interfaces xe-0/0/32 flexible-vlan-tagging
+set interfaces xe-0/0/32 mtu 9022
+set interfaces xe-0/0/32 native-vlan-id 70
+set interfaces xe-0/0/32 unit 10 family inet address 10.72.2.96/31
+set interfaces xe-0/0/32 unit 10 family inet mtu 9000
+set interfaces xe-0/0/32 unit 10 vlan-id 10
+set interfaces xe-0/0/32 unit 100 family inet address 100.72.2.96/31
+set interfaces xe-0/0/32 unit 100 family inet mtu 1500
+set interfaces xe-0/0/32 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:260/127
+set interfaces xe-0/0/32 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/32 unit 100 vlan-id 100
+set interfaces xe-0/0/32 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/32 unit 70 family inet address 10.144.4.193/30
+set interfaces xe-0/0/32 unit 70 vlan-id 70
+set interfaces xe-0/0/33 flexible-vlan-tagging
+set interfaces xe-0/0/33 mtu 9022
+set interfaces xe-0/0/33 native-vlan-id 70
+set interfaces xe-0/0/33 unit 10 family inet address 10.72.2.98/31
+set interfaces xe-0/0/33 unit 10 family inet mtu 9000
+set interfaces xe-0/0/33 unit 10 vlan-id 10
+set interfaces xe-0/0/33 unit 100 family inet address 100.72.2.98/31
+set interfaces xe-0/0/33 unit 100 family inet mtu 1500
+set interfaces xe-0/0/33 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:262/127
+set interfaces xe-0/0/33 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/33 unit 100 vlan-id 100
+set interfaces xe-0/0/33 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/33 unit 70 family inet address 10.144.4.197/30
+set interfaces xe-0/0/33 unit 70 vlan-id 70
+set interfaces xe-0/0/34 flexible-vlan-tagging
+set interfaces xe-0/0/34 mtu 9022
+set interfaces xe-0/0/34 native-vlan-id 70
+set interfaces xe-0/0/34 unit 10 family inet address 10.72.2.100/31
+set interfaces xe-0/0/34 unit 10 family inet mtu 9000
+set interfaces xe-0/0/34 unit 10 vlan-id 10
+set interfaces xe-0/0/34 unit 100 family inet address 100.72.2.100/31
+set interfaces xe-0/0/34 unit 100 family inet mtu 1500
+set interfaces xe-0/0/34 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:264/127
+set interfaces xe-0/0/34 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/34 unit 100 vlan-id 100
+set interfaces xe-0/0/34 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/34 unit 70 family inet address 10.144.4.201/30
+set interfaces xe-0/0/34 unit 70 vlan-id 70
+set interfaces xe-0/0/35 flexible-vlan-tagging
+set interfaces xe-0/0/35 mtu 9022
+set interfaces xe-0/0/35 native-vlan-id 70
+set interfaces xe-0/0/35 unit 10 family inet address 10.72.2.102/31
+set interfaces xe-0/0/35 unit 10 family inet mtu 9000
+set interfaces xe-0/0/35 unit 10 vlan-id 10
+set interfaces xe-0/0/35 unit 100 family inet address 100.72.2.102/31
+set interfaces xe-0/0/35 unit 100 family inet mtu 1500
+set interfaces xe-0/0/35 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:266/127
+set interfaces xe-0/0/35 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/35 unit 100 vlan-id 100
+set interfaces xe-0/0/35 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/35 unit 70 family inet address 10.144.4.205/30
+set interfaces xe-0/0/35 unit 70 vlan-id 70
+set interfaces xe-0/0/36 flexible-vlan-tagging
+set interfaces xe-0/0/36 mtu 9022
+set interfaces xe-0/0/36 native-vlan-id 70
+set interfaces xe-0/0/36 unit 10 family inet address 10.72.2.104/31
+set interfaces xe-0/0/36 unit 10 family inet mtu 9000
+set interfaces xe-0/0/36 unit 10 vlan-id 10
+set interfaces xe-0/0/36 unit 100 family inet address 100.72.2.104/31
+set interfaces xe-0/0/36 unit 100 family inet mtu 1500
+set interfaces xe-0/0/36 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:268/127
+set interfaces xe-0/0/36 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/36 unit 100 vlan-id 100
+set interfaces xe-0/0/36 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/36 unit 70 family inet address 10.144.4.209/30
+set interfaces xe-0/0/36 unit 70 vlan-id 70
+set interfaces xe-0/0/37 flexible-vlan-tagging
+set interfaces xe-0/0/37 mtu 9022
+set interfaces xe-0/0/37 native-vlan-id 70
+set interfaces xe-0/0/37 unit 10 family inet address 10.72.2.106/31
+set interfaces xe-0/0/37 unit 10 family inet mtu 9000
+set interfaces xe-0/0/37 unit 10 vlan-id 10
+set interfaces xe-0/0/37 unit 100 family inet address 100.72.2.106/31
+set interfaces xe-0/0/37 unit 100 family inet mtu 1500
+set interfaces xe-0/0/37 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:26a/127
+set interfaces xe-0/0/37 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/37 unit 100 vlan-id 100
+set interfaces xe-0/0/37 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/37 unit 70 family inet address 10.144.4.213/30
+set interfaces xe-0/0/37 unit 70 vlan-id 70
+set interfaces xe-0/0/38 flexible-vlan-tagging
+set interfaces xe-0/0/38 mtu 9022
+set interfaces xe-0/0/38 native-vlan-id 70
+set interfaces xe-0/0/38 unit 10 family inet address 10.72.2.108/31
+set interfaces xe-0/0/38 unit 10 family inet mtu 9000
+set interfaces xe-0/0/38 unit 10 vlan-id 10
+set interfaces xe-0/0/38 unit 100 family inet address 100.72.2.108/31
+set interfaces xe-0/0/38 unit 100 family inet mtu 1500
+set interfaces xe-0/0/38 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:26c/127
+set interfaces xe-0/0/38 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/38 unit 100 vlan-id 100
+set interfaces xe-0/0/38 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/38 unit 70 family inet address 10.144.4.217/30
+set interfaces xe-0/0/38 unit 70 vlan-id 70
+set interfaces xe-0/0/39 flexible-vlan-tagging
+set interfaces xe-0/0/39 mtu 9022
+set interfaces xe-0/0/39 native-vlan-id 70
+set interfaces xe-0/0/39 unit 10 family inet address 10.72.2.110/31
+set interfaces xe-0/0/39 unit 10 family inet mtu 9000
+set interfaces xe-0/0/39 unit 10 vlan-id 10
+set interfaces xe-0/0/39 unit 100 family inet address 100.72.2.110/31
+set interfaces xe-0/0/39 unit 100 family inet mtu 1500
+set interfaces xe-0/0/39 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:26e/127
+set interfaces xe-0/0/39 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/39 unit 100 vlan-id 100
+set interfaces xe-0/0/39 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/39 unit 70 family inet address 10.144.4.221/30
+set interfaces xe-0/0/39 unit 70 vlan-id 70
+set interfaces xe-0/0/4 flexible-vlan-tagging
+set interfaces xe-0/0/4 mtu 9022
+set interfaces xe-0/0/4 native-vlan-id 70
+set interfaces xe-0/0/4 unit 10 family inet address 10.72.2.40/31
+set interfaces xe-0/0/4 unit 10 family inet mtu 9000
+set interfaces xe-0/0/4 unit 10 vlan-id 10
+set interfaces xe-0/0/4 unit 100 family inet address 100.72.2.40/31
+set interfaces xe-0/0/4 unit 100 family inet mtu 1500
+set interfaces xe-0/0/4 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:228/127
+set interfaces xe-0/0/4 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/4 unit 100 vlan-id 100
+set interfaces xe-0/0/4 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/4 unit 70 family inet address 10.144.4.81/30
+set interfaces xe-0/0/4 unit 70 vlan-id 70
+set interfaces xe-0/0/40 flexible-vlan-tagging
+set interfaces xe-0/0/40 mtu 9022
+set interfaces xe-0/0/40 native-vlan-id 70
+set interfaces xe-0/0/40 unit 10 family inet address 10.72.2.112/31
+set interfaces xe-0/0/40 unit 10 family inet mtu 9000
+set interfaces xe-0/0/40 unit 10 vlan-id 10
+set interfaces xe-0/0/40 unit 100 family inet address 100.72.2.112/31
+set interfaces xe-0/0/40 unit 100 family inet mtu 1500
+set interfaces xe-0/0/40 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:270/127
+set interfaces xe-0/0/40 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/40 unit 100 vlan-id 100
+set interfaces xe-0/0/40 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/40 unit 70 family inet address 10.144.4.225/30
+set interfaces xe-0/0/40 unit 70 vlan-id 70
+set interfaces xe-0/0/41 flexible-vlan-tagging
+set interfaces xe-0/0/41 mtu 9022
+set interfaces xe-0/0/41 native-vlan-id 70
+set interfaces xe-0/0/41 unit 10 family inet address 10.72.2.114/31
+set interfaces xe-0/0/41 unit 10 family inet mtu 9000
+set interfaces xe-0/0/41 unit 10 vlan-id 10
+set interfaces xe-0/0/41 unit 100 family inet address 100.72.2.114/31
+set interfaces xe-0/0/41 unit 100 family inet mtu 1500
+set interfaces xe-0/0/41 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:272/127
+set interfaces xe-0/0/41 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/41 unit 100 vlan-id 100
+set interfaces xe-0/0/41 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/41 unit 70 family inet address 10.144.4.229/30
+set interfaces xe-0/0/41 unit 70 vlan-id 70
+set interfaces xe-0/0/42 flexible-vlan-tagging
+set interfaces xe-0/0/42 mtu 9022
+set interfaces xe-0/0/42 native-vlan-id 70
+set interfaces xe-0/0/42 unit 10 family inet address 10.72.2.116/31
+set interfaces xe-0/0/42 unit 10 family inet mtu 9000
+set interfaces xe-0/0/42 unit 10 vlan-id 10
+set interfaces xe-0/0/42 unit 100 family inet address 100.72.2.116/31
+set interfaces xe-0/0/42 unit 100 family inet mtu 1500
+set interfaces xe-0/0/42 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:274/127
+set interfaces xe-0/0/42 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/42 unit 100 vlan-id 100
+set interfaces xe-0/0/42 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/42 unit 70 family inet address 10.144.4.233/30
+set interfaces xe-0/0/42 unit 70 vlan-id 70
+set interfaces xe-0/0/43 flexible-vlan-tagging
+set interfaces xe-0/0/43 mtu 9022
+set interfaces xe-0/0/43 native-vlan-id 70
+set interfaces xe-0/0/43 unit 10 family inet address 10.72.2.118/31
+set interfaces xe-0/0/43 unit 10 family inet mtu 9000
+set interfaces xe-0/0/43 unit 10 vlan-id 10
+set interfaces xe-0/0/43 unit 100 family inet address 100.72.2.118/31
+set interfaces xe-0/0/43 unit 100 family inet mtu 1500
+set interfaces xe-0/0/43 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:276/127
+set interfaces xe-0/0/43 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/43 unit 100 vlan-id 100
+set interfaces xe-0/0/43 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/43 unit 70 family inet address 10.144.4.237/30
+set interfaces xe-0/0/43 unit 70 vlan-id 70
+set interfaces xe-0/0/44 flexible-vlan-tagging
+set interfaces xe-0/0/44 mtu 9022
+set interfaces xe-0/0/44 native-vlan-id 70
+set interfaces xe-0/0/44 unit 10 family inet address 10.72.2.120/31
+set interfaces xe-0/0/44 unit 10 family inet mtu 9000
+set interfaces xe-0/0/44 unit 10 vlan-id 10
+set interfaces xe-0/0/44 unit 100 family inet address 100.72.2.120/31
+set interfaces xe-0/0/44 unit 100 family inet mtu 1500
+set interfaces xe-0/0/44 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:278/127
+set interfaces xe-0/0/44 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/44 unit 100 vlan-id 100
+set interfaces xe-0/0/44 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/44 unit 70 family inet address 10.144.4.241/30
+set interfaces xe-0/0/44 unit 70 vlan-id 70
+set interfaces xe-0/0/45 flexible-vlan-tagging
+set interfaces xe-0/0/45 mtu 9022
+set interfaces xe-0/0/45 native-vlan-id 70
+set interfaces xe-0/0/45 unit 10 family inet address 10.72.2.122/31
+set interfaces xe-0/0/45 unit 10 family inet mtu 9000
+set interfaces xe-0/0/45 unit 10 vlan-id 10
+set interfaces xe-0/0/45 unit 100 family inet address 100.72.2.122/31
+set interfaces xe-0/0/45 unit 100 family inet mtu 1500
+set interfaces xe-0/0/45 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:27a/127
+set interfaces xe-0/0/45 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/45 unit 100 vlan-id 100
+set interfaces xe-0/0/45 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/45 unit 70 family inet address 10.144.4.245/30
+set interfaces xe-0/0/45 unit 70 vlan-id 70
+set interfaces xe-0/0/46 flexible-vlan-tagging
+set interfaces xe-0/0/46 mtu 9022
+set interfaces xe-0/0/46 native-vlan-id 70
+set interfaces xe-0/0/46 unit 10 family inet address 10.72.2.124/31
+set interfaces xe-0/0/46 unit 10 family inet mtu 9000
+set interfaces xe-0/0/46 unit 10 vlan-id 10
+set interfaces xe-0/0/46 unit 100 family inet address 100.72.2.124/31
+set interfaces xe-0/0/46 unit 100 family inet mtu 1500
+set interfaces xe-0/0/46 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:27c/127
+set interfaces xe-0/0/46 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/46 unit 100 vlan-id 100
+set interfaces xe-0/0/46 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/46 unit 70 family inet address 10.144.4.249/30
+set interfaces xe-0/0/46 unit 70 vlan-id 70
+set interfaces xe-0/0/47 flexible-vlan-tagging
+set interfaces xe-0/0/47 mtu 9022
+set interfaces xe-0/0/47 native-vlan-id 70
+set interfaces xe-0/0/47 unit 10 family inet address 10.72.2.126/31
+set interfaces xe-0/0/47 unit 10 family inet mtu 9000
+set interfaces xe-0/0/47 unit 10 vlan-id 10
+set interfaces xe-0/0/47 unit 100 family inet address 100.72.2.126/31
+set interfaces xe-0/0/47 unit 100 family inet mtu 1500
+set interfaces xe-0/0/47 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:27e/127
+set interfaces xe-0/0/47 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/47 unit 100 vlan-id 100
+set interfaces xe-0/0/47 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/47 unit 70 family inet address 10.144.4.253/30
+set interfaces xe-0/0/47 unit 70 vlan-id 70
+set interfaces xe-0/0/5 flexible-vlan-tagging
+set interfaces xe-0/0/5 mtu 9022
+set interfaces xe-0/0/5 native-vlan-id 70
+set interfaces xe-0/0/5 unit 10 family inet address 10.72.2.42/31
+set interfaces xe-0/0/5 unit 10 family inet mtu 9000
+set interfaces xe-0/0/5 unit 10 vlan-id 10
+set interfaces xe-0/0/5 unit 100 family inet address 100.72.2.42/31
+set interfaces xe-0/0/5 unit 100 family inet mtu 1500
+set interfaces xe-0/0/5 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:22a/127
+set interfaces xe-0/0/5 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/5 unit 100 vlan-id 100
+set interfaces xe-0/0/5 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/5 unit 70 family inet address 10.144.4.85/30
+set interfaces xe-0/0/5 unit 70 vlan-id 70
+set interfaces xe-0/0/6 flexible-vlan-tagging
+set interfaces xe-0/0/6 mtu 9022
+set interfaces xe-0/0/6 native-vlan-id 70
+set interfaces xe-0/0/6 unit 10 family inet address 10.72.2.44/31
+set interfaces xe-0/0/6 unit 10 family inet mtu 9000
+set interfaces xe-0/0/6 unit 10 vlan-id 10
+set interfaces xe-0/0/6 unit 100 family inet address 100.72.2.44/31
+set interfaces xe-0/0/6 unit 100 family inet mtu 1500
+set interfaces xe-0/0/6 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:22c/127
+set interfaces xe-0/0/6 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/6 unit 100 vlan-id 100
+set interfaces xe-0/0/6 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/6 unit 70 family inet address 10.144.4.89/30
+set interfaces xe-0/0/6 unit 70 vlan-id 70
+set interfaces xe-0/0/7 flexible-vlan-tagging
+set interfaces xe-0/0/7 mtu 9022
+set interfaces xe-0/0/7 native-vlan-id 70
+set interfaces xe-0/0/7 unit 10 family inet address 10.72.2.46/31
+set interfaces xe-0/0/7 unit 10 family inet mtu 9000
+set interfaces xe-0/0/7 unit 10 vlan-id 10
+set interfaces xe-0/0/7 unit 100 family inet address 100.72.2.46/31
+set interfaces xe-0/0/7 unit 100 family inet mtu 1500
+set interfaces xe-0/0/7 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:22e/127
+set interfaces xe-0/0/7 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/7 unit 100 vlan-id 100
+set interfaces xe-0/0/7 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/7 unit 70 family inet address 10.144.4.93/30
+set interfaces xe-0/0/7 unit 70 vlan-id 70
+set interfaces xe-0/0/8 flexible-vlan-tagging
+set interfaces xe-0/0/8 mtu 9022
+set interfaces xe-0/0/8 native-vlan-id 70
+set interfaces xe-0/0/8 unit 10 family inet address 10.72.2.48/31
+set interfaces xe-0/0/8 unit 10 family inet mtu 9000
+set interfaces xe-0/0/8 unit 10 vlan-id 10
+set interfaces xe-0/0/8 unit 100 family inet address 100.72.2.48/31
+set interfaces xe-0/0/8 unit 100 family inet mtu 1500
+set interfaces xe-0/0/8 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:230/127
+set interfaces xe-0/0/8 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/8 unit 100 vlan-id 100
+set interfaces xe-0/0/8 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/8 unit 70 family inet address 10.144.4.97/30
+set interfaces xe-0/0/8 unit 70 vlan-id 70
+set interfaces xe-0/0/9 flexible-vlan-tagging
+set interfaces xe-0/0/9 mtu 9022
+set interfaces xe-0/0/9 native-vlan-id 70
+set interfaces xe-0/0/9 unit 10 family inet address 10.72.2.50/31
+set interfaces xe-0/0/9 unit 10 family inet mtu 9000
+set interfaces xe-0/0/9 unit 10 vlan-id 10
+set interfaces xe-0/0/9 unit 100 family inet address 100.72.2.50/31
+set interfaces xe-0/0/9 unit 100 family inet mtu 1500
+set interfaces xe-0/0/9 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:232/127
+set interfaces xe-0/0/9 unit 100 family inet6 mtu 1500
+set interfaces xe-0/0/9 unit 100 vlan-id 100
+set interfaces xe-0/0/9 unit 70 description "To server for provisionning" 
+set interfaces xe-0/0/9 unit 70 family inet address 10.144.4.101/30
+set interfaces xe-0/0/9 unit 70 vlan-id 70
+set policy-options policy-statement BGPTTH-IN-V4 term ACCEPT-BGP from protocol bgp
+set policy-options policy-statement BGPTTH-IN-V4 term ACCEPT-BGP from protocol bgp
+set policy-options policy-statement BGPTTH-IN-V4 term ACCEPT-BGP then accept
+set policy-options policy-statement BGPTTH-IN-V4 term ACCEPT-BGP then accept
+set policy-options policy-statement BGPTTH-IN-V4 then reject
+set policy-options policy-statement BGPTTH-IN-V4 then reject
+set policy-options policy-statement BGPTTH-OUT-V4 term ACCEPT-BGP from protocol bgp
+set policy-options policy-statement BGPTTH-OUT-V4 term ACCEPT-BGP then accept
+set policy-options policy-statement BGPTTH-OUT-V4 term ACCEPT-PROVISIONING from route-filter 10.144.4.128/25 exact
+set policy-options policy-statement BGPTTH-OUT-V4 term ACCEPT-PROVISIONING from route-filter 10.144.4.64/26 exact
+set policy-options policy-statement BGPTTH-OUT-V4 term ACCEPT-PROVISIONING then accept
+set policy-options policy-statement BGPTTH-OUT-V4 then reject
+set policy-options policy-statement REJECT-ALL then reject
+set policy-options policy-statement ecmp-default then load-balance per-packet
+set protocols lldp port-description-type interface-alias
+set protocols lldp port-id-subtype interface-name
+set routing-instances private access address-assignment pool xe-0-0-0 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-0 family inet dhcp-attributes router 10.144.4.65
+set routing-instances private access address-assignment pool xe-0-0-0 family inet network 10.144.4.64/30
+set routing-instances private access address-assignment pool xe-0-0-0 family inet range provisioning high 10.144.4.66
+set routing-instances private access address-assignment pool xe-0-0-0 family inet range provisioning low  10.144.4.66
+set routing-instances private access address-assignment pool xe-0-0-1 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-1 family inet dhcp-attributes router 10.144.4.69
+set routing-instances private access address-assignment pool xe-0-0-1 family inet network 10.144.4.68/30
+set routing-instances private access address-assignment pool xe-0-0-1 family inet range provisioning high 10.144.4.70
+set routing-instances private access address-assignment pool xe-0-0-1 family inet range provisioning low  10.144.4.70
+set routing-instances private access address-assignment pool xe-0-0-10 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-10 family inet dhcp-attributes router 10.144.4.105
+set routing-instances private access address-assignment pool xe-0-0-10 family inet network 10.144.4.104/30
+set routing-instances private access address-assignment pool xe-0-0-10 family inet range provisioning high 10.144.4.106
+set routing-instances private access address-assignment pool xe-0-0-10 family inet range provisioning low  10.144.4.106
+set routing-instances private access address-assignment pool xe-0-0-11 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-11 family inet dhcp-attributes router 10.144.4.109
+set routing-instances private access address-assignment pool xe-0-0-11 family inet network 10.144.4.108/30
+set routing-instances private access address-assignment pool xe-0-0-11 family inet range provisioning high 10.144.4.110
+set routing-instances private access address-assignment pool xe-0-0-11 family inet range provisioning low  10.144.4.110
+set routing-instances private access address-assignment pool xe-0-0-12 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-12 family inet dhcp-attributes router 10.144.4.113
+set routing-instances private access address-assignment pool xe-0-0-12 family inet network 10.144.4.112/30
+set routing-instances private access address-assignment pool xe-0-0-12 family inet range provisioning high 10.144.4.114
+set routing-instances private access address-assignment pool xe-0-0-12 family inet range provisioning low  10.144.4.114
+set routing-instances private access address-assignment pool xe-0-0-13 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-13 family inet dhcp-attributes router 10.144.4.117
+set routing-instances private access address-assignment pool xe-0-0-13 family inet network 10.144.4.116/30
+set routing-instances private access address-assignment pool xe-0-0-13 family inet range provisioning high 10.144.4.118
+set routing-instances private access address-assignment pool xe-0-0-13 family inet range provisioning low  10.144.4.118
+set routing-instances private access address-assignment pool xe-0-0-14 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-14 family inet dhcp-attributes router 10.144.4.121
+set routing-instances private access address-assignment pool xe-0-0-14 family inet network 10.144.4.120/30
+set routing-instances private access address-assignment pool xe-0-0-14 family inet range provisioning high 10.144.4.122
+set routing-instances private access address-assignment pool xe-0-0-14 family inet range provisioning low  10.144.4.122
+set routing-instances private access address-assignment pool xe-0-0-15 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-15 family inet dhcp-attributes router 10.144.4.125
+set routing-instances private access address-assignment pool xe-0-0-15 family inet network 10.144.4.124/30
+set routing-instances private access address-assignment pool xe-0-0-15 family inet range provisioning high 10.144.4.126
+set routing-instances private access address-assignment pool xe-0-0-15 family inet range provisioning low  10.144.4.126
+set routing-instances private access address-assignment pool xe-0-0-16 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-16 family inet dhcp-attributes router 10.144.4.129
+set routing-instances private access address-assignment pool xe-0-0-16 family inet network 10.144.4.128/30
+set routing-instances private access address-assignment pool xe-0-0-16 family inet range provisioning high 10.144.4.130
+set routing-instances private access address-assignment pool xe-0-0-16 family inet range provisioning low  10.144.4.130
+set routing-instances private access address-assignment pool xe-0-0-17 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-17 family inet dhcp-attributes router 10.144.4.133
+set routing-instances private access address-assignment pool xe-0-0-17 family inet network 10.144.4.132/30
+set routing-instances private access address-assignment pool xe-0-0-17 family inet range provisioning high 10.144.4.134
+set routing-instances private access address-assignment pool xe-0-0-17 family inet range provisioning low  10.144.4.134
+set routing-instances private access address-assignment pool xe-0-0-18 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-18 family inet dhcp-attributes router 10.144.4.137
+set routing-instances private access address-assignment pool xe-0-0-18 family inet network 10.144.4.136/30
+set routing-instances private access address-assignment pool xe-0-0-18 family inet range provisioning high 10.144.4.138
+set routing-instances private access address-assignment pool xe-0-0-18 family inet range provisioning low  10.144.4.138
+set routing-instances private access address-assignment pool xe-0-0-19 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-19 family inet dhcp-attributes router 10.144.4.141
+set routing-instances private access address-assignment pool xe-0-0-19 family inet network 10.144.4.140/30
+set routing-instances private access address-assignment pool xe-0-0-19 family inet range provisioning high 10.144.4.142
+set routing-instances private access address-assignment pool xe-0-0-19 family inet range provisioning low  10.144.4.142
+set routing-instances private access address-assignment pool xe-0-0-2 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-2 family inet dhcp-attributes router 10.144.4.73
+set routing-instances private access address-assignment pool xe-0-0-2 family inet network 10.144.4.72/30
+set routing-instances private access address-assignment pool xe-0-0-2 family inet range provisioning high 10.144.4.74
+set routing-instances private access address-assignment pool xe-0-0-2 family inet range provisioning low  10.144.4.74
+set routing-instances private access address-assignment pool xe-0-0-20 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-20 family inet dhcp-attributes router 10.144.4.145
+set routing-instances private access address-assignment pool xe-0-0-20 family inet network 10.144.4.144/30
+set routing-instances private access address-assignment pool xe-0-0-20 family inet range provisioning high 10.144.4.146
+set routing-instances private access address-assignment pool xe-0-0-20 family inet range provisioning low  10.144.4.146
+set routing-instances private access address-assignment pool xe-0-0-21 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-21 family inet dhcp-attributes router 10.144.4.149
+set routing-instances private access address-assignment pool xe-0-0-21 family inet network 10.144.4.148/30
+set routing-instances private access address-assignment pool xe-0-0-21 family inet range provisioning high 10.144.4.150
+set routing-instances private access address-assignment pool xe-0-0-21 family inet range provisioning low  10.144.4.150
+set routing-instances private access address-assignment pool xe-0-0-22 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-22 family inet dhcp-attributes router 10.144.4.153
+set routing-instances private access address-assignment pool xe-0-0-22 family inet network 10.144.4.152/30
+set routing-instances private access address-assignment pool xe-0-0-22 family inet range provisioning high 10.144.4.154
+set routing-instances private access address-assignment pool xe-0-0-22 family inet range provisioning low  10.144.4.154
+set routing-instances private access address-assignment pool xe-0-0-23 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-23 family inet dhcp-attributes router 10.144.4.157
+set routing-instances private access address-assignment pool xe-0-0-23 family inet network 10.144.4.156/30
+set routing-instances private access address-assignment pool xe-0-0-23 family inet range provisioning high 10.144.4.158
+set routing-instances private access address-assignment pool xe-0-0-23 family inet range provisioning low  10.144.4.158
+set routing-instances private access address-assignment pool xe-0-0-24 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-24 family inet dhcp-attributes router 10.144.4.161
+set routing-instances private access address-assignment pool xe-0-0-24 family inet network 10.144.4.160/30
+set routing-instances private access address-assignment pool xe-0-0-24 family inet range provisioning high 10.144.4.162
+set routing-instances private access address-assignment pool xe-0-0-24 family inet range provisioning low  10.144.4.162
+set routing-instances private access address-assignment pool xe-0-0-25 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-25 family inet dhcp-attributes router 10.144.4.165
+set routing-instances private access address-assignment pool xe-0-0-25 family inet network 10.144.4.164/30
+set routing-instances private access address-assignment pool xe-0-0-25 family inet range provisioning high 10.144.4.166
+set routing-instances private access address-assignment pool xe-0-0-25 family inet range provisioning low  10.144.4.166
+set routing-instances private access address-assignment pool xe-0-0-26 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-26 family inet dhcp-attributes router 10.144.4.169
+set routing-instances private access address-assignment pool xe-0-0-26 family inet network 10.144.4.168/30
+set routing-instances private access address-assignment pool xe-0-0-26 family inet range provisioning high 10.144.4.170
+set routing-instances private access address-assignment pool xe-0-0-26 family inet range provisioning low  10.144.4.170
+set routing-instances private access address-assignment pool xe-0-0-27 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-27 family inet dhcp-attributes router 10.144.4.173
+set routing-instances private access address-assignment pool xe-0-0-27 family inet network 10.144.4.172/30
+set routing-instances private access address-assignment pool xe-0-0-27 family inet range provisioning high 10.144.4.174
+set routing-instances private access address-assignment pool xe-0-0-27 family inet range provisioning low  10.144.4.174
+set routing-instances private access address-assignment pool xe-0-0-28 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-28 family inet dhcp-attributes router 10.144.4.177
+set routing-instances private access address-assignment pool xe-0-0-28 family inet network 10.144.4.176/30
+set routing-instances private access address-assignment pool xe-0-0-28 family inet range provisioning high 10.144.4.178
+set routing-instances private access address-assignment pool xe-0-0-28 family inet range provisioning low  10.144.4.178
+set routing-instances private access address-assignment pool xe-0-0-29 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-29 family inet dhcp-attributes router 10.144.4.181
+set routing-instances private access address-assignment pool xe-0-0-29 family inet network 10.144.4.180/30
+set routing-instances private access address-assignment pool xe-0-0-29 family inet range provisioning high 10.144.4.182
+set routing-instances private access address-assignment pool xe-0-0-29 family inet range provisioning low  10.144.4.182
+set routing-instances private access address-assignment pool xe-0-0-3 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-3 family inet dhcp-attributes router 10.144.4.77
+set routing-instances private access address-assignment pool xe-0-0-3 family inet network 10.144.4.76/30
+set routing-instances private access address-assignment pool xe-0-0-3 family inet range provisioning high 10.144.4.78
+set routing-instances private access address-assignment pool xe-0-0-3 family inet range provisioning low  10.144.4.78
+set routing-instances private access address-assignment pool xe-0-0-30 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-30 family inet dhcp-attributes router 10.144.4.185
+set routing-instances private access address-assignment pool xe-0-0-30 family inet network 10.144.4.184/30
+set routing-instances private access address-assignment pool xe-0-0-30 family inet range provisioning high 10.144.4.186
+set routing-instances private access address-assignment pool xe-0-0-30 family inet range provisioning low  10.144.4.186
+set routing-instances private access address-assignment pool xe-0-0-31 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-31 family inet dhcp-attributes router 10.144.4.189
+set routing-instances private access address-assignment pool xe-0-0-31 family inet network 10.144.4.188/30
+set routing-instances private access address-assignment pool xe-0-0-31 family inet range provisioning high 10.144.4.190
+set routing-instances private access address-assignment pool xe-0-0-31 family inet range provisioning low  10.144.4.190
+set routing-instances private access address-assignment pool xe-0-0-32 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-32 family inet dhcp-attributes router 10.144.4.193
+set routing-instances private access address-assignment pool xe-0-0-32 family inet network 10.144.4.192/30
+set routing-instances private access address-assignment pool xe-0-0-32 family inet range provisioning high 10.144.4.194
+set routing-instances private access address-assignment pool xe-0-0-32 family inet range provisioning low  10.144.4.194
+set routing-instances private access address-assignment pool xe-0-0-33 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-33 family inet dhcp-attributes router 10.144.4.197
+set routing-instances private access address-assignment pool xe-0-0-33 family inet network 10.144.4.196/30
+set routing-instances private access address-assignment pool xe-0-0-33 family inet range provisioning high 10.144.4.198
+set routing-instances private access address-assignment pool xe-0-0-33 family inet range provisioning low  10.144.4.198
+set routing-instances private access address-assignment pool xe-0-0-34 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-34 family inet dhcp-attributes router 10.144.4.201
+set routing-instances private access address-assignment pool xe-0-0-34 family inet network 10.144.4.200/30
+set routing-instances private access address-assignment pool xe-0-0-34 family inet range provisioning high 10.144.4.202
+set routing-instances private access address-assignment pool xe-0-0-34 family inet range provisioning low  10.144.4.202
+set routing-instances private access address-assignment pool xe-0-0-35 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-35 family inet dhcp-attributes router 10.144.4.205
+set routing-instances private access address-assignment pool xe-0-0-35 family inet network 10.144.4.204/30
+set routing-instances private access address-assignment pool xe-0-0-35 family inet range provisioning high 10.144.4.206
+set routing-instances private access address-assignment pool xe-0-0-35 family inet range provisioning low  10.144.4.206
+set routing-instances private access address-assignment pool xe-0-0-36 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-36 family inet dhcp-attributes router 10.144.4.209
+set routing-instances private access address-assignment pool xe-0-0-36 family inet network 10.144.4.208/30
+set routing-instances private access address-assignment pool xe-0-0-36 family inet range provisioning high 10.144.4.210
+set routing-instances private access address-assignment pool xe-0-0-36 family inet range provisioning low  10.144.4.210
+set routing-instances private access address-assignment pool xe-0-0-37 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-37 family inet dhcp-attributes router 10.144.4.213
+set routing-instances private access address-assignment pool xe-0-0-37 family inet network 10.144.4.212/30
+set routing-instances private access address-assignment pool xe-0-0-37 family inet range provisioning high 10.144.4.214
+set routing-instances private access address-assignment pool xe-0-0-37 family inet range provisioning low  10.144.4.214
+set routing-instances private access address-assignment pool xe-0-0-38 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-38 family inet dhcp-attributes router 10.144.4.217
+set routing-instances private access address-assignment pool xe-0-0-38 family inet network 10.144.4.216/30
+set routing-instances private access address-assignment pool xe-0-0-38 family inet range provisioning high 10.144.4.218
+set routing-instances private access address-assignment pool xe-0-0-38 family inet range provisioning low  10.144.4.218
+set routing-instances private access address-assignment pool xe-0-0-39 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-39 family inet dhcp-attributes router 10.144.4.221
+set routing-instances private access address-assignment pool xe-0-0-39 family inet network 10.144.4.220/30
+set routing-instances private access address-assignment pool xe-0-0-39 family inet range provisioning high 10.144.4.222
+set routing-instances private access address-assignment pool xe-0-0-39 family inet range provisioning low  10.144.4.222
+set routing-instances private access address-assignment pool xe-0-0-4 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-4 family inet dhcp-attributes router 10.144.4.81
+set routing-instances private access address-assignment pool xe-0-0-4 family inet network 10.144.4.80/30
+set routing-instances private access address-assignment pool xe-0-0-4 family inet range provisioning high 10.144.4.82
+set routing-instances private access address-assignment pool xe-0-0-4 family inet range provisioning low  10.144.4.82
+set routing-instances private access address-assignment pool xe-0-0-40 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-40 family inet dhcp-attributes router 10.144.4.225
+set routing-instances private access address-assignment pool xe-0-0-40 family inet network 10.144.4.224/30
+set routing-instances private access address-assignment pool xe-0-0-40 family inet range provisioning high 10.144.4.226
+set routing-instances private access address-assignment pool xe-0-0-40 family inet range provisioning low  10.144.4.226
+set routing-instances private access address-assignment pool xe-0-0-41 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-41 family inet dhcp-attributes router 10.144.4.229
+set routing-instances private access address-assignment pool xe-0-0-41 family inet network 10.144.4.228/30
+set routing-instances private access address-assignment pool xe-0-0-41 family inet range provisioning high 10.144.4.230
+set routing-instances private access address-assignment pool xe-0-0-41 family inet range provisioning low  10.144.4.230
+set routing-instances private access address-assignment pool xe-0-0-42 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-42 family inet dhcp-attributes router 10.144.4.233
+set routing-instances private access address-assignment pool xe-0-0-42 family inet network 10.144.4.232/30
+set routing-instances private access address-assignment pool xe-0-0-42 family inet range provisioning high 10.144.4.234
+set routing-instances private access address-assignment pool xe-0-0-42 family inet range provisioning low  10.144.4.234
+set routing-instances private access address-assignment pool xe-0-0-43 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-43 family inet dhcp-attributes router 10.144.4.237
+set routing-instances private access address-assignment pool xe-0-0-43 family inet network 10.144.4.236/30
+set routing-instances private access address-assignment pool xe-0-0-43 family inet range provisioning high 10.144.4.238
+set routing-instances private access address-assignment pool xe-0-0-43 family inet range provisioning low  10.144.4.238
+set routing-instances private access address-assignment pool xe-0-0-44 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-44 family inet dhcp-attributes router 10.144.4.241
+set routing-instances private access address-assignment pool xe-0-0-44 family inet network 10.144.4.240/30
+set routing-instances private access address-assignment pool xe-0-0-44 family inet range provisioning high 10.144.4.242
+set routing-instances private access address-assignment pool xe-0-0-44 family inet range provisioning low  10.144.4.242
+set routing-instances private access address-assignment pool xe-0-0-45 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-45 family inet dhcp-attributes router 10.144.4.245
+set routing-instances private access address-assignment pool xe-0-0-45 family inet network 10.144.4.244/30
+set routing-instances private access address-assignment pool xe-0-0-45 family inet range provisioning high 10.144.4.246
+set routing-instances private access address-assignment pool xe-0-0-45 family inet range provisioning low  10.144.4.246
+set routing-instances private access address-assignment pool xe-0-0-46 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-46 family inet dhcp-attributes router 10.144.4.249
+set routing-instances private access address-assignment pool xe-0-0-46 family inet network 10.144.4.248/30
+set routing-instances private access address-assignment pool xe-0-0-46 family inet range provisioning high 10.144.4.250
+set routing-instances private access address-assignment pool xe-0-0-46 family inet range provisioning low  10.144.4.250
+set routing-instances private access address-assignment pool xe-0-0-47 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-47 family inet dhcp-attributes router 10.144.4.253
+set routing-instances private access address-assignment pool xe-0-0-47 family inet network 10.144.4.252/30
+set routing-instances private access address-assignment pool xe-0-0-47 family inet range provisioning high 10.144.4.254
+set routing-instances private access address-assignment pool xe-0-0-47 family inet range provisioning low  10.144.4.254
+set routing-instances private access address-assignment pool xe-0-0-5 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-5 family inet dhcp-attributes router 10.144.4.85
+set routing-instances private access address-assignment pool xe-0-0-5 family inet network 10.144.4.84/30
+set routing-instances private access address-assignment pool xe-0-0-5 family inet range provisioning high 10.144.4.86
+set routing-instances private access address-assignment pool xe-0-0-5 family inet range provisioning low  10.144.4.86
+set routing-instances private access address-assignment pool xe-0-0-6 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-6 family inet dhcp-attributes router 10.144.4.89
+set routing-instances private access address-assignment pool xe-0-0-6 family inet network 10.144.4.88/30
+set routing-instances private access address-assignment pool xe-0-0-6 family inet range provisioning high 10.144.4.90
+set routing-instances private access address-assignment pool xe-0-0-6 family inet range provisioning low  10.144.4.90
+set routing-instances private access address-assignment pool xe-0-0-7 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-7 family inet dhcp-attributes router 10.144.4.93
+set routing-instances private access address-assignment pool xe-0-0-7 family inet network 10.144.4.92/30
+set routing-instances private access address-assignment pool xe-0-0-7 family inet range provisioning high 10.144.4.94
+set routing-instances private access address-assignment pool xe-0-0-7 family inet range provisioning low  10.144.4.94
+set routing-instances private access address-assignment pool xe-0-0-8 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-8 family inet dhcp-attributes router 10.144.4.97
+set routing-instances private access address-assignment pool xe-0-0-8 family inet network 10.144.4.96/30
+set routing-instances private access address-assignment pool xe-0-0-8 family inet range provisioning high 10.144.4.98
+set routing-instances private access address-assignment pool xe-0-0-8 family inet range provisioning low  10.144.4.98
+set routing-instances private access address-assignment pool xe-0-0-9 apply-groups provisioning-dhcp-attributes
+set routing-instances private access address-assignment pool xe-0-0-9 family inet dhcp-attributes router 10.144.4.101
+set routing-instances private access address-assignment pool xe-0-0-9 family inet network 10.144.4.100/30
+set routing-instances private access address-assignment pool xe-0-0-9 family inet range provisioning high 10.144.4.102
+set routing-instances private access address-assignment pool xe-0-0-9 family inet range provisioning low  10.144.4.102
+set routing-instances private instance-type virtual-router
+set routing-instances private interface et-0/0/31.10
+set routing-instances private interface et-0/0/31.70
+set routing-instances private interface et-0/0/32.10
+set routing-instances private interface et-0/0/32.70
+set routing-instances private interface xe-0/0/0.10
+set routing-instances private interface xe-0/0/0.70
+set routing-instances private interface xe-0/0/1.10
+set routing-instances private interface xe-0/0/1.70
+set routing-instances private interface xe-0/0/10.10
+set routing-instances private interface xe-0/0/10.70
+set routing-instances private interface xe-0/0/11.10
+set routing-instances private interface xe-0/0/11.70
+set routing-instances private interface xe-0/0/12.10
+set routing-instances private interface xe-0/0/12.70
+set routing-instances private interface xe-0/0/13.10
+set routing-instances private interface xe-0/0/13.70
+set routing-instances private interface xe-0/0/14.10
+set routing-instances private interface xe-0/0/14.70
+set routing-instances private interface xe-0/0/15.10
+set routing-instances private interface xe-0/0/15.70
+set routing-instances private interface xe-0/0/16.10
+set routing-instances private interface xe-0/0/16.70
+set routing-instances private interface xe-0/0/17.10
+set routing-instances private interface xe-0/0/17.70
+set routing-instances private interface xe-0/0/18.10
+set routing-instances private interface xe-0/0/18.70
+set routing-instances private interface xe-0/0/19.10
+set routing-instances private interface xe-0/0/19.70
+set routing-instances private interface xe-0/0/2.10
+set routing-instances private interface xe-0/0/2.70
+set routing-instances private interface xe-0/0/20.10
+set routing-instances private interface xe-0/0/20.70
+set routing-instances private interface xe-0/0/21.10
+set routing-instances private interface xe-0/0/21.70
+set routing-instances private interface xe-0/0/22.10
+set routing-instances private interface xe-0/0/22.70
+set routing-instances private interface xe-0/0/23.10
+set routing-instances private interface xe-0/0/23.70
+set routing-instances private interface xe-0/0/24.10
+set routing-instances private interface xe-0/0/24.70
+set routing-instances private interface xe-0/0/25.10
+set routing-instances private interface xe-0/0/25.70
+set routing-instances private interface xe-0/0/26.10
+set routing-instances private interface xe-0/0/26.70
+set routing-instances private interface xe-0/0/27.10
+set routing-instances private interface xe-0/0/27.70
+set routing-instances private interface xe-0/0/28.10
+set routing-instances private interface xe-0/0/28.70
+set routing-instances private interface xe-0/0/29.10
+set routing-instances private interface xe-0/0/29.70
+set routing-instances private interface xe-0/0/3.10
+set routing-instances private interface xe-0/0/3.70
+set routing-instances private interface xe-0/0/30.10
+set routing-instances private interface xe-0/0/30.70
+set routing-instances private interface xe-0/0/31.10
+set routing-instances private interface xe-0/0/31.70
+set routing-instances private interface xe-0/0/32.10
+set routing-instances private interface xe-0/0/32.70
+set routing-instances private interface xe-0/0/33.10
+set routing-instances private interface xe-0/0/33.70
+set routing-instances private interface xe-0/0/34.10
+set routing-instances private interface xe-0/0/34.70
+set routing-instances private interface xe-0/0/35.10
+set routing-instances private interface xe-0/0/35.70
+set routing-instances private interface xe-0/0/36.10
+set routing-instances private interface xe-0/0/36.70
+set routing-instances private interface xe-0/0/37.10
+set routing-instances private interface xe-0/0/37.70
+set routing-instances private interface xe-0/0/38.10
+set routing-instances private interface xe-0/0/38.70
+set routing-instances private interface xe-0/0/39.10
+set routing-instances private interface xe-0/0/39.70
+set routing-instances private interface xe-0/0/4.10
+set routing-instances private interface xe-0/0/4.70
+set routing-instances private interface xe-0/0/40.10
+set routing-instances private interface xe-0/0/40.70
+set routing-instances private interface xe-0/0/41.10
+set routing-instances private interface xe-0/0/41.70
+set routing-instances private interface xe-0/0/42.10
+set routing-instances private interface xe-0/0/42.70
+set routing-instances private interface xe-0/0/43.10
+set routing-instances private interface xe-0/0/43.70
+set routing-instances private interface xe-0/0/44.10
+set routing-instances private interface xe-0/0/44.70
+set routing-instances private interface xe-0/0/45.10
+set routing-instances private interface xe-0/0/45.70
+set routing-instances private interface xe-0/0/46.10
+set routing-instances private interface xe-0/0/46.70
+set routing-instances private interface xe-0/0/47.10
+set routing-instances private interface xe-0/0/47.70
+set routing-instances private interface xe-0/0/5.10
+set routing-instances private interface xe-0/0/5.70
+set routing-instances private interface xe-0/0/6.10
+set routing-instances private interface xe-0/0/6.70
+set routing-instances private interface xe-0/0/7.10
+set routing-instances private interface xe-0/0/7.70
+set routing-instances private interface xe-0/0/8.10
+set routing-instances private interface xe-0/0/8.70
+set routing-instances private interface xe-0/0/9.10
+set routing-instances private interface xe-0/0/9.70
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP enforce-first-as
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP export BGPTTH-OUT-V4
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP family inet unicast
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP hold-time 3
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP import BGPTTH-IN-V4
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP multipath multiple-as
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.101 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.101 peer-as 4208000306
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.103 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.103 peer-as 4208000307
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.105 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.105 peer-as 4208000308
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.107 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.107 peer-as 4208000309
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.109 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.109 peer-as 4208000310
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.111 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.111 peer-as 4208000311
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.113 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.113 peer-as 4208000312
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.115 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.115 peer-as 4208000313
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.117 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.117 peer-as 4208000314
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.119 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.119 peer-as 4208000315
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.121 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.121 peer-as 4208000316
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.123 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.123 peer-as 4208000317
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.125 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.125 peer-as 4208000318
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.127 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.127 peer-as 4208000319
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.33 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.33 peer-as 4208000272
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.35 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.35 peer-as 4208000273
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.37 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.37 peer-as 4208000274
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.39 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.39 peer-as 4208000275
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.41 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.41 peer-as 4208000276
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.43 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.43 peer-as 4208000277
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.45 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.45 peer-as 4208000278
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.47 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.47 peer-as 4208000279
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.49 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.49 peer-as 4208000280
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.51 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.51 peer-as 4208000281
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.53 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.53 peer-as 4208000282
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.55 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.55 peer-as 4208000283
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.57 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.57 peer-as 4208000284
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.59 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.59 peer-as 4208000285
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.61 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.61 peer-as 4208000286
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.63 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.63 peer-as 4208000287
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.65 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.65 peer-as 4208000288
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.67 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.67 peer-as 4208000289
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.69 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.69 peer-as 4208000290
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.71 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.71 peer-as 4208000291
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.73 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.73 peer-as 4208000292
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.75 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.75 peer-as 4208000293
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.77 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.77 peer-as 4208000294
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.79 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.79 peer-as 4208000295
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.81 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.81 peer-as 4208000296
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.83 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.83 peer-as 4208000297
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.85 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.85 peer-as 4208000298
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.87 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.87 peer-as 4208000299
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.89 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.89 peer-as 4208000300
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.91 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.91 peer-as 4208000301
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.93 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.93 peer-as 4208000302
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.95 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.95 peer-as 4208000303
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.97 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.97 peer-as 4208000304
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.99 passive
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.2.99 peer-as 4208000305
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.238.132 peer-as 4208999980
+set routing-instances private protocols bgp group v4-private-EBGP neighbor 10.72.238.4 peer-as 4208999980
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp group v4-private-EBGP type external
+set routing-instances private protocols bgp local-as 4208991002
+set routing-instances private protocols bgp log-updown
+set routing-instances private routing-options static route 10.144.4.128/25 discard
+set routing-instances private routing-options static route 10.144.4.128/25 no-install
+set routing-instances private routing-options static route 10.144.4.64/26 discard
+set routing-instances private routing-options static route 10.144.4.64/26 no-install
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/0.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/1.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/10.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/11.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/12.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/13.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/14.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/15.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/16.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/17.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/18.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/19.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/2.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/20.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/21.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/22.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/23.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/24.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/25.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/26.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/27.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/28.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/29.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/3.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/30.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/31.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/32.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/33.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/34.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/35.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/36.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/37.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/38.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/39.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/4.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/40.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/41.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/42.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/43.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/44.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/45.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/46.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/47.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/5.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/6.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/7.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/8.70
+set routing-instances private system services dhcp-local-server group provisioning interface xe-0/0/9.70
+set routing-instances public instance-type virtual-router
+set routing-instances public interface et-0/0/31.100
+set routing-instances public interface et-0/0/32.100
+set routing-instances public interface xe-0/0/0.100
+set routing-instances public interface xe-0/0/1.100
+set routing-instances public interface xe-0/0/10.100
+set routing-instances public interface xe-0/0/11.100
+set routing-instances public interface xe-0/0/12.100
+set routing-instances public interface xe-0/0/13.100
+set routing-instances public interface xe-0/0/14.100
+set routing-instances public interface xe-0/0/15.100
+set routing-instances public interface xe-0/0/16.100
+set routing-instances public interface xe-0/0/17.100
+set routing-instances public interface xe-0/0/18.100
+set routing-instances public interface xe-0/0/19.100
+set routing-instances public interface xe-0/0/2.100
+set routing-instances public interface xe-0/0/20.100
+set routing-instances public interface xe-0/0/21.100
+set routing-instances public interface xe-0/0/22.100
+set routing-instances public interface xe-0/0/23.100
+set routing-instances public interface xe-0/0/24.100
+set routing-instances public interface xe-0/0/25.100
+set routing-instances public interface xe-0/0/26.100
+set routing-instances public interface xe-0/0/27.100
+set routing-instances public interface xe-0/0/28.100
+set routing-instances public interface xe-0/0/29.100
+set routing-instances public interface xe-0/0/3.100
+set routing-instances public interface xe-0/0/30.100
+set routing-instances public interface xe-0/0/31.100
+set routing-instances public interface xe-0/0/32.100
+set routing-instances public interface xe-0/0/33.100
+set routing-instances public interface xe-0/0/34.100
+set routing-instances public interface xe-0/0/35.100
+set routing-instances public interface xe-0/0/36.100
+set routing-instances public interface xe-0/0/37.100
+set routing-instances public interface xe-0/0/38.100
+set routing-instances public interface xe-0/0/39.100
+set routing-instances public interface xe-0/0/4.100
+set routing-instances public interface xe-0/0/40.100
+set routing-instances public interface xe-0/0/41.100
+set routing-instances public interface xe-0/0/42.100
+set routing-instances public interface xe-0/0/43.100
+set routing-instances public interface xe-0/0/44.100
+set routing-instances public interface xe-0/0/45.100
+set routing-instances public interface xe-0/0/46.100
+set routing-instances public interface xe-0/0/47.100
+set routing-instances public interface xe-0/0/5.100
+set routing-instances public interface xe-0/0/6.100
+set routing-instances public interface xe-0/0/7.100
+set routing-instances public interface xe-0/0/8.100
+set routing-instances public interface xe-0/0/9.100
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP family inet unicast
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.101 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.101 peer-as 4208000306
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.103 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.103 peer-as 4208000307
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.105 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.105 peer-as 4208000308
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.107 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.107 peer-as 4208000309
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.109 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.109 peer-as 4208000310
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.111 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.111 peer-as 4208000311
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.113 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.113 peer-as 4208000312
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.115 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.115 peer-as 4208000313
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.117 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.117 peer-as 4208000314
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.119 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.119 peer-as 4208000315
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.121 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.121 peer-as 4208000316
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.123 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.123 peer-as 4208000317
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.125 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.125 peer-as 4208000318
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.127 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.127 peer-as 4208000319
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.33 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.33 peer-as 4208000272
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.35 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.35 peer-as 4208000273
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.37 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.37 peer-as 4208000274
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.39 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.39 peer-as 4208000275
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.41 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.41 peer-as 4208000276
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.43 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.43 peer-as 4208000277
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.45 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.45 peer-as 4208000278
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.47 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.47 peer-as 4208000279
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.49 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.49 peer-as 4208000280
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.51 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.51 peer-as 4208000281
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.53 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.53 peer-as 4208000282
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.55 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.55 peer-as 4208000283
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.57 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.57 peer-as 4208000284
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.59 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.59 peer-as 4208000285
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.61 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.61 peer-as 4208000286
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.63 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.63 peer-as 4208000287
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.65 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.65 peer-as 4208000288
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.67 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.67 peer-as 4208000289
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.69 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.69 peer-as 4208000290
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.71 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.71 peer-as 4208000291
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.73 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.73 peer-as 4208000292
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.75 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.75 peer-as 4208000293
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.77 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.77 peer-as 4208000294
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.79 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.79 peer-as 4208000295
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.81 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.81 peer-as 4208000296
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.83 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.83 peer-as 4208000297
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.85 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.85 peer-as 4208000298
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.87 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.87 peer-as 4208000299
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.89 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.89 peer-as 4208000300
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.91 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.91 peer-as 4208000301
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.93 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.93 peer-as 4208000302
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.95 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.95 peer-as 4208000303
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.97 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.97 peer-as 4208000304
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.99 passive
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.2.99 peer-as 4208000305
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.238.132 peer-as 4208999980
+set routing-instances public protocols bgp group v4-public-EBGP neighbor 100.72.238.4 peer-as 4208999980
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v4-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP enforce-first-as
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP family inet6 unicast
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP hold-time 3
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP multipath multiple-as
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:221 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:221 peer-as 4208000272
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:223 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:223 peer-as 4208000273
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:225 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:225 peer-as 4208000274
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:227 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:227 peer-as 4208000275
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:229 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:229 peer-as 4208000276
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:22b passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:22b peer-as 4208000277
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:22d passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:22d peer-as 4208000278
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:22f passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:22f peer-as 4208000279
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:231 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:231 peer-as 4208000280
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:233 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:233 peer-as 4208000281
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:235 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:235 peer-as 4208000282
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:237 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:237 peer-as 4208000283
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:239 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:239 peer-as 4208000284
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:23b passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:23b peer-as 4208000285
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:23d passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:23d peer-as 4208000286
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:23f passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:23f peer-as 4208000287
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:241 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:241 peer-as 4208000288
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:243 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:243 peer-as 4208000289
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:245 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:245 peer-as 4208000290
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:247 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:247 peer-as 4208000291
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:249 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:249 peer-as 4208000292
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:24b passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:24b peer-as 4208000293
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:24d passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:24d peer-as 4208000294
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:24f passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:24f peer-as 4208000295
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:251 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:251 peer-as 4208000296
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:253 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:253 peer-as 4208000297
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:255 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:255 peer-as 4208000298
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:257 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:257 peer-as 4208000299
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:259 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:259 peer-as 4208000300
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:25b passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:25b peer-as 4208000301
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:25d passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:25d peer-as 4208000302
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:25f passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:25f peer-as 4208000303
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:261 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:261 peer-as 4208000304
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:263 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:263 peer-as 4208000305
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:265 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:265 peer-as 4208000306
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:267 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:267 peer-as 4208000307
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:269 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:269 peer-as 4208000308
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:26b passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:26b peer-as 4208000309
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:26d passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:26d peer-as 4208000310
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:26f passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:26f peer-as 4208000311
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:271 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:271 peer-as 4208000312
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:273 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:273 peer-as 4208000313
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:275 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:275 peer-as 4208000314
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:277 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:277 peer-as 4208000315
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:279 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:279 peer-as 4208000316
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:27b passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:27b peer-as 4208000317
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:27d passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:27d peer-as 4208000318
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:27f passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:27f peer-as 4208000319
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:ee04 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:ee04 peer-as 4208999980
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:ee84 passive
+set routing-instances public protocols bgp group v6-public-EBGP neighbor 2605:940:500:b1:a:de:6448:ee84 peer-as 4208999980
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp group v6-public-EBGP type external
+set routing-instances public protocols bgp local-as 4208991002
+set routing-instances public protocols bgp log-updown
+set routing-options forwarding-table export ecmp-default
+set routing-options static route 10.0.0.0/8 next-hop 172.30.31.254
+set routing-options static route 172.16.0.0/12 next-hop 172.30.31.254
+set snmp community 67dskf8fds78fdn authorization read-only
+set snmp location "San Francisco, US"
+set system domain-name blade-group.net
+set system host-name to1-p2.ussfo03
+set system location country-code US
+set system login class backup permissions secret
+set system login class backup permissions view
+set system login class backup permissions view-configuration
+set system login message "______ _           _\n| ___ \\ |         | |\n| |_/ / | __ _  __| | ___      This is a private system.\n| ___ \\ |/ _` |/ _` |/ _ \\     Use by unauthorized persons is prohibited.\n| |_/ / | (_| | (_| |  __/     Go away.\n\\____/|_|\\__,_|\\__,_|\\___|\n"
+set system login retry-options backoff-factor 5
+set system login retry-options backoff-threshold 3
+set system login retry-options maximum-time 20
+set system login retry-options tries-before-disconnect 3
+set system login user alfred authentication ssh-rsa "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDlfgjPITduKHmK7PYagxJrX/pPxRcY64Ccwad8NhBWEO/op/VkgECHlOVdw/nJ90EOI/UXkwqCQBLVzr+TeogI4dKAjLtwMikTQznxSfCgrjybPp/+WPWDFC9N08rwLlj3HWNrPp30CFzljun82Ljo6ykPd2lb2TH+xvliNAseWJiTmLx9nWmOV/oAGLX7lGZ6NYV8HNSjfpWwIjLp1xhnyur71kVoWAI0D9S6JIcw4AXc2mfC91Io9JshUCNnKdCY6Eae9YCCj+T+JXOh5KBU66plv4gFyDF/RJ+LD2yhu0WOCAre0t0wSiJ6M7AdplUgDtM4aYwLNU79miXLpULhHFpgqlpKxvxJW56lLh1QtxJZBK7ppM4Q69d3s/S1+Zo6ekfnzDFqQibltuF10srOuJNUKEGY3jVq8U0pwlqilelTUtAN7vRTTZIsueLGHF4gTJKcOqxJMPIroaEebVESy7wrAE0y9u+mH9QlcLTZzudypN18ll7bagAAhw8QC1c= alfred"
+set system login user alfred class super-user
+set system login user blade authentication encrypted-password "$5$.............."
+set system login user blade class super-user
+set system login user roger authentication ssh-rsa "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC1k62F1WguJ0seuCtzuFLfOzI1MHCpQR3qeW3OjzqtEIl5h6/whKayzYP++as8X8Y5YKVSp5g2mjCRAkB9C5/hfwI4yI381rm3wT8dRJGR/yUy6l0qDbS+kQTJtoQbsz4j+NAsk2utRb8OAYBwYVVbKVaIj8cywYmfYRL86DVdzN8XU0vvU3OZcmjRTOhJQ5WkhU3phMAs3aFo/3v11g3VllpDPRcB0w4iP6Qsay8iDUUr6EFO/k7N/IS3QxmOlziPj7JHTqc/jftAwsizLsq+WFKFNDdDJ0RLDbUUMasnvJ3jbIgaxiwkuO/ObknZI1MCWNcocRy+Ch2PvgXrcdMB1+UP1f3IZZF5S1h7it1VpfZFKD9v9qEnukoVIlfJxJkq4dp8jOqyPgoV4s7a5shdqCF5OKiY+fgAVf6oOM8naJ0FlPRE5twbYkeDsvCmzztWqeJO/vXj3qtFmjq5ZbuUJa4xCpppI20yGMVfTqkTb7YbTCCdaqVhXzzYWcFjUXE= roger"
+set system login user roger class super-user
+set system name-server 172.30.20.2
+set system name-server 172.30.20.3
+set system ntp server 172.30.20.4
+set system ntp server 172.30.20.5
+set system ports console log-out-on-disconnect
+set system ports console type vt100
+set system root-authentication encrypted-password "$5$......"
+set system services netconf ssh
+set system services ssh authentication-order password
+set system services ssh connection-limit 10
+set system services ssh protocol-version v2
+set system services ssh rate-limit 10
+set system services ssh root-login deny
+set system syslog archive size 10m files 10 world-readable
+set system syslog console authorization info
+set system syslog file * user emergency
+set system syslog file commands explicit-priority
+set system syslog file commands interactive-commands info
+set system syslog file console any critical
+set system syslog file console authorization info
+set system syslog file default-log-messages any any
+set system syslog file default-log-messages structured-data
+set system syslog file filter explicit-priority
+set system syslog file filter firewall any
+set system syslog file interactive-commands interactive-commands any
+set system syslog file interfaces any info
+set system syslog file interfaces archive size 1m files 10
+set system syslog file interfaces daemon info
+set system syslog file interfaces explicit-priority
+set system syslog file interfaces match .*SNMP_TRAP_LINK.*
+set system syslog file messages any any
+set system syslog file messages archive size 1m files 10
+set system syslog file messages authorization none
+set system syslog file messages change-log notice
+set system syslog file messages explicit-priority
+set system syslog file messages firewall none
+set system syslog file messages interactive-commands none
+set system syslog file messages match "!(Virtual Chassis Fabric usage requires a license|Receive FX craftd set alarm message|color: 2 class: 50 object: 50 slot: 126 id=0 reason=168|downward spike received from pfe for ibytes_reply)"
+set system syslog file security authorization info
+set system syslog file security explicit-priority
+set system syslog file security interactive-commands info
+set system syslog file updown any info
+set system syslog file updown match "LINK_DOWN|LINK_UP"
+set system syslog host 172.30.20.10 any warning
+set system syslog host 172.30.20.10 authorization notice
+set system syslog host 172.30.20.10 firewall any
+set system syslog host 172.30.20.10 interactive-commands any
+set system syslog host 172.30.20.10 port 514
+set system syslog host 172.30.20.10 source-address 172.30.24.35
+set system syslog host 172.30.20.10 structured-data
+set system syslog host 172.30.20.9 any warning
+set system syslog host 172.30.20.9 authorization notice
+set system syslog host 172.30.20.9 firewall any
+set system syslog host 172.30.20.9 interactive-commands any
+set system syslog host 172.30.20.9 port 514
+set system syslog host 172.30.20.9 source-address 172.30.24.35
+set system syslog host 172.30.20.9 structured-data
+set system syslog time-format year millisecond
+set system syslog user * any emergency
+set system time-zone UTC

@@ -1,0 +1,2767 @@
+
+system {
+  host-name edge2.ussfo03;
+  domain-name blade-group.net;
+  time-zone UTC;
+  location country-code US;
+  ports {
+    console {
+      log-out-on-disconnect;
+      type vt100;
+    }
+  }
+}
+
+system {
+  replace: root-authentication {
+    encrypted-password "$5$......"; ## SECRET-DATA
+  }
+  services {
+    replace: ssh {
+      authentication-order password;
+      root-login deny;
+      protocol-version v2;
+      connection-limit 10;
+      rate-limit 10;
+    }
+    replace: netconf {
+       ssh;
+    }
+  }
+  replace: login {
+    message "______ _           _\n| ___ \\ |         | |\n| |_/ / | __ _  __| | ___      This is a private system.\n| ___ \\ |/ _` |/ _` |/ _ \\     Use by unauthorized persons is prohibited.\n| |_/ / | (_| | (_| |  __/     Go away.\n\\____/|_|\\__,_|\\__,_|\\___|\n";
+    retry-options {
+      tries-before-disconnect 3;
+      backoff-threshold 3;
+      backoff-factor 5;
+      maximum-time 20;
+    }
+    class backup {
+      permissions [ secret view view-configuration ];
+    }
+    user roger {
+      class super-user;
+      authentication {
+        ssh-rsa "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC1k62F1WguJ0seuCtzuFLfOzI1MHCpQR3qeW3OjzqtEIl5h6/whKayzYP++as8X8Y5YKVSp5g2mjCRAkB9C5/hfwI4yI381rm3wT8dRJGR/yUy6l0qDbS+kQTJtoQbsz4j+NAsk2utRb8OAYBwYVVbKVaIj8cywYmfYRL86DVdzN8XU0vvU3OZcmjRTOhJQ5WkhU3phMAs3aFo/3v11g3VllpDPRcB0w4iP6Qsay8iDUUr6EFO/k7N/IS3QxmOlziPj7JHTqc/jftAwsizLsq+WFKFNDdDJ0RLDbUUMasnvJ3jbIgaxiwkuO/ObknZI1MCWNcocRy+Ch2PvgXrcdMB1+UP1f3IZZF5S1h7it1VpfZFKD9v9qEnukoVIlfJxJkq4dp8jOqyPgoV4s7a5shdqCF5OKiY+fgAVf6oOM8naJ0FlPRE5twbYkeDsvCmzztWqeJO/vXj3qtFmjq5ZbuUJa4xCpppI20yGMVfTqkTb7YbTCCdaqVhXzzYWcFjUXE= roger";
+      }
+    }
+    user alfred {
+      class super-user;
+      authentication {
+        ssh-rsa "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDlfgjPITduKHmK7PYagxJrX/pPxRcY64Ccwad8NhBWEO/op/VkgECHlOVdw/nJ90EOI/UXkwqCQBLVzr+TeogI4dKAjLtwMikTQznxSfCgrjybPp/+WPWDFC9N08rwLlj3HWNrPp30CFzljun82Ljo6ykPd2lb2TH+xvliNAseWJiTmLx9nWmOV/oAGLX7lGZ6NYV8HNSjfpWwIjLp1xhnyur71kVoWAI0D9S6JIcw4AXc2mfC91Io9JshUCNnKdCY6Eae9YCCj+T+JXOh5KBU66plv4gFyDF/RJ+LD2yhu0WOCAre0t0wSiJ6M7AdplUgDtM4aYwLNU79miXLpULhHFpgqlpKxvxJW56lLh1QtxJZBK7ppM4Q69d3s/S1+Zo6ekfnzDFqQibltuF10srOuJNUKEGY3jVq8U0pwlqilelTUtAN7vRTTZIsueLGHF4gTJKcOqxJMPIroaEebVESy7wrAE0y9u+mH9QlcLTZzudypN18ll7bagAAhw8QC1c= alfred";
+      }
+    }
+    user blade {
+      class super-user;
+      authentication {
+        encrypted-password "$5$.............."; ## SECRET-DATA
+      }
+    }
+  }
+}
+
+system {
+  replace: ntp {
+    server 172.30.20.4;
+    server 172.30.20.5;
+  }
+  replace: name-server {
+    172.30.20.2;
+    172.30.20.3;
+  }
+  replace: syslog {
+    archive size 10m files 10 world-readable;
+    user * {
+      any emergency;
+    }
+    host 172.30.20.9 {
+      any warning;
+      authorization notice;
+      firewall any;
+      interactive-commands any;
+      port 514;
+      source-address 172.30.24.2;
+      structured-data;
+    }
+    host 172.30.20.10 {
+      any warning;
+      authorization notice;
+      firewall any;
+      interactive-commands any;
+      port 514;
+      source-address 172.30.24.2;
+      structured-data;
+    }
+    file * {
+      user emergency;
+    }
+    file messages {
+      any any;
+      authorization none;
+      firewall none;
+      change-log notice;
+      interactive-commands none;
+      match "!(Virtual Chassis Fabric usage requires a license|Receive FX craftd set alarm message|color: 2 class: 50 object: 50 slot: 126 id=0 reason=168|downward spike received from pfe for ibytes_reply)";
+      archive size 1m files 10;
+      explicit-priority;
+    }
+    file interactive-commands {
+      interactive-commands any;
+    }
+    file updown {
+      any info;
+      match "LINK_DOWN|LINK_UP";
+    }
+    file interfaces {
+      any info;
+      daemon info;
+      match .*SNMP_TRAP_LINK.*;
+      archive size 1m files 10;
+      explicit-priority;
+    }
+    file security {
+      authorization info;
+      interactive-commands info;
+      explicit-priority;
+    }
+    file default-log-messages {
+      any any;
+      structured-data;
+    }
+    file filter {
+      firewall any;
+      explicit-priority;
+    }
+    file commands {
+      interactive-commands info;
+      explicit-priority;
+    }
+    file console {
+      any critical;
+      authorization info;
+    }
+    console {
+      authorization info;
+    }
+    time-format year millisecond;
+  }
+}
+chassis {
+  alarm {
+    management-ethernet {
+      link-down ignore;
+    }
+  }
+}
+
+snmp {
+  location "San Francisco, US";
+  community 67dskf8fds78fdn authorization read-only;
+  routing-instance-access;
+}
+
+protocols {
+    lldp {
+      port-id-subtype interface-name;
+      port-description-type interface-alias;
+    }
+}
+
+routing-options {
+  forwarding-table {
+    export ecmp-default;
+    ecmp-fast-reroute;
+    indirect-next-hop;
+  }
+}
+
+policy-options {
+  policy-statement ecmp-default {
+    then {
+      load-balance per-packet;
+    }
+  }
+  policy-statement REJECT-ALL {
+    then reject;
+  }
+}
+
+interfaces {
+  protect: em0 {
+    unit 0 {
+      family inet address 172.30.24.2/21;
+    }
+  }
+}
+
+chassis {
+  aggregated-devices {
+    ethernet {
+      device-count 64;
+    }
+  }
+}
+
+routing-options {
+  static {
+    route 172.16.0.0/12 next-hop 172.30.31.254;
+    route 10.0.0.0/8 next-hop 172.30.31.254;
+  }
+}
+
+
+chassis {
+      fpc 0 pic 0 port 1 {
+    speed 100g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 3 {
+    channel-speed 10g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 3 {
+    channel-speed 10g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 3 {
+    channel-speed 10g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 3 {
+    channel-speed 10g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 3 {
+    channel-speed 10g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 3 {
+    channel-speed 10g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 3 {
+    channel-speed 10g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 3 {
+    channel-speed 10g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 3 {
+    channel-speed 10g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 3 {
+    channel-speed 10g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 3 {
+    channel-speed 10g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 3 {
+    channel-speed 10g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 7 {
+    speed 100g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 11 {
+    speed 100g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 13 {
+    speed 100g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 17 {
+    speed 100g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 19 {
+    speed 100g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 23 {
+    speed 100g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 25 {
+    speed 100g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 29 {
+    speed 100g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 31 {
+    speed 100g;
+  }
+
+}
+chassis {
+      fpc 0 pic 0 port 35 {
+    speed 100g;
+  }
+
+}
+interfaces {
+  et-0/0/1 {
+      description "Transit: Cogent [100G-LR4] (...) {A.01.05.01.41 port:1,2 ref:...}";
+      unit 0 {
+        family inet {
+          address 38.140.30.234/29;
+        }
+        family inet6 {
+          address 2001:550:2:B::1F9:2/126;
+        }
+      }
+    }
+}
+routing-instances {
+  internet {
+      instance-type virtual-router;
+      interface et-0/0/1.0;
+  }
+}
+protocols lldp interface et-0/0/1;
+interfaces xe-0/0/3:0 disable;
+interfaces {
+  xe-0/0/3:1 {
+      description "IX: SFMIX [10G-LR] {A.01.05.01.41 port:3,4 ref:...}";
+      unit 0 {
+        family inet {
+          address 206.197.187.98/24;
+        }
+        family inet6 {
+          address 2001:504:30::ba39:6919:1/64;
+        }
+      }
+    }
+}
+routing-instances {
+  internet {
+      instance-type virtual-router;
+      interface xe-0/0/3:1.0;
+  }
+}
+interfaces xe-0/0/3:2 disable;
+interfaces xe-0/0/3:3 disable;
+interfaces xe-0/0/4:0 disable;
+interfaces xe-0/0/4:1 disable;
+interfaces xe-0/0/4:2 disable;
+interfaces xe-0/0/4:3 disable;
+interfaces xe-0/0/5:0 disable;
+interfaces xe-0/0/5:1 disable;
+interfaces xe-0/0/5:2 disable;
+interfaces xe-0/0/5:3 disable;
+interfaces et-0/0/7 disable;
+interfaces et-0/0/11 disable;
+interfaces et-0/0/13 disable;
+interfaces et-0/0/17 disable;
+interfaces et-0/0/19 disable;
+interfaces et-0/0/23 disable;
+interfaces {
+  et-0/0/25 {
+      mtu 9216;
+  }
+  et-0/0/25 {
+      hold-time up 3000 down 30;
+  }
+  et-0/0/25 {
+      description "Core: s-spine2 [100G-SR4]";
+    }
+}
+interfaces {
+  et-0/0/29 {
+      mtu 9216;
+  }
+  et-0/0/29 {
+      hold-time up 3000 down 30;
+  }
+  et-0/0/29 {
+      description "Core: s-spine1 [100G-SR4]";
+    }
+}
+interfaces {
+  et-0/0/31 {
+      description "Core: edge1 [100G-SR4]";
+      gigether-options 802.3ad ae0;
+    }
+}
+interfaces {
+  et-0/0/35 {
+      description "Core: edge1 [100G-SR4]";
+      gigether-options 802.3ad ae0;
+    }
+}
+interfaces {
+  ae0 {
+      mtu 9216;
+  }
+  et-0/0/31 {
+      hold-time up 3000 down 30;
+    }
+  et-0/0/35 {
+      hold-time up 3000 down 30;
+    }
+  ae0 {
+      aggregated-ether-options {
+          lacp {
+              active;
+              periodic fast;
+          }
+      }
+      description "Core: edge1 [200G]";
+    }
+}
+interfaces {
+  ae0 {
+      aggregated-ether-options {
+          lacp {
+              active;
+              periodic fast;
+          }
+      }
+      description "Core: edge1 [200G]";
+      vlan-tagging;
+      unit 100 {
+        vlan-id 100;
+        family inet {
+          address 69.58.92.9/31;
+        }
+        family inet6 {
+          address 2605:940:500:b1:a:de:453a:5c09/127;
+        }
+      }
+    }
+}
+routing-instances {
+  internet {
+      instance-type virtual-router;
+      interface ae0.100;
+  }
+}
+protocols lldp interface ae0;
+interfaces {
+  lo0 {
+    description "Loopback:";
+    unit 0;
+    unit 666 {
+      family inet {
+        address 69.58.92.2/32;
+      }
+    }
+  }
+}
+interfaces {
+  lo0 {
+    description "Loopback:";
+    unit 0;
+    unit 666 {
+      family inet6 {
+        address 2605:940:500:b1:a:de:453a:5c02/128;
+      }
+    }
+  }
+}
+routing-instances {
+  internet {
+      instance-type virtual-router;
+      interface lo0.666;
+  }
+}
+
+interfaces {
+    et-0/0/29 {
+        vlan-tagging;
+        unit 100 {
+            vlan-id 100;
+            family inet {
+                address 100.72.246.63/31;
+            }
+            family inet6 {
+                address 2605:940:500:b1:a:de:6448:f63f/127;
+            }
+        }
+    }
+}
+routing-instances {
+  internet {
+      instance-type virtual-router;
+      interface et-0/0/29.100;
+  }
+}
+protocols lldp interface et-0/0/29;
+interfaces {
+    et-0/0/25 {
+        vlan-tagging;
+        unit 100 {
+            vlan-id 100;
+            family inet {
+                address 100.72.246.127/31;
+            }
+            family inet6 {
+                address 2605:940:500:b1:a:de:6448:f67f/127;
+            }
+        }
+    }
+}
+routing-instances {
+  internet {
+      instance-type virtual-router;
+      interface et-0/0/25.100;
+  }
+}
+protocols lldp interface et-0/0/25;
+routing-options {
+    validation {
+        notification-rib [ internet.inet.0 internet.inet6.0 ];
+
+        group validators {
+            session 10.0.0.31 {
+                port 3323;
+            }
+        }
+    }
+}
+
+
+routing-instances internet {
+   protocols {
+      bgp {
+        group ipv4-cogent {
+          type external;
+          multipath;
+          description "cogent AS174";
+          local-as 396919;
+          peer-as 174;
+          remove-private;
+          enforce-first-as;
+          family inet {
+            unicast loops 5;
+          }
+          
+          import AS174-TRANSIT-IN-V4;
+          export AS174-TRANSIT-OUT-V4;
+
+
+          neighbor 38.140.30.233;
+        }
+      }
+   }
+   protocols {
+      bgp {
+        group ipv6-cogent {
+          type external;
+          multipath;
+          description "cogent AS174";
+          local-as 396919;
+          peer-as 174;
+          remove-private;
+          enforce-first-as;
+          family inet6 {
+            unicast loops 5;
+          }
+          
+          import AS174-TRANSIT-IN-V6;
+          export AS174-TRANSIT-OUT-V6;
+
+
+          neighbor 2001:550:2:B::1F9:1;
+        }
+      }
+   }
+   protocols {
+      bgp {
+        group ipv4-rssfmix {
+          type external;
+          multipath;
+          description "rs-sfmix AS63055";
+          local-as 396919;
+          peer-as 63055;
+          remove-private;
+          family inet {
+            unicast {
+              prefix-limit {
+                maximum 100000;
+                teardown 80 idle-timeout 15;
+              }
+            }
+          }
+
+          import AS63055-IX-SFMIX-IN-V4;
+          export AS63055-IX-SFMIX-OUT-V4;
+
+
+          neighbor 206.197.187.253;
+        }
+      }
+   }
+   protocols {
+      bgp {
+        group ipv4-rssfmix {
+
+          neighbor 206.197.187.254;
+        }
+      }
+   }
+   protocols {
+      bgp {
+        group ipv6-rssfmix {
+          type external;
+          multipath;
+          description "rs-sfmix AS63055";
+          local-as 396919;
+          peer-as 63055;
+          remove-private;
+          family inet6 {
+            unicast {
+              prefix-limit {
+                maximum 50000;
+                teardown 80 idle-timeout 15;
+              }
+            }
+          }
+
+          import AS63055-IX-SFMIX-IN-V6;
+          export AS63055-IX-SFMIX-OUT-V6;
+
+
+          neighbor 2001:504:30::ba06:3055:1;
+        }
+      }
+   }
+   protocols {
+      bgp {
+        group ipv6-rssfmix {
+
+          neighbor 2001:504:30::ba06:3055:2;
+        }
+      }
+   }
+   protocols {
+      bgp {
+        group ipv4-lookingglasssfmix {
+          type external;
+          multipath;
+          description "looking-glass-sfmix AS12276";
+          local-as 396919;
+          peer-as 12276;
+          remove-private;
+          enforce-first-as;
+          
+          import AS12276-IX-SFMIX-IN-V4;
+          export AS12276-IX-SFMIX-OUT-V4;
+
+
+          neighbor 206.197.187.1;
+        }
+      }
+   }
+   protocols {
+      bgp {
+        group ipv6-lookingglasssfmix {
+          type external;
+          multipath;
+          description "looking-glass-sfmix AS12276";
+          local-as 396919;
+          peer-as 12276;
+          remove-private;
+          enforce-first-as;
+          
+          import AS12276-IX-SFMIX-IN-V6;
+          export AS12276-IX-SFMIX-OUT-V6;
+
+
+          neighbor 2001:504:30::ba01:2276:1;
+        }
+      }
+   }
+   protocols {
+      bgp {
+        group ipv4-blizzard {
+          type external;
+          multipath;
+          description "blizzard AS57976";
+          local-as 396919;
+          peer-as 57976;
+          remove-private;
+          enforce-first-as;
+          family inet {
+            unicast {
+              prefix-limit {
+                maximum 200;
+                teardown 80 idle-timeout 15;
+              }
+            }
+          }
+
+          import AS57976-IX-SFMIX-IN-V4;
+          export AS57976-IX-SFMIX-OUT-V4;
+
+
+          neighbor 206.197.187.42;
+        }
+      }
+   }
+   protocols {
+      bgp {
+        group ipv6-blizzard {
+          type external;
+          multipath;
+          description "blizzard AS57976";
+          local-as 396919;
+          peer-as 57976;
+          remove-private;
+          enforce-first-as;
+          family inet6 {
+            unicast {
+              prefix-limit {
+                maximum 50;
+                teardown 80 idle-timeout 15;
+              }
+            }
+          }
+
+          import AS57976-IX-SFMIX-IN-V6;
+          export AS57976-IX-SFMIX-OUT-V6;
+
+
+          neighbor 2001:504:30::ba05:7976:1;
+        }
+      }
+   }
+   protocols {
+      bgp {
+        group ipv4-i3dnet {
+          type external;
+          multipath;
+          description "i3d.net AS49544";
+          local-as 396919;
+          peer-as 49544;
+          remove-private;
+          enforce-first-as;
+          family inet {
+            unicast {
+              prefix-limit {
+                maximum 500;
+                teardown 80 idle-timeout 15;
+              }
+            }
+          }
+
+          import AS49544-IX-SFMIX-IN-V4;
+          export AS49544-IX-SFMIX-OUT-V4;
+
+
+          neighbor 206.197.187.87;
+        }
+      }
+   }
+   protocols {
+      bgp {
+        group ipv6-i3dnet {
+          type external;
+          multipath;
+          description "i3d.net AS49544";
+          local-as 396919;
+          peer-as 49544;
+          remove-private;
+          enforce-first-as;
+          family inet6 {
+            unicast {
+              prefix-limit {
+                maximum 200;
+                teardown 80 idle-timeout 15;
+              }
+            }
+          }
+
+          import AS49544-IX-SFMIX-IN-V6;
+          export AS49544-IX-SFMIX-OUT-V6;
+
+
+          neighbor 2001:504:30::ba04:9544:1;
+        }
+      }
+   }
+   protocols {
+      bgp {
+        traceoptions {
+          file bgplog size 10k files 10;
+        }
+        log-updown;
+      }
+   }
+
+   routing-options {
+      generate {
+        route 0.0.0.0/0 {
+           policy DEFAULT-ROUTE-GENERATE-V4;
+           discard;
+        }
+      }
+      rib internet.inet6.0 {
+        generate {
+          route ::0/0 {
+             policy DEFAULT-ROUTE-GENERATE-V6;
+             discard;
+          }
+        }
+      }
+static {
+             route 69.58.92.0/23 {
+                discard;
+                preference 200;
+                no-install;
+                community 64476:64476;
+             }
+         }
+rib internet.inet6.0 static {
+             route 2605:940::/40 {
+                discard;
+                preference 200;
+                no-install;
+                community 64476:64476;
+             }
+         }
+rib internet.inet6.0 static {
+             route 2605:940:500::/40 {
+                discard;
+                preference 200;
+                no-install;
+                community 64476:64476;
+             }
+         }
+   }
+}
+
+
+groups disable-bgp routing-instances <*> protocols bgp group <*> neighbor <*> export REJECT-ALL;
+policy-options {
+  route-filter-list DEFAULT-V4 0.0.0.0/0 exact;
+  route-filter-list DEFAULT-V6 ::0/0 exact;
+  route-filter-list TOO-SPECIFIC-V4 0.0.0.0/0 prefix-length-range /25-/32;
+  route-filter-list TOO-SPECIFIC-V6 ::/0 prefix-length-range /49-/128;
+  route-filter-list BLADE-SUPERNET-V4 {
+    69.58.92.0/23 exact;
+  }
+  route-filter-list BLADE-SUPERNET-ORLONGER-V4 {
+    69.58.92.0/23 orlonger;
+  }
+  route-filter-list BOGON-V4 {
+    0.0.0.0/8 orlonger;
+    10.0.0.0/8 orlonger;
+    100.64.0.0/10 orlonger;
+    127.0.0.0/8 orlonger;
+    169.254.0.0/16 orlonger;
+    172.16.0.0/12 orlonger;
+    192.0.2.0/24 orlonger;
+    192.88.99.0/24 orlonger;
+    192.168.0.0/16 orlonger;
+    198.18.0.0/15 orlonger;
+    198.51.100.0/24 orlonger;
+    203.0.113.0/24 orlonger;
+    224.0.0.0/4 orlonger;
+    240.0.0.0/4 orlonger;
+  }
+  route-filter-list BLADE-SUPERNET-V6 {
+    2605:940::/40 exact;
+    2605:940:500::/40 exact;
+  }
+  route-filter-list BLADE-SUPERNET-ORLONGER-V6 {
+    2605:940::/40 orlonger;
+    2605:940:500::/40 orlonger;
+  }
+  route-filter-list BOGON-V6 {
+    ::/8 orlonger;
+    100::/64 orlonger;
+    2001:2::/48 orlonger;
+    2001:10::/28 orlonger;
+    2001:db8::/32 orlonger;
+    2002::/16 orlonger;
+    3ffe::/16 orlonger;
+    fc00::/7 orlonger;
+    fe80::/10 orlonger;
+    fec0::/10 orlonger;
+    ff00::/8 orlonger;
+  }
+
+  as-path AS-PATH-TOO-MANY-HOPS ".{64,}";
+  as-path AS-PATH-MODERATE ".{3,}";
+  as-path-group AS-GROUP-BOGON-ASN {
+    as-path bogon1 ".* 0 .*";
+    as-path bogon2 ".* 23456 .*";
+    as-path bogon3 ".* [64496-64511] .*";
+    as-path bogon4 ".* [65536-65551] .*";
+    as-path bogon5 ".* [64512-65534] .*";
+    as-path bogon6 ".* [4200000000-4294967294] .*";
+    as-path bogon7 ".* 65535 .*";
+    as-path bogon8 ".* 4294967295 .*";
+    as-path bogon9 ".* [65552-131071] .*";
+  }
+  community COMM-TELIA-IN-OUT members 64476:101;
+  community COMM-COGENT-IN-OUT members 64476:102;
+  community COMM-COMCAST-IN-OUT members 64476:103;
+  community COMM-COMCAST-TRANSIT-IN-OUT members 64476:104;
+  community COMM-HURRICANE-IN-OUT members 64476:105;
+  community COMM-INAP-IN-OUT members 64476:106;
+  community COMM-BSO-IN-OUT members 64476:107;
+  community COMM-GOOGLE-IN-OUT members 64476:108;
+  community COMM-AKAMAI-IN-OUT members 64476:109;
+  community COMM-TWITCH-IN-OUT members 64476:110;
+  community COMM-PROXIMUS-IN-OUT members 64476:111;
+  community COMM-HOPUS-PARIS-FR-IN-OUT members 64476:201;
+  community COMM-HOPUS-PARIS-ALL-IN-OUT members 64476:202;
+  community COMM-IX-FRANCEIX-PARIS-IN-OUT members 64476:203;
+  community COMM-IX-EQUINIX-PARIS-IN-OUT members 64476:204;
+  community COMM-IX-EQUINIX-PAOALTO-IN-OUT members 64476:206;
+  community COMM-IX-EQUINIX-SANJOSE-IN-OUT members 64476:207;
+  community COMM-HOPUS-AMSTERDAM-IN-OUT members 64476:208;
+  community COMM-CORE-IN-OUT members 64476:1;
+}
+
+policy-options {
+  policy-statement DEFAULT-ROUTE-GENERATE-V4 {
+        term TRANSIT-V4 {
+            from {
+                protocol bgp;
+                as-path AS-PATH-MODERATE;
+                route-filter 0.0.0.0/0 prefix-length-range /8-/12;
+            }
+            then accept;
+        }
+        then reject;
+  }
+  policy-statement IBGP-IN-V4 {
+    then accept;
+  }
+  policy-statement IBGP-OUT-V4 {
+    term SET-NEXT-HOP-SELF {
+      apply-flags omit;
+      from protocol bgp;
+      then next-hop self;
+    }
+
+    term ACCEPT-BLADE-SUPERNET-V4 {
+      apply-flags omit;
+      from route-filter-list BLADE-SUPERNET-V4;
+      then accept;
+    }
+
+    term ACCEPT-BGP {
+      from protocol bgp;
+      then accept;
+    }
+    term ACCEPT-CONNECTED {
+      from protocol direct;
+      then accept;
+    }
+    then reject;
+  }
+  policy-statement CORE-IN-V4 {
+    term REJECT-NOT-BLADE-SUPERNET-ORLONGER-V4 {
+      apply-flags omit;
+      from policy NOT-BLADE-SUPERNET-ORLONGER-V4;
+      then reject;
+    }
+
+    then {
+      local-preference 1000;
+      community add COMM-CORE-IN-OUT;
+      accept;
+    }
+  }
+  policy-statement CORE-OUT-V4 {
+    term ACCEPT-DEFAULT-V4 {
+      apply-flags omit;
+      from route-filter-list DEFAULT-V4;
+      then accept;
+    }
+
+    then reject;
+  }
+  policy-statement NOT-BLADE-SUPERNET-V4 {
+    term REJECT-BLADE-SUPERNET {
+      from {
+        route-filter-list BLADE-SUPERNET-V4;
+      }
+      then reject; # -> false
+    }
+    then accept; # -> true
+  }
+  policy-statement NOT-BLADE-SUPERNET-ORLONGER-V4 {
+    term REJECT-BLADE-SUPERNET {
+      from {
+        route-filter-list BLADE-SUPERNET-ORLONGER-V4;
+      }
+      then reject; # -> false
+    }
+    then accept; # -> true
+  }
+  policy-statement NOT-AS57976-IRR-V4 {
+    term REJECT-VALID {
+      from {
+        route-filter-list AS57976-IRR-V4;
+      }
+      then reject; # -> false
+    }
+    then accept; # -> true
+  }
+  policy-statement NOT-AS49544-IRR-V4 {
+    term REJECT-VALID {
+      from {
+        route-filter-list AS49544-IRR-V4;
+      }
+      then reject; # -> false
+    }
+    then accept; # -> true
+  }
+}
+policy-options {
+  policy-statement DEFAULT-ROUTE-GENERATE-V6 {
+        term TRANSIT-V6 {
+            from {
+                protocol bgp;
+                as-path AS-PATH-MODERATE;
+                route-filter ::0/0 prefix-length-range /32-/32;
+            }
+            then accept;
+        }
+        then reject;
+  }
+  policy-statement IBGP-IN-V6 {
+    then accept;
+  }
+  policy-statement IBGP-OUT-V6 {
+    term SET-NEXT-HOP-SELF {
+      apply-flags omit;
+      from protocol bgp;
+      then next-hop self;
+    }
+
+    term ACCEPT-BLADE-SUPERNET-V6 {
+      apply-flags omit;
+      from route-filter-list BLADE-SUPERNET-V6;
+      then accept;
+    }
+
+    term ACCEPT-BGP {
+      from protocol bgp;
+      then accept;
+    }
+    term ACCEPT-CONNECTED {
+      from protocol direct;
+      then accept;
+    }
+    then reject;
+  }
+  policy-statement CORE-IN-V6 {
+    term REJECT-NOT-BLADE-SUPERNET-ORLONGER-V6 {
+      apply-flags omit;
+      from policy NOT-BLADE-SUPERNET-ORLONGER-V6;
+      then reject;
+    }
+
+    then {
+      local-preference 1000;
+      community add COMM-CORE-IN-OUT;
+      accept;
+    }
+  }
+  policy-statement CORE-OUT-V6 {
+    term ACCEPT-DEFAULT-V6 {
+      apply-flags omit;
+      from route-filter-list DEFAULT-V6;
+      then accept;
+    }
+
+    then reject;
+  }
+  policy-statement NOT-BLADE-SUPERNET-V6 {
+    term REJECT-BLADE-SUPERNET {
+      from {
+        route-filter-list BLADE-SUPERNET-V6;
+      }
+      then reject; # -> false
+    }
+    then accept; # -> true
+  }
+  policy-statement NOT-BLADE-SUPERNET-ORLONGER-V6 {
+    term REJECT-BLADE-SUPERNET {
+      from {
+        route-filter-list BLADE-SUPERNET-ORLONGER-V6;
+      }
+      then reject; # -> false
+    }
+    then accept; # -> true
+  }
+  policy-statement NOT-AS57976-IRR-V6 {
+    term REJECT-VALID {
+      from {
+        route-filter-list AS57976-IRR-V6;
+      }
+      then reject; # -> false
+    }
+    then accept; # -> true
+  }
+  policy-statement NOT-AS49544-IRR-V6 {
+    term REJECT-VALID {
+      from {
+        route-filter-list AS49544-IRR-V6;
+      }
+      then reject; # -> false
+    }
+    then accept; # -> true
+  }
+}
+
+policy-options {
+      
+  policy-statement AS174-TRANSIT-IN-V4 {
+    term REJECT-DEFAULT-V4 {
+      apply-flags omit;
+      from route-filter-list DEFAULT-V4;
+      then reject;
+    }
+
+    term REJECT-BLADE-SUPERNET-V4 {
+      apply-flags omit;
+      from route-filter-list BLADE-SUPERNET-V4;
+      then reject;
+    }
+
+    term REJECT-LONG-AS-PATH {
+      apply-flags omit;
+      from as-path AS-PATH-TOO-MANY-HOPS;
+      then reject;
+    }
+
+    term REJECT-TOO-SPECIFIC-V4 {
+      apply-flags omit;
+      from route-filter-list TOO-SPECIFIC-V4;
+      then reject;
+    }
+
+    term REJECT-BOGON-V4 {
+      apply-flags omit;
+      from route-filter-list BOGON-V4;
+      then reject;
+    }
+
+    term REJECT-BOGON-ASN {
+      apply-flags omit;
+      from as-path-group AS-GROUP-BOGON-ASN;
+      then reject;
+    }
+
+    term REJECT-RPKI-INVALID {
+      apply-flags omit;
+      from validation-database invalid;
+      then {
+        validation-state invalid;
+        reject;
+      }
+    }
+
+    term SET-ATTRIBUTES {
+      then {
+        community add COMM-COGENT-IN-OUT;
+      }
+    }
+    term ACCEPT-SPECIFIC-ATTUS {
+      from as-path AS-PATH-ATTUS;
+      then {
+        local-preference add 50;
+        accept;
+      }
+    }
+    then accept;
+  }
+
+  policy-statement AS174-TRANSIT-OUT-V4 {
+    term ACCEPT-BLADE-ONLY {
+      from {
+        route-filter-list BLADE-SUPERNET-V4;
+      }
+      then {
+        community add COMM-COGENT-IN-OUT;
+        accept;
+      }
+    }
+    then reject;
+  }
+  policy-statement AS174-TRANSIT-IN-V6 {
+    term REJECT-DEFAULT-V6 {
+      apply-flags omit;
+      from route-filter-list DEFAULT-V6;
+      then reject;
+    }
+
+    term REJECT-BLADE-SUPERNET-V6 {
+      apply-flags omit;
+      from route-filter-list BLADE-SUPERNET-V6;
+      then reject;
+    }
+
+    term REJECT-LONG-AS-PATH {
+      apply-flags omit;
+      from as-path AS-PATH-TOO-MANY-HOPS;
+      then reject;
+    }
+
+    term REJECT-TOO-SPECIFIC-V6 {
+      apply-flags omit;
+      from route-filter-list TOO-SPECIFIC-V6;
+      then reject;
+    }
+
+    term REJECT-BOGON-V6 {
+      apply-flags omit;
+      from route-filter-list BOGON-V6;
+      then reject;
+    }
+
+    term REJECT-BOGON-ASN {
+      apply-flags omit;
+      from as-path-group AS-GROUP-BOGON-ASN;
+      then reject;
+    }
+
+    term REJECT-RPKI-INVALID {
+      apply-flags omit;
+      from validation-database invalid;
+      then {
+        validation-state invalid;
+        reject;
+      }
+    }
+
+    term SET-ATTRIBUTES {
+      then {
+        community add COMM-COGENT-IN-OUT;
+      }
+    }
+    term ACCEPT-SPECIFIC-ATTUS {
+      from as-path AS-PATH-ATTUS;
+      then {
+        local-preference add 50;
+        accept;
+      }
+    }
+    then accept;
+  }
+
+  policy-statement AS174-TRANSIT-OUT-V6 {
+    term ACCEPT-BLADE-ONLY {
+      from {
+        route-filter-list BLADE-SUPERNET-V6;
+      }
+      then {
+        community add COMM-COGENT-IN-OUT;
+        accept;
+      }
+    }
+    then reject;
+  }
+	as-path AS-PATH-ATTUS ".*7018$";
+      
+  policy-statement AS63055-IX-SFMIX-IN-V4 {
+    term REJECT-DEFAULT-V4 {
+      apply-flags omit;
+      from route-filter-list DEFAULT-V4;
+      then reject;
+    }
+
+    term REJECT-BLADE-SUPERNET-V4 {
+      apply-flags omit;
+      from route-filter-list BLADE-SUPERNET-V4;
+      then reject;
+    }
+
+    term REJECT-LONG-AS-PATH {
+      apply-flags omit;
+      from as-path AS-PATH-TOO-MANY-HOPS;
+      then reject;
+    }
+
+    term REJECT-TOO-SPECIFIC-V4 {
+      apply-flags omit;
+      from route-filter-list TOO-SPECIFIC-V4;
+      then reject;
+    }
+
+    term REJECT-BOGON-V4 {
+      apply-flags omit;
+      from route-filter-list BOGON-V4;
+      then reject;
+    }
+
+    term REJECT-BOGON-ASN {
+      apply-flags omit;
+      from as-path-group AS-GROUP-BOGON-ASN;
+      then reject;
+    }
+
+    term REJECT-RPKI-INVALID {
+      apply-flags omit;
+      from validation-database invalid;
+      then {
+        validation-state invalid;
+        reject;
+      }
+    }
+
+    term SET-ATTRIBUTES {
+      then {
+        local-preference 200;
+      }
+    }
+    then accept;
+  }
+
+  policy-statement AS63055-IX-SFMIX-OUT-V4 {
+    term ACCEPT-BLADE-ONLY {
+      from {
+        route-filter-list BLADE-SUPERNET-V4;
+      }
+      then {
+        accept;
+      }
+    }
+    then reject;
+  }
+  policy-statement AS63055-IX-SFMIX-IN-V6 {
+    term REJECT-DEFAULT-V6 {
+      apply-flags omit;
+      from route-filter-list DEFAULT-V6;
+      then reject;
+    }
+
+    term REJECT-BLADE-SUPERNET-V6 {
+      apply-flags omit;
+      from route-filter-list BLADE-SUPERNET-V6;
+      then reject;
+    }
+
+    term REJECT-LONG-AS-PATH {
+      apply-flags omit;
+      from as-path AS-PATH-TOO-MANY-HOPS;
+      then reject;
+    }
+
+    term REJECT-TOO-SPECIFIC-V6 {
+      apply-flags omit;
+      from route-filter-list TOO-SPECIFIC-V6;
+      then reject;
+    }
+
+    term REJECT-BOGON-V6 {
+      apply-flags omit;
+      from route-filter-list BOGON-V6;
+      then reject;
+    }
+
+    term REJECT-BOGON-ASN {
+      apply-flags omit;
+      from as-path-group AS-GROUP-BOGON-ASN;
+      then reject;
+    }
+
+    term REJECT-RPKI-INVALID {
+      apply-flags omit;
+      from validation-database invalid;
+      then {
+        validation-state invalid;
+        reject;
+      }
+    }
+
+    term SET-ATTRIBUTES {
+      then {
+        local-preference 200;
+      }
+    }
+    then accept;
+  }
+
+  policy-statement AS63055-IX-SFMIX-OUT-V6 {
+    term ACCEPT-BLADE-ONLY {
+      from {
+        route-filter-list BLADE-SUPERNET-V6;
+      }
+      then {
+        accept;
+      }
+    }
+    then reject;
+  }
+      
+  policy-statement AS12276-IX-SFMIX-IN-V4 {
+    then reject;
+
+  }
+
+  policy-statement AS12276-IX-SFMIX-OUT-V4 {
+    term ACCEPT-BLADE-ONLY {
+      from {
+        route-filter-list BLADE-SUPERNET-V4;
+      }
+      then {
+        accept;
+      }
+    }
+    then reject;
+  }
+  policy-statement AS12276-IX-SFMIX-IN-V6 {
+    then reject;
+
+  }
+
+  policy-statement AS12276-IX-SFMIX-OUT-V6 {
+    term ACCEPT-BLADE-ONLY {
+      from {
+        route-filter-list BLADE-SUPERNET-V6;
+      }
+      then {
+        accept;
+      }
+    }
+    then reject;
+  }
+      
+  policy-statement AS57976-IX-SFMIX-IN-V4 {
+    term REJECT-DEFAULT-V4 {
+      apply-flags omit;
+      from route-filter-list DEFAULT-V4;
+      then reject;
+    }
+
+    term REJECT-BLADE-SUPERNET-V4 {
+      apply-flags omit;
+      from route-filter-list BLADE-SUPERNET-V4;
+      then reject;
+    }
+
+    term REJECT-LONG-AS-PATH {
+      apply-flags omit;
+      from as-path AS-PATH-TOO-MANY-HOPS;
+      then reject;
+    }
+
+    term REJECT-TOO-SPECIFIC-V4 {
+      apply-flags omit;
+      from route-filter-list TOO-SPECIFIC-V4;
+      then reject;
+    }
+
+    term REJECT-BOGON-V4 {
+      apply-flags omit;
+      from route-filter-list BOGON-V4;
+      then reject;
+    }
+
+    term REJECT-BOGON-ASN {
+      apply-flags omit;
+      from as-path-group AS-GROUP-BOGON-ASN;
+      then reject;
+    }
+
+    term REJECT-RPKI-INVALID {
+      apply-flags omit;
+      from validation-database invalid;
+      then {
+        validation-state invalid;
+        reject;
+      }
+    }
+
+    term REJECT-NOT-AS57976-IRR-V4 {
+      apply-flags omit;
+      from policy NOT-AS57976-IRR-V4;
+      then reject;
+    }
+
+    term SET-ATTRIBUTES {
+      then {
+        local-preference 200;
+      }
+    }
+    then accept;
+  }
+
+  policy-statement AS57976-IX-SFMIX-OUT-V4 {
+    term ACCEPT-BLADE-ONLY {
+      from {
+        route-filter-list BLADE-SUPERNET-V4;
+      }
+      then {
+        accept;
+      }
+    }
+    then reject;
+  }
+  policy-statement AS57976-IX-SFMIX-IN-V6 {
+    term REJECT-DEFAULT-V6 {
+      apply-flags omit;
+      from route-filter-list DEFAULT-V6;
+      then reject;
+    }
+
+    term REJECT-BLADE-SUPERNET-V6 {
+      apply-flags omit;
+      from route-filter-list BLADE-SUPERNET-V6;
+      then reject;
+    }
+
+    term REJECT-LONG-AS-PATH {
+      apply-flags omit;
+      from as-path AS-PATH-TOO-MANY-HOPS;
+      then reject;
+    }
+
+    term REJECT-TOO-SPECIFIC-V6 {
+      apply-flags omit;
+      from route-filter-list TOO-SPECIFIC-V6;
+      then reject;
+    }
+
+    term REJECT-BOGON-V6 {
+      apply-flags omit;
+      from route-filter-list BOGON-V6;
+      then reject;
+    }
+
+    term REJECT-BOGON-ASN {
+      apply-flags omit;
+      from as-path-group AS-GROUP-BOGON-ASN;
+      then reject;
+    }
+
+    term REJECT-RPKI-INVALID {
+      apply-flags omit;
+      from validation-database invalid;
+      then {
+        validation-state invalid;
+        reject;
+      }
+    }
+
+    term REJECT-NOT-AS57976-IRR-V6 {
+      apply-flags omit;
+      from policy NOT-AS57976-IRR-V6;
+      then reject;
+    }
+
+    term SET-ATTRIBUTES {
+      then {
+        local-preference 200;
+      }
+    }
+    then accept;
+  }
+
+  policy-statement AS57976-IX-SFMIX-OUT-V6 {
+    term ACCEPT-BLADE-ONLY {
+      from {
+        route-filter-list BLADE-SUPERNET-V6;
+      }
+      then {
+        accept;
+      }
+    }
+    then reject;
+  }
+      
+  policy-statement AS49544-IX-SFMIX-IN-V4 {
+    term REJECT-DEFAULT-V4 {
+      apply-flags omit;
+      from route-filter-list DEFAULT-V4;
+      then reject;
+    }
+
+    term REJECT-BLADE-SUPERNET-V4 {
+      apply-flags omit;
+      from route-filter-list BLADE-SUPERNET-V4;
+      then reject;
+    }
+
+    term REJECT-LONG-AS-PATH {
+      apply-flags omit;
+      from as-path AS-PATH-TOO-MANY-HOPS;
+      then reject;
+    }
+
+    term REJECT-TOO-SPECIFIC-V4 {
+      apply-flags omit;
+      from route-filter-list TOO-SPECIFIC-V4;
+      then reject;
+    }
+
+    term REJECT-BOGON-V4 {
+      apply-flags omit;
+      from route-filter-list BOGON-V4;
+      then reject;
+    }
+
+    term REJECT-BOGON-ASN {
+      apply-flags omit;
+      from as-path-group AS-GROUP-BOGON-ASN;
+      then reject;
+    }
+
+    term REJECT-RPKI-INVALID {
+      apply-flags omit;
+      from validation-database invalid;
+      then {
+        validation-state invalid;
+        reject;
+      }
+    }
+
+    term REJECT-NOT-AS49544-IRR-V4 {
+      apply-flags omit;
+      from policy NOT-AS49544-IRR-V4;
+      then reject;
+    }
+
+    term SET-ATTRIBUTES {
+      then {
+        local-preference 200;
+      }
+    }
+    then accept;
+  }
+
+  policy-statement AS49544-IX-SFMIX-OUT-V4 {
+    term ACCEPT-BLADE-ONLY {
+      from {
+        route-filter-list BLADE-SUPERNET-V4;
+      }
+      then {
+        accept;
+      }
+    }
+    then reject;
+  }
+  policy-statement AS49544-IX-SFMIX-IN-V6 {
+    term REJECT-DEFAULT-V6 {
+      apply-flags omit;
+      from route-filter-list DEFAULT-V6;
+      then reject;
+    }
+
+    term REJECT-BLADE-SUPERNET-V6 {
+      apply-flags omit;
+      from route-filter-list BLADE-SUPERNET-V6;
+      then reject;
+    }
+
+    term REJECT-LONG-AS-PATH {
+      apply-flags omit;
+      from as-path AS-PATH-TOO-MANY-HOPS;
+      then reject;
+    }
+
+    term REJECT-TOO-SPECIFIC-V6 {
+      apply-flags omit;
+      from route-filter-list TOO-SPECIFIC-V6;
+      then reject;
+    }
+
+    term REJECT-BOGON-V6 {
+      apply-flags omit;
+      from route-filter-list BOGON-V6;
+      then reject;
+    }
+
+    term REJECT-BOGON-ASN {
+      apply-flags omit;
+      from as-path-group AS-GROUP-BOGON-ASN;
+      then reject;
+    }
+
+    term REJECT-RPKI-INVALID {
+      apply-flags omit;
+      from validation-database invalid;
+      then {
+        validation-state invalid;
+        reject;
+      }
+    }
+
+    term REJECT-NOT-AS49544-IRR-V6 {
+      apply-flags omit;
+      from policy NOT-AS49544-IRR-V6;
+      then reject;
+    }
+
+    term SET-ATTRIBUTES {
+      then {
+        local-preference 200;
+      }
+    }
+    then accept;
+  }
+
+  policy-statement AS49544-IX-SFMIX-OUT-V6 {
+    term ACCEPT-BLADE-ONLY {
+      from {
+        route-filter-list BLADE-SUPERNET-V6;
+      }
+      then {
+        accept;
+      }
+    }
+    then reject;
+  }
+}
+routing-instances {
+  internet {
+    protocols {
+      bgp {
+        group ipv4-edges-IBGP {
+          type internal;
+          description "IPv4 - iBGP AS396919";
+          local-address 69.58.92.2;
+          family inet {
+            unicast loops 5;
+        }
+          import IBGP-IN-V4;
+          export IBGP-OUT-V4;
+          peer-as 396919;
+          local-as 396919;
+          neighbor 69.58.92.1 {
+            description "IPv4 - iBGP session to edge1.ussfo03.blade-group.net";
+           }
+        }
+          }
+      ospf {
+        area 0.0.0.0 {
+          interface lo0.666 {
+            passive;
+          }
+          interface ae0.100 {
+            interface-type p2p;
+            metric 10;
+          }
+        }
+      }
+    }
+  }
+}
+routing-instances {
+  internet {
+    protocols {
+      bgp {
+        group ipv6-edges-IBGP {
+          type internal;
+          description "IPv6 - iBGP AS396919";
+          local-address 2605:940:500:b1:a:de:453a:5c02;
+          family inet6 {
+            unicast loops 5;
+        }
+          import IBGP-IN-V6;
+          export IBGP-OUT-V6;
+          peer-as 396919;
+          local-as 396919;
+          neighbor 2605:940:500:b1:a:de:453a:5c01 {
+            description "IPv6 - iBGP session to edge1.ussfo03.blade-group.net";
+           }
+        }
+          }
+      ospf3 {
+        area 0.0.0.0 {
+          interface lo0.666 {
+            passive;
+          }
+          interface ae0.100 {
+            interface-type p2p;
+            metric 10;
+          }
+        }
+      }
+    }
+  }
+}
+routing-instances internet {
+    protocols {
+      bgp {
+        group ipv4-s-spine1 {
+          type external;
+          multipath multiple-as;
+          description "s-spine1 AS4208999992";
+          import CORE-IN-V4;
+          export CORE-OUT-V4;
+          neighbor 100.72.246.62 {
+              description s-spine1;
+              peer-as 4208999992;
+              local-as 4208999995;
+          }
+        }
+        group ipv6-s-spine1 {
+          type external;
+          multipath multiple-as;
+          description "s-spine1 AS4208999992";
+          import CORE-IN-V6;
+          export CORE-OUT-V6;
+          neighbor 2605:940:500:b1:a:de:6448:f63e {
+              description s-spine1;
+              peer-as 4208999992;
+              local-as 4208999995;
+          }
+        }
+        group ipv4-s-spine2 {
+          type external;
+          multipath multiple-as;
+          description "s-spine2 AS4208999992";
+          import CORE-IN-V4;
+          export CORE-OUT-V4;
+          neighbor 100.72.246.126 {
+              description s-spine2;
+              peer-as 4208999992;
+              local-as 4208999995;
+          }
+        }
+        group ipv6-s-spine2 {
+          type external;
+          multipath multiple-as;
+          description "s-spine2 AS4208999992";
+          import CORE-IN-V6;
+          export CORE-OUT-V6;
+          neighbor 2605:940:500:b1:a:de:6448:f67e {
+              description s-spine2;
+              peer-as 4208999992;
+              local-as 4208999995;
+          }
+        }
+    }
+  }
+}
+
+ 
+policy-options  {
+  prefix-list ipv4-admin {
+    203.0.113.11/32;
+    /* OOB-subnet */
+    172.30.24.0/21;
+  }
+  prefix-list ipv4-snmp {
+  }
+}
+firewall {
+  family inet {
+    filter ipv4-accept-ospf {
+      apply-flags omit;
+      term accept-ospf {
+        from {
+          source-prefix-list {
+            ipv4-router;
+          }
+          destination-prefix-list {
+            ipv4-router;
+            ospf;
+          }
+          protocol ospf;
+        }
+        then {
+            
+            count ipv4-accept-accept-ospf;
+            
+            accept;
+          }
+
+      }
+    }
+  }
+  family inet6 {
+    filter ipv6-accept-ospf {
+      apply-flags omit;
+      term accept-ospfv3 {
+        from {
+          source-prefix-list {
+            ipv6-link-local;
+          }
+          next-header ospf;
+        }
+        then {
+            
+            count ipv6-accept-accept-ospf;
+            
+            accept;
+          }
+
+      }
+    }
+  }
+}
+policy-options {
+  prefix-list ospf {
+    224.0.0.5/32;
+    224.0.0.6/32;
+  }
+}
+firewall {
+  family inet {
+    filter ipv4-accept-bgp {
+      apply-flags omit;
+      term accept-bgp {
+        from {
+          source-prefix-list {
+            ipv4-bgp-neighbors-routing-instances;
+            ipv4-bgp-neighbors;
+          }
+          destination-prefix-list {
+            ipv4-router;
+          }
+          protocol tcp;
+          port bgp;
+        }
+        then {
+            
+            count ipv4-accept-accept-bgp;
+            
+            accept;
+          }
+
+      }
+    }
+  }
+}
+policy-options {
+  prefix-list ipv4-bgp-neighbors-routing-instances {
+    apply-path "routing-instances <*> protocols bgp group <ipv4-*> neighbor <*>";
+  }
+    prefix-list ipv4-bgp-neighbors {
+    apply-path "protocols bgp group <ipv4-*> neighbor <*>";
+  }
+}
+firewall {
+  family inet6 {
+    filter ipv6-accept-bgp {
+      apply-flags omit;
+      term accept-bgp {
+        from {
+          source-prefix-list {
+            ipv6-bgp-neighbors-routing-instances;
+            ipv6-bgp-neighbors;
+          }
+          destination-prefix-list {
+            ipv6-router;
+          }
+          next-header tcp;
+          port bgp;
+        }
+        then {
+            
+            count ipv6-accept-accept-bgp;
+            
+            accept;
+          }
+
+      }
+    }
+  }
+}
+policy-options {
+  prefix-list ipv6-bgp-neighbors-routing-instances {
+    apply-path "routing-instances <*> protocols bgp group <ipv6-*> neighbor <*>";
+  }
+    prefix-list ipv6-bgp-neighbors {
+    apply-path "protocols bgp group <ipv6-*> neighbor <*>";
+  }
+}
+firewall {
+  family inet {
+    filter ipv4-accept-rtr {
+      term accept-established-tcp-rtr {
+        apply-flags omit;
+        from {
+          source-prefix-list {
+            ipv4-rtr-servers;
+          }
+          destination-prefix-list {
+            ipv4-router;
+          }
+          protocol tcp;
+          source-port 3323;
+          tcp-established;
+        }
+        then {
+            
+            count ipv6-accept-established-tcp-rtr;
+            
+            accept;
+          }
+
+      }
+    }
+  }
+}
+policy-options {
+  prefix-list ipv4-rtr-servers {
+    apply-path "routing-options validation group validators session <*>";
+  }
+}
+groups protect-re {
+  interfaces {
+    lo0 {
+      unit <*> {
+       family inet {
+          filter input-list [ipv4-security ipv4-accept-ospf ipv4-accept-bgp ipv4-accept-rtr ipv4-accept-common-services ipv4-accept-established  ipv4-discard-all ];
+        }
+       family inet6 {
+          filter input-list [ ipv6-security ipv6-accept-ospf ipv6-accept-bgp ipv6-accept-icmp6-misc ipv6-accept-common-services  ipv6-discard-all ];
+        }
+      }
+    }
+  }
+}
+
+interfaces {
+  lo0 {
+  apply-groups protect-re;
+  }
+}
+firewall {
+  family inet {
+    filter ipv4-security {
+      term discard-frags {
+        apply-flags omit;
+        from {
+          is-fragment;
+        }
+        then {
+            
+            count ipv4-discard-discard-frags;
+            log;
+            discard;
+          }
+
+      }
+      term discard-ip-options {
+        apply-flags omit;
+        from {
+          ip-options any;
+        }
+        then {
+            
+            count ipv4-discard-discard-ip-options;
+            log;
+            discard;
+          }
+
+      }
+    }
+  }
+  family inet6 {
+    filter ipv6-security {
+      term discard-extension-headers {
+        apply-flags omit;
+        from {
+            next-header [ dstopts egp fragment gre icmp igmp ipip ipv6 no-next-header routing rsvp sctp ];
+        }
+        then {
+            
+            count ipv6-discard-discard-extension-headers;
+            log;
+            discard;
+          }
+
+      }
+      term icmp6-unassigned-discard {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type [ 102-106 155-199 202-254 ];
+        }
+        then {
+            
+            count ipv6-discard-icmp6-unassigned-discard;
+            log;
+            discard;
+          }
+
+      }
+      term icmp-rfc4443-discard {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type [ 100-101 200-201 ];
+        }
+        then {
+            
+            count ipv6-discard-icmp6-rfc4443;
+            log;
+            discard;
+          }
+
+      }
+    }
+  }
+}
+firewall {
+  family inet {
+    filter ipv4-discard-all {
+      apply-flags omit;
+      term discard-ttl1-unknown {
+        from {
+          ttl 1;
+        }
+         then {
+            
+            count ipv4-discard-ttl1-unknown;
+            log;
+            discard;
+          }
+
+    }
+      term discard-tcp {
+        from {
+          protocol tcp;
+        }
+        then {
+            
+            count ipv4-discard-tcp;
+            log;
+            discard;
+          }
+
+      }
+      term discard-udp {
+        from {
+          protocol udp;
+        }
+        then {
+            
+            count ipv4-discard-udp;
+            log;
+            discard;
+          }
+
+      }
+      term discard-icmp {
+        from {
+          protocol icmp;
+        }
+        then {
+            
+            count ipv4-discard-icmp;
+            log;
+            discard;
+          }
+
+      }
+      term discard-unknown {
+        then {
+            
+            count ipv4-discard-unknown;
+            log;
+            discard;
+          }
+
+      }
+    }
+  }
+  family inet6 {
+    filter ipv6-discard-all {
+      apply-flags omit;
+      term discard-hoplimit1-unknown {
+        from {
+          hop-limit 1;
+        }
+        then {
+            
+            count ipv6-discard-hoplimit1-unknown;
+            log;
+            discard;
+          }
+
+      }
+      term discard-tcp {
+        from {
+          next-header tcp;
+        }
+        then {
+            
+            count ipv6-discard-tcp;
+            log;
+            discard;
+          }
+
+      }
+      term discard-udp {
+        from {
+          next-header udp;
+        }
+        then {
+            
+            count ipv6-discard-udp;
+            log;
+            discard;
+          }
+
+      }
+      term discard-icmp {
+        from {
+          next-header icmp;
+        }
+        then {
+            
+            count ipv6-discard-icmp;
+            log;
+            discard;
+          }
+
+      }
+      term discard-unknown {
+        then {
+            
+            count ipv6-discard-unknown;
+            log;
+            discard;
+          }
+
+      }
+    }
+  }
+}
+policy-options  {
+  prefix-list ipv4-router {
+    apply-path "interfaces <*> unit <*> family inet address <*>";
+  }
+  prefix-list ipv6-router {
+    apply-path "interfaces <*> unit <*> family inet6 address <*>";
+  }
+  prefix-list ntp-servers {
+    apply-path "system ntp server <*>";
+  }
+  prefix-list snmp-client-lists {
+    apply-path "snmp client-list <*> <*>";
+  }
+  prefix-list snmp-community-clients {
+    apply-path "snmp community <*> clients <*>";
+  }
+  prefix-list ipv4-localhost {
+    127.0.0.1/32;
+  }
+  prefix-list ipv6-link-local {
+    fe80::/64;
+  }
+  prefix-list dns-servers {
+    apply-path "system name-server <*>";
+  }
+}
+firewall {
+  policer management-1m {
+    if-exceeding {
+      bandwidth-limit 1m;
+      burst-size-limit 625k;
+    }
+    then discard;
+  }
+  policer management-5m {
+    if-exceeding {
+      bandwidth-limit 5m;
+      burst-size-limit 625k;
+    }
+    then discard;
+  }
+  family inet {
+    filter ipv4-accept-established {
+      term accept-established-tcp-ssh {
+        apply-flags omit;
+        from {
+          destination-prefix-list {
+            ipv4-router;
+          }
+          source-port ssh;
+          tcp-established;
+        }
+        then {
+            policer management-5m;
+            count ipv4-accept-established-tcp-ssh;
+            
+            accept;
+          }
+
+      }
+      term accept-established-tcp-http {
+        apply-flags omit;
+        from {
+          source-prefix-list {
+            ipv4-admin;
+          }
+          destination-prefix-list {
+            ipv4-router;
+          }
+          source-port [ http https ];
+          tcp-established;
+        }
+        then {
+            
+            count ipv4-accept-established-tcp-http;
+            
+            accept;
+          }
+
+      }
+      term accept-established-udp-ephemeral {
+        apply-flags omit;
+        from {
+          destination-prefix-list {
+            ipv4-router;
+          }
+          protocol udp;
+          destination-port 49152-65535;
+        }
+        then {
+            policer management-5m;
+            count ipv4-accept-established-udp-ephemeral;
+            
+            accept;
+          }
+
+      }
+    }
+    filter ipv4-accept-common-services {
+      term accept-icmp {
+        apply-flags omit;
+        from {
+          protocol icmp;
+          ttl-except 1;
+          icmp-type [ echo-reply echo-request time-exceeded unreachable source-quench router-advertisement parameter-problem ];
+        }
+        then {
+            policer management-5m;
+            count ipv4-accept-icmp;
+            
+            accept;
+          }
+
+      }
+      term accept-traceroute-udp {
+        apply-flags omit;
+        from {
+          destination-prefix-list {
+            ipv4-router;
+          }
+          protocol udp;
+          ttl 1;
+          destination-port 33435-33450;
+        }
+        then {
+            policer management-5m;
+            count ipv4-accept-traceroute-udp;
+            
+            accept;
+          }
+
+      }
+      term accept-traceroute-icmp {
+        apply-flags omit;
+        from {
+          destination-prefix-list {
+            ipv4-router;
+          }
+          protocol icmp;
+          ttl 1;
+          icmp-type [ echo-request timestamp time-exceeded ];
+        }
+        then {
+            policer management-5m;
+            count ipv4-accept-traceroute-icmp;
+            
+            accept;
+          }
+
+      }
+      term accept-ssh {
+        apply-flags omit;
+        from {
+          source-prefix-list {
+            ipv4-admin;
+          }
+          protocol tcp;
+          destination-port [ ssh 830 ];
+        }
+        then {
+            policer management-5m;
+            count ipv4-accept-ssh;
+            
+            accept;
+          }
+
+      }
+      term accept-snmp {
+        apply-flags omit;
+        from {
+          source-prefix-list {
+            snmp-client-lists;
+            snmp-community-clients;
+            ipv4-snmp;
+          }
+          destination-prefix-list {
+            ipv4-router;
+          }
+          protocol udp;
+          destination-port snmp;
+        }
+        then {
+            policer management-5m;
+            count ipv4-accept-snmp;
+            
+            accept;
+          }
+
+      }
+      term accept-ntp {
+        apply-flags omit;
+        from {
+          source-prefix-list {
+            ntp-servers;
+            ipv4-router;
+            ipv4-localhost;
+          }
+          destination-prefix-list {
+            ipv4-router;
+            ipv4-localhost;
+          }
+          protocol udp;
+          port ntp;
+        }
+        then {
+            policer management-1m;
+            count ipv4-accept-ntp;
+            
+            accept;
+          }
+
+      }
+      term accept-dns {
+        apply-flags omit;
+        from {
+          source-prefix-list {
+            dns-servers;
+          }
+          destination-prefix-list {
+            ipv4-router;
+          }
+          protocol udp;
+          source-port 53;
+        }
+        then {
+            policer management-1m;
+            count ipv4-accept-dns;
+            
+            accept;
+          }
+
+      }
+    }
+  }
+  family inet6 {
+    filter ipv6-accept-common-services {
+      term accept-traceroute-udp {
+      apply-flags omit;
+        from {
+          destination-prefix-list {
+            ipv6-router;
+          }
+          next-header udp;
+          destination-port 33435-33450;
+          hop-limit 1;
+        }
+        then {
+            policer management-1m;
+            count ipv6-accept-traceroute-udp;
+            
+            accept;
+          }
+
+      }
+      term accept-traceroute-icmp6 {
+      apply-flags omit;
+        from {
+          destination-prefix-list {
+            ipv6-router;
+          }
+          next-header icmp;
+          icmp-type [ echo-request time-exceeded ];
+          hop-limit 1;
+        }
+        then {
+            policer management-1m;
+            count ipv6-accept-traceroute-icmp6;
+            
+            accept;
+          }
+
+      }
+    }
+    filter ipv6-accept-icmp6-misc {
+      term neigbor-discovery-accept {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type 133-136;
+        }
+        then accept;
+      }
+      term inverse-neigbor-discovery-accept {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type 141-142;
+        }
+        then {
+            policer management-1m;
+            count ipv6-accept-icmp6-misc;
+            
+            accept;
+          }
+
+      }
+      term icmp6-echo-request {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type echo-request;
+        }
+        then {
+            policer management-1m;
+            count ipv6-accept-icmp6-echo-request;
+            
+            accept;
+          }
+
+      }
+      term icmp6-echo-reply {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type echo-reply;
+        }
+        then {
+            policer management-1m;
+            count ipv6-accept-icmp6-echo-reply;
+            
+            accept;
+          }
+
+      }
+      term icmp6-dest-unreachable-accept {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type destination-unreachable;
+        }
+        then {
+            policer management-1m;
+            count ipv6-accept-icmp6-dest-unreachable;
+            
+            accept;
+          }
+
+      }
+      term icmp6-packet-too-big-accept {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type packet-too-big;
+        }
+        then {
+            policer management-1m;
+            count ipv6-accept-icmp6-too-big;
+            
+            accept;
+          }
+
+      }
+      term icmp6-time-exceeded-accept {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type time-exceeded;
+          icmp-code 0;
+        }
+        then {
+            policer management-1m;
+            count ipv6-accept-icmp6-time-exceeded;
+            
+            accept;
+          }
+
+      }
+      term icmp6-parameter-problem-accept {
+      apply-flags omit;
+        from {
+          next-header icmpv6;
+          icmp-type parameter-problem;
+          icmp-code [ 1 2 ];
+        }
+        then {
+            policer management-1m;
+            count ipv6-accept-icmp6-parameter-problem;
+            
+            accept;
+          }
+
+      }
+    }
+  }
+}
+firewall {
+  family inet {
+    filter ipv4-internet-ingress {
+      term 1 {
+        from {
+          source-address {
+            209.50.158.0/23;
+          }
+          protocol udp;
+          destination-port snmp;
+        }
+        then accept;
+      }
+      term 2 {
+        from {
+          protocol udp;
+          destination-port snmp;
+        }
+        then {
+          count ipv4-reject-dport-snmp;
+          reject;
+        }
+      }
+      term 3 {
+        from {
+          protocol udp;
+          destination-port ntp;
+        }
+        then {
+          count ipv4-reject-dport-ntp;
+          reject;
+        }
+      }
+      term 4 {
+        from {
+          protocol udp;
+          destination-port 7;
+        }
+        then {
+          count ipv4-reject-dport-7;
+          reject;
+        }
+      }
+      term 5 {
+        from {
+          protocol udp;
+          destination-port 9;
+        }
+        then {
+          count ipv4-reject-dport-9;
+          reject;
+        }
+      }
+      term 6 {
+        from {
+          protocol udp;
+          destination-port 17;
+        }
+        then {
+          count ipv4-reject-dport-17;
+          reject;
+        }
+      }
+      term 7 {
+        from {
+          protocol udp;
+          destination-port 19;
+        }
+        then {
+          count ipv4-reject-dport-19;
+          reject;
+        }
+      }
+      term 8 {
+        from {
+          protocol udp;
+          destination-port 1900;
+        }
+        then {
+          count ipv4-reject-dport-1900;
+          reject;
+        }
+      }
+     term accept-remaining {
+       then accept;
+      }
+    }
+  }
+}
+groups firewall-ingress-protect {
+  interfaces {
+    <*> {
+      unit <*> {
+        family inet {
+          filter input-list ipv4-internet-ingress;
+        }
+      }
+    }
+  }
+}
+interfaces {
+  et-0/0/1 {
+    apply-groups firewall-ingress-protect;
+  }
+}
+interfaces {
+  xe-0/0/3:1 {
+    apply-groups firewall-ingress-protect;
+  }
+}

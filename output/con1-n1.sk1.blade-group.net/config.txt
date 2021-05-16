@@ -1,0 +1,352 @@
+## other
+config.ntp.enabled on
+config.ntp.servers.server1.address 172.29.64.4
+config.ntp.servers.server1.key_id 0
+config.ntp.servers.server2.address 172.29.64.5
+config.ntp.servers.server2.key_id 0
+config.ntp.servers.total 2
+
+## Interfaces
+config.interfaces.wan.address 172.29.15.10
+config.interfaces.wan.gateway 172.29.15.254
+config.interfaces.wan.media Auto
+config.interfaces.wan.mode static
+config.interfaces.wan.netmask 255.255.248.0
+config.interfaces.wan.dns1 172.29.64.2
+config.interfaces.wan.dns2 172.29.64.3
+config.wan.services.https.enabled on
+config.wan.services.lldp.enabled on
+config.wan.services.modified true
+config.wan.services.ping.enabled on
+config.wan.services.rfc2217_ports.enabled on
+config.wan.services.snmp.enabled on
+config.wan.services.ssh.enabled on
+config.wan.services.ssh_ports.enabled on
+config.wan.services.tcp_ports.enabled on
+
+config.interfaces.lan.address 172.29.15.11
+config.interfaces.lan.gateway 172.29.15.254
+config.interfaces.lan.media Auto
+config.interfaces.lan.mode static
+config.interfaces.lan.netmask 255.255.248.0
+config.interfaces.lan.device.type marvell
+config.interfaces.lan.dns1 172.29.64.2
+config.interfaces.lan.dns2 172.29.64.3
+config.lan.services.https.enabled on
+config.lan.services.lldp.enabled on
+config.lan.services.modified true
+config.lan.services.ping.enabled on
+config.lan.services.rfc2217_ports.enabled on
+config.lan.services.snmp.enabled on
+config.lan.services.ssh.enabled on
+config.lan.services.ssh_ports.enabled on
+config.lan.services.tcp_ports.enabled on
+
+
+# Disable service on unused interfaces
+
+config.vpn.services.modified true
+config.dialin.services.modified true
+config.dialout.services.modified true
+
+## console ports
+
+config.ports.port1.charsize 8
+config.ports.port1.dtrmode alwayson
+config.ports.port1.flowcontrol None
+config.ports.port1.label edge1
+config.ports.port1.loglevel 0
+config.ports.port1.mode portmanager
+config.ports.port1.parity None
+config.ports.port1.pinout X2
+config.ports.port1.protocol RS232
+config.ports.port1.speed 9600
+config.ports.port1.ssh on
+config.ports.port1.stop 1
+config.ports.port1.syslog.facility Default
+config.ports.port1.syslog.priority Default
+config.ports.port1.terminal vt220
+config.ports.port1.webshell on
+
+config.ports.port2.charsize 8
+config.ports.port2.dtrmode alwayson
+config.ports.port2.flowcontrol None
+config.ports.port2.label edge2
+config.ports.port2.loglevel 0
+config.ports.port2.mode portmanager
+config.ports.port2.parity None
+config.ports.port2.pinout X2
+config.ports.port2.protocol RS232
+config.ports.port2.speed 9600
+config.ports.port2.ssh on
+config.ports.port2.stop 1
+config.ports.port2.syslog.facility Default
+config.ports.port2.syslog.priority Default
+config.ports.port2.terminal vt220
+config.ports.port2.webshell on
+
+config.ports.port3.charsize 8
+config.ports.port3.dtrmode alwayson
+config.ports.port3.flowcontrol None
+config.ports.port3.label spine1
+config.ports.port3.loglevel 0
+config.ports.port3.mode portmanager
+config.ports.port3.parity None
+config.ports.port3.pinout X2
+config.ports.port3.protocol RS232
+config.ports.port3.speed 115200
+config.ports.port3.ssh on
+config.ports.port3.stop 1
+config.ports.port3.syslog.facility Default
+config.ports.port3.syslog.priority Default
+config.ports.port3.terminal vt220
+config.ports.port3.webshell on
+
+config.ports.port4.charsize 8
+config.ports.port4.dtrmode alwayson
+config.ports.port4.flowcontrol None
+config.ports.port4.label spine2
+config.ports.port4.loglevel 0
+config.ports.port4.mode portmanager
+config.ports.port4.parity None
+config.ports.port4.pinout X2
+config.ports.port4.protocol RS232
+config.ports.port4.speed 115200
+config.ports.port4.ssh on
+config.ports.port4.stop 1
+config.ports.port4.syslog.facility Default
+config.ports.port4.syslog.priority Default
+config.ports.port4.terminal vt220
+config.ports.port4.webshell on
+
+config.ports.port5.charsize 8
+config.ports.port5.dtrmode alwayson
+config.ports.port5.flowcontrol None
+config.ports.port5.label to1-ap1
+config.ports.port5.loglevel 0
+config.ports.port5.mode portmanager
+config.ports.port5.parity None
+config.ports.port5.pinout X2
+config.ports.port5.protocol RS232
+config.ports.port5.speed 115200
+config.ports.port5.ssh on
+config.ports.port5.stop 1
+config.ports.port5.syslog.facility Default
+config.ports.port5.syslog.priority Default
+config.ports.port5.terminal vt220
+config.ports.port5.webshell on
+
+config.ports.port6.charsize 8
+config.ports.port6.dtrmode alwayson
+config.ports.port6.flowcontrol None
+config.ports.port6.label to2-ap1
+config.ports.port6.loglevel 0
+config.ports.port6.mode portmanager
+config.ports.port6.parity None
+config.ports.port6.pinout X2
+config.ports.port6.protocol RS232
+config.ports.port6.speed 115200
+config.ports.port6.ssh on
+config.ports.port6.stop 1
+config.ports.port6.syslog.facility Default
+config.ports.port6.syslog.priority Default
+config.ports.port6.terminal vt220
+config.ports.port6.webshell on
+
+config.ports.port7.charsize 8
+config.ports.port7.dtrmode alwayson
+config.ports.port7.flowcontrol None
+config.ports.port7.label to1-p1
+config.ports.port7.loglevel 0
+config.ports.port7.mode portmanager
+config.ports.port7.parity None
+config.ports.port7.pinout X2
+config.ports.port7.protocol RS232
+config.ports.port7.speed 115200
+config.ports.port7.ssh on
+config.ports.port7.stop 1
+config.ports.port7.syslog.facility Default
+config.ports.port7.syslog.priority Default
+config.ports.port7.terminal vt220
+config.ports.port7.webshell on
+
+config.ports.port8.charsize 8
+config.ports.port8.dtrmode alwayson
+config.ports.port8.flowcontrol None
+config.ports.port8.label to2-p1
+config.ports.port8.loglevel 0
+config.ports.port8.mode portmanager
+config.ports.port8.parity None
+config.ports.port8.pinout X2
+config.ports.port8.protocol RS232
+config.ports.port8.speed 115200
+config.ports.port8.ssh on
+config.ports.port8.stop 1
+config.ports.port8.syslog.facility Default
+config.ports.port8.syslog.priority Default
+config.ports.port8.terminal vt220
+config.ports.port8.webshell on
+
+config.ports.port9.charsize 8
+config.ports.port9.dtrmode alwayson
+config.ports.port9.flowcontrol None
+config.ports.port9.label to1-p2
+config.ports.port9.loglevel 0
+config.ports.port9.mode portmanager
+config.ports.port9.parity None
+config.ports.port9.pinout X2
+config.ports.port9.protocol RS232
+config.ports.port9.speed 115200
+config.ports.port9.ssh on
+config.ports.port9.stop 1
+config.ports.port9.syslog.facility Default
+config.ports.port9.syslog.priority Default
+config.ports.port9.terminal vt220
+config.ports.port9.webshell on
+
+config.ports.port10.charsize 8
+config.ports.port10.dtrmode alwayson
+config.ports.port10.flowcontrol None
+config.ports.port10.label to2-p2
+config.ports.port10.loglevel 0
+config.ports.port10.mode portmanager
+config.ports.port10.parity None
+config.ports.port10.pinout X2
+config.ports.port10.protocol RS232
+config.ports.port10.speed 115200
+config.ports.port10.ssh on
+config.ports.port10.stop 1
+config.ports.port10.syslog.facility Default
+config.ports.port10.syslog.priority Default
+config.ports.port10.terminal vt220
+config.ports.port10.webshell on
+
+config.ports.port11.charsize 8
+config.ports.port11.dtrmode alwayson
+config.ports.port11.flowcontrol None
+config.ports.port11.label ob1-n1
+config.ports.port11.loglevel 0
+config.ports.port11.mode portmanager
+config.ports.port11.parity None
+config.ports.port11.pinout X2
+config.ports.port11.protocol RS232
+config.ports.port11.speed 9600
+config.ports.port11.ssh on
+config.ports.port11.stop 1
+config.ports.port11.syslog.facility Default
+config.ports.port11.syslog.priority Default
+config.ports.port11.terminal vt220
+config.ports.port11.webshell on
+
+config.ports.port12.charsize 8
+config.ports.port12.dtrmode alwayson
+config.ports.port12.flowcontrol None
+config.ports.port12.label ob2-n1
+config.ports.port12.loglevel 0
+config.ports.port12.mode portmanager
+config.ports.port12.parity None
+config.ports.port12.pinout X2
+config.ports.port12.protocol RS232
+config.ports.port12.speed 9600
+config.ports.port12.ssh on
+config.ports.port12.stop 1
+config.ports.port12.syslog.facility Default
+config.ports.port12.syslog.priority Default
+config.ports.port12.terminal vt220
+config.ports.port12.webshell on
+
+config.ports.port13.charsize 8
+config.ports.port13.dtrmode alwayson
+config.ports.port13.flowcontrol None
+config.ports.port13.label ob1-p1
+config.ports.port13.loglevel 0
+config.ports.port13.mode portmanager
+config.ports.port13.parity None
+config.ports.port13.pinout X2
+config.ports.port13.protocol RS232
+config.ports.port13.speed 9600
+config.ports.port13.ssh on
+config.ports.port13.stop 1
+config.ports.port13.syslog.facility Default
+config.ports.port13.syslog.priority Default
+config.ports.port13.terminal vt220
+config.ports.port13.webshell on
+
+config.ports.port14.charsize 8
+config.ports.port14.dtrmode alwayson
+config.ports.port14.flowcontrol None
+config.ports.port14.label ob2-p1
+config.ports.port14.loglevel 0
+config.ports.port14.mode portmanager
+config.ports.port14.parity None
+config.ports.port14.pinout X2
+config.ports.port14.protocol RS232
+config.ports.port14.speed 9600
+config.ports.port14.ssh on
+config.ports.port14.stop 1
+config.ports.port14.syslog.facility Default
+config.ports.port14.syslog.priority Default
+config.ports.port14.terminal vt220
+config.ports.port14.webshell on
+
+config.ports.port15.charsize 8
+config.ports.port15.dtrmode alwayson
+config.ports.port15.flowcontrol None
+config.ports.port15.label ob1-p2
+config.ports.port15.loglevel 0
+config.ports.port15.mode portmanager
+config.ports.port15.parity None
+config.ports.port15.pinout X2
+config.ports.port15.protocol RS232
+config.ports.port15.speed 9600
+config.ports.port15.ssh on
+config.ports.port15.stop 1
+config.ports.port15.syslog.facility Default
+config.ports.port15.syslog.priority Default
+config.ports.port15.terminal vt220
+config.ports.port15.webshell on
+
+config.ports.port16.charsize 8
+config.ports.port16.dtrmode alwayson
+config.ports.port16.flowcontrol None
+config.ports.port16.label ob2-p2
+config.ports.port16.loglevel 0
+config.ports.port16.mode portmanager
+config.ports.port16.parity None
+config.ports.port16.pinout X2
+config.ports.port16.protocol RS232
+config.ports.port16.speed 9600
+config.ports.port16.ssh on
+config.ports.port16.stop 1
+config.ports.port16.syslog.facility Default
+config.ports.port16.syslog.priority Default
+config.ports.port16.terminal vt220
+config.ports.port16.webshell on
+
+## server services 
+
+config.services.http.enabled on
+config.services.https.enabled on
+config.services.lldp.enabled on
+config.services.snmp.enabled on
+config.services.snmp.protocol UDP
+config.services.snmp.roauthprotocol SHA
+config.services.snmp.rocommunity 67dskf8fds78fdn
+config.services.snmp.roprivprotocol DES
+config.services.snmp.syscontact someone@example.com
+config.services.snmp.syslocation KINX Dogok-dong, KR
+config.services.ssh.enabled on
+config.services.telnet.enabled off
+
+
+## global system
+
+config.system.name con1-n1.sk1.blade-group.net
+config.system.timezone UTC
+
+
+## user
+config.users.user1.description Root User
+config.users.user1.username root
+config.users.user1.password $1$...........
+config.users.total 1

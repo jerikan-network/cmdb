@@ -1,0 +1,8 @@
+devices:
+  ob1-n1.sk1.blade-group.net: ios
+  ob2-n1.sk1.blade-group.net: ios
+  ob1-p1.sk1.blade-group.net: ios
+  ob2-p1.sk1.blade-group.net: ios
+  ob1-p2.sk1.blade-group.net: ios
+  ob2-p2.sk1.blade-group.net: ios
+tftp: 172.29.15.252

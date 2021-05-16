@@ -1,0 +1,4484 @@
+
+system {
+  host-name to2-p2.ussfo03;
+  domain-name blade-group.net;
+  time-zone UTC;
+  location country-code US;
+  ports {
+    console {
+      log-out-on-disconnect;
+      type vt100;
+    }
+  }
+}
+
+system {
+  replace: root-authentication {
+    encrypted-password "$5$......"; ## SECRET-DATA
+  }
+  services {
+    replace: ssh {
+      authentication-order password;
+      root-login deny;
+      protocol-version v2;
+      connection-limit 10;
+      rate-limit 10;
+    }
+    replace: netconf {
+       ssh;
+    }
+  }
+  replace: login {
+    message "______ _           _\n| ___ \\ |         | |\n| |_/ / | __ _  __| | ___      This is a private system.\n| ___ \\ |/ _` |/ _` |/ _ \\     Use by unauthorized persons is prohibited.\n| |_/ / | (_| | (_| |  __/     Go away.\n\\____/|_|\\__,_|\\__,_|\\___|\n";
+    retry-options {
+      tries-before-disconnect 3;
+      backoff-threshold 3;
+      backoff-factor 5;
+      maximum-time 20;
+    }
+    class backup {
+      permissions [ secret view view-configuration ];
+    }
+    user roger {
+      class super-user;
+      authentication {
+        ssh-rsa "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC1k62F1WguJ0seuCtzuFLfOzI1MHCpQR3qeW3OjzqtEIl5h6/whKayzYP++as8X8Y5YKVSp5g2mjCRAkB9C5/hfwI4yI381rm3wT8dRJGR/yUy6l0qDbS+kQTJtoQbsz4j+NAsk2utRb8OAYBwYVVbKVaIj8cywYmfYRL86DVdzN8XU0vvU3OZcmjRTOhJQ5WkhU3phMAs3aFo/3v11g3VllpDPRcB0w4iP6Qsay8iDUUr6EFO/k7N/IS3QxmOlziPj7JHTqc/jftAwsizLsq+WFKFNDdDJ0RLDbUUMasnvJ3jbIgaxiwkuO/ObknZI1MCWNcocRy+Ch2PvgXrcdMB1+UP1f3IZZF5S1h7it1VpfZFKD9v9qEnukoVIlfJxJkq4dp8jOqyPgoV4s7a5shdqCF5OKiY+fgAVf6oOM8naJ0FlPRE5twbYkeDsvCmzztWqeJO/vXj3qtFmjq5ZbuUJa4xCpppI20yGMVfTqkTb7YbTCCdaqVhXzzYWcFjUXE= roger";
+      }
+    }
+    user alfred {
+      class super-user;
+      authentication {
+        ssh-rsa "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDlfgjPITduKHmK7PYagxJrX/pPxRcY64Ccwad8NhBWEO/op/VkgECHlOVdw/nJ90EOI/UXkwqCQBLVzr+TeogI4dKAjLtwMikTQznxSfCgrjybPp/+WPWDFC9N08rwLlj3HWNrPp30CFzljun82Ljo6ykPd2lb2TH+xvliNAseWJiTmLx9nWmOV/oAGLX7lGZ6NYV8HNSjfpWwIjLp1xhnyur71kVoWAI0D9S6JIcw4AXc2mfC91Io9JshUCNnKdCY6Eae9YCCj+T+JXOh5KBU66plv4gFyDF/RJ+LD2yhu0WOCAre0t0wSiJ6M7AdplUgDtM4aYwLNU79miXLpULhHFpgqlpKxvxJW56lLh1QtxJZBK7ppM4Q69d3s/S1+Zo6ekfnzDFqQibltuF10srOuJNUKEGY3jVq8U0pwlqilelTUtAN7vRTTZIsueLGHF4gTJKcOqxJMPIroaEebVESy7wrAE0y9u+mH9QlcLTZzudypN18ll7bagAAhw8QC1c= alfred";
+      }
+    }
+    user blade {
+      class super-user;
+      authentication {
+        encrypted-password "$5$.............."; ## SECRET-DATA
+      }
+    }
+  }
+}
+
+system {
+  replace: ntp {
+    server 172.30.20.4;
+    server 172.30.20.5;
+  }
+  replace: name-server {
+    172.30.20.2;
+    172.30.20.3;
+  }
+  replace: syslog {
+    archive size 10m files 10 world-readable;
+    user * {
+      any emergency;
+    }
+    host 172.30.20.9 {
+      any warning;
+      authorization notice;
+      firewall any;
+      interactive-commands any;
+      port 514;
+      source-address 172.30.24.36;
+      structured-data;
+    }
+    host 172.30.20.10 {
+      any warning;
+      authorization notice;
+      firewall any;
+      interactive-commands any;
+      port 514;
+      source-address 172.30.24.36;
+      structured-data;
+    }
+    file * {
+      user emergency;
+    }
+    file messages {
+      any any;
+      authorization none;
+      firewall none;
+      change-log notice;
+      interactive-commands none;
+      match "!(Virtual Chassis Fabric usage requires a license|Receive FX craftd set alarm message|color: 2 class: 50 object: 50 slot: 126 id=0 reason=168|downward spike received from pfe for ibytes_reply)";
+      archive size 1m files 10;
+      explicit-priority;
+    }
+    file interactive-commands {
+      interactive-commands any;
+    }
+    file updown {
+      any info;
+      match "LINK_DOWN|LINK_UP";
+    }
+    file interfaces {
+      any info;
+      daemon info;
+      match .*SNMP_TRAP_LINK.*;
+      archive size 1m files 10;
+      explicit-priority;
+    }
+    file security {
+      authorization info;
+      interactive-commands info;
+      explicit-priority;
+    }
+    file default-log-messages {
+      any any;
+      structured-data;
+    }
+    file filter {
+      firewall any;
+      explicit-priority;
+    }
+    file commands {
+      interactive-commands info;
+      explicit-priority;
+    }
+    file console {
+      any critical;
+      authorization info;
+    }
+    console {
+      authorization info;
+    }
+    time-format year millisecond;
+  }
+}
+chassis {
+  alarm {
+    management-ethernet {
+      link-down ignore;
+    }
+  }
+}
+
+snmp {
+  location "San Francisco, US";
+  community 67dskf8fds78fdn authorization read-only;
+}
+
+protocols {
+    lldp {
+      port-id-subtype interface-name;
+      port-description-type interface-alias;
+    }
+}
+
+routing-options {
+  forwarding-table {
+    export ecmp-default;
+  }
+}
+
+policy-options {
+  policy-statement ecmp-default {
+    then {
+      load-balance per-packet;
+    }
+  }
+  policy-statement REJECT-ALL {
+    then reject;
+  }
+}
+
+interfaces {
+  protect: em0 {
+    unit 0 {
+      family inet address 172.30.24.36/21;
+    }
+  }
+}
+
+chassis {
+  aggregated-devices {
+    ethernet {
+      device-count 64;
+    }
+  }
+}
+
+routing-options {
+  static {
+    route 172.16.0.0/12 next-hop 172.30.31.254;
+    route 10.0.0.0/8 next-hop 172.30.31.254;
+  }
+}
+
+
+interfaces {
+            xe-0/0/0 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.97/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.48/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.48/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:330/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/1 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.101/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.50/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.50/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:332/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/2 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.105/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.52/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.52/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:334/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/3 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.109/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.54/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.54/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:336/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/4 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.113/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.56/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.56/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:338/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/5 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.117/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.58/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.58/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:33a/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/6 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.121/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.60/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.60/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:33c/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/7 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.125/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.62/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.62/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:33e/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/8 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.129/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.64/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.64/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:340/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/9 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.133/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.66/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.66/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:342/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/10 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.137/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.68/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.68/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:344/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/11 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.141/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.70/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.70/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:346/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/12 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.145/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.72/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.72/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:348/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/13 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.149/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.74/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.74/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:34a/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/14 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.153/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.76/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.76/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:34c/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/15 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.157/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.78/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.78/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:34e/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/16 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.161/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.80/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.80/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:350/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/17 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.165/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.82/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.82/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:352/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/18 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.169/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.84/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.84/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:354/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/19 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.173/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.86/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.86/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:356/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/20 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.177/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.88/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.88/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:358/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/21 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.181/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.90/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.90/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:35a/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/22 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.185/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.92/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.92/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:35c/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/23 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.189/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.94/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.94/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:35e/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/24 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.193/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.96/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.96/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:360/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/25 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.197/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.98/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.98/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:362/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/26 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.201/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.100/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.100/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:364/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/27 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.205/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.102/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.102/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:366/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/28 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.209/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.104/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.104/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:368/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/29 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.213/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.106/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.106/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:36a/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/30 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.217/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.108/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.108/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:36c/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/31 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.221/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.110/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.110/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:36e/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/32 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.225/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.112/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.112/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:370/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/33 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.229/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.114/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.114/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:372/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/34 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.233/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.116/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.116/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:374/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/35 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.237/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.118/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.118/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:376/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/36 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.241/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.120/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.120/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:378/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/37 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.245/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.122/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.122/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:37a/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/38 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.249/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.124/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.124/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:37c/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/39 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.6.253/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.126/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.126/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:37e/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/40 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.7.1/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.128/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.128/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:380/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/41 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.7.5/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.130/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.130/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:382/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/42 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.7.9/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.132/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.132/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:384/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/43 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.7.13/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.134/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.134/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:386/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/44 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.7.17/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.136/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.136/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:388/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/45 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.7.21/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.138/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.138/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:38a/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/46 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.7.25/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.140/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.140/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:38c/127;
+                  mtu 1500;
+              }
+          }
+        }
+        xe-0/0/47 {
+          flexible-vlan-tagging;
+          native-vlan-id 70;
+          mtu 9022;
+          unit 70 {
+              vlan-id 70;
+              description "To server for provisionning" ;
+              family inet {
+                  address 10.144.7.29/30;
+              }
+          }
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.3.142/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.3.142/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:38e/127;
+                  mtu 1500;
+              }
+          }
+        }
+        et-0/0/31 {
+          vlan-tagging;
+          mtu 9018;
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.238.7/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.238.7/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:ee07/127;
+                  mtu 1500;
+              }
+          }
+        }
+        et-0/0/32 {
+          vlan-tagging;
+          mtu 9018;
+          unit 10 {
+              vlan-id 10;
+              family inet {
+                  address 10.72.238.135/31;
+                  mtu 9000;
+              }
+          }
+          unit 100 {
+              vlan-id 100;
+              family inet {
+                  address 100.72.238.135/31;
+                  mtu 1500;
+              }
+              family inet6 {
+                  address 2605:940:500:b1:a:de:6448:ee87/127;
+                  mtu 1500;
+              }
+          }
+        }
+
+}
+
+
+
+
+routing-instances {
+    private {
+        instance-type virtual-router;
+        protocols {
+            bgp {
+                log-updown;
+                local-as 4208992002;
+                                   group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.49 {
+                        peer-as 4208000272;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.51 {
+                        peer-as 4208000273;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.53 {
+                        peer-as 4208000274;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.55 {
+                        peer-as 4208000275;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.57 {
+                        peer-as 4208000276;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.59 {
+                        peer-as 4208000277;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.61 {
+                        peer-as 4208000278;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.63 {
+                        peer-as 4208000279;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.65 {
+                        peer-as 4208000280;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.67 {
+                        peer-as 4208000281;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.69 {
+                        peer-as 4208000282;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.71 {
+                        peer-as 4208000283;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.73 {
+                        peer-as 4208000284;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.75 {
+                        peer-as 4208000285;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.77 {
+                        peer-as 4208000286;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.79 {
+                        peer-as 4208000287;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.81 {
+                        peer-as 4208000288;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.83 {
+                        peer-as 4208000289;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.85 {
+                        peer-as 4208000290;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.87 {
+                        peer-as 4208000291;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.89 {
+                        peer-as 4208000292;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.91 {
+                        peer-as 4208000293;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.93 {
+                        peer-as 4208000294;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.95 {
+                        peer-as 4208000295;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.97 {
+                        peer-as 4208000296;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.99 {
+                        peer-as 4208000297;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.101 {
+                        peer-as 4208000298;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.103 {
+                        peer-as 4208000299;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.105 {
+                        peer-as 4208000300;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.107 {
+                        peer-as 4208000301;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.109 {
+                        peer-as 4208000302;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.111 {
+                        peer-as 4208000303;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.113 {
+                        peer-as 4208000304;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.115 {
+                        peer-as 4208000305;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.117 {
+                        peer-as 4208000306;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.119 {
+                        peer-as 4208000307;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.121 {
+                        peer-as 4208000308;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.123 {
+                        peer-as 4208000309;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.125 {
+                        peer-as 4208000310;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.127 {
+                        peer-as 4208000311;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.129 {
+                        peer-as 4208000312;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.131 {
+                        peer-as 4208000313;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.133 {
+                        peer-as 4208000314;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.135 {
+                        peer-as 4208000315;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.137 {
+                        peer-as 4208000316;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.139 {
+                        peer-as 4208000317;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.141 {
+                        peer-as 4208000318;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.3.143 {
+                        peer-as 4208000319;
+                        passive;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.238.6 {
+                        peer-as 4208999980;
+                    }
+                }
+               group v4-private-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    import [ BGPTTH-IN-V4 ];
+                    export [ BGPTTH-OUT-V4 ];
+                    neighbor 10.72.238.134 {
+                        peer-as 4208999980;
+                    }
+                }
+
+            }
+        }
+        routing-options {
+            static route 10.144.6.96/27 {
+                discard;
+                no-install;
+            }
+            static route 10.144.6.128/25 {
+                discard;
+                no-install;
+            }
+            static route 10.144.7.0/27 {
+                discard;
+                no-install;
+            }
+        }
+    interface xe-0/0/0.10;
+    interface xe-0/0/0.70;
+    interface xe-0/0/1.10;
+    interface xe-0/0/1.70;
+    interface xe-0/0/2.10;
+    interface xe-0/0/2.70;
+    interface xe-0/0/3.10;
+    interface xe-0/0/3.70;
+    interface xe-0/0/4.10;
+    interface xe-0/0/4.70;
+    interface xe-0/0/5.10;
+    interface xe-0/0/5.70;
+    interface xe-0/0/6.10;
+    interface xe-0/0/6.70;
+    interface xe-0/0/7.10;
+    interface xe-0/0/7.70;
+    interface xe-0/0/8.10;
+    interface xe-0/0/8.70;
+    interface xe-0/0/9.10;
+    interface xe-0/0/9.70;
+    interface xe-0/0/10.10;
+    interface xe-0/0/10.70;
+    interface xe-0/0/11.10;
+    interface xe-0/0/11.70;
+    interface xe-0/0/12.10;
+    interface xe-0/0/12.70;
+    interface xe-0/0/13.10;
+    interface xe-0/0/13.70;
+    interface xe-0/0/14.10;
+    interface xe-0/0/14.70;
+    interface xe-0/0/15.10;
+    interface xe-0/0/15.70;
+    interface xe-0/0/16.10;
+    interface xe-0/0/16.70;
+    interface xe-0/0/17.10;
+    interface xe-0/0/17.70;
+    interface xe-0/0/18.10;
+    interface xe-0/0/18.70;
+    interface xe-0/0/19.10;
+    interface xe-0/0/19.70;
+    interface xe-0/0/20.10;
+    interface xe-0/0/20.70;
+    interface xe-0/0/21.10;
+    interface xe-0/0/21.70;
+    interface xe-0/0/22.10;
+    interface xe-0/0/22.70;
+    interface xe-0/0/23.10;
+    interface xe-0/0/23.70;
+    interface xe-0/0/24.10;
+    interface xe-0/0/24.70;
+    interface xe-0/0/25.10;
+    interface xe-0/0/25.70;
+    interface xe-0/0/26.10;
+    interface xe-0/0/26.70;
+    interface xe-0/0/27.10;
+    interface xe-0/0/27.70;
+    interface xe-0/0/28.10;
+    interface xe-0/0/28.70;
+    interface xe-0/0/29.10;
+    interface xe-0/0/29.70;
+    interface xe-0/0/30.10;
+    interface xe-0/0/30.70;
+    interface xe-0/0/31.10;
+    interface xe-0/0/31.70;
+    interface xe-0/0/32.10;
+    interface xe-0/0/32.70;
+    interface xe-0/0/33.10;
+    interface xe-0/0/33.70;
+    interface xe-0/0/34.10;
+    interface xe-0/0/34.70;
+    interface xe-0/0/35.10;
+    interface xe-0/0/35.70;
+    interface xe-0/0/36.10;
+    interface xe-0/0/36.70;
+    interface xe-0/0/37.10;
+    interface xe-0/0/37.70;
+    interface xe-0/0/38.10;
+    interface xe-0/0/38.70;
+    interface xe-0/0/39.10;
+    interface xe-0/0/39.70;
+    interface xe-0/0/40.10;
+    interface xe-0/0/40.70;
+    interface xe-0/0/41.10;
+    interface xe-0/0/41.70;
+    interface xe-0/0/42.10;
+    interface xe-0/0/42.70;
+    interface xe-0/0/43.10;
+    interface xe-0/0/43.70;
+    interface xe-0/0/44.10;
+    interface xe-0/0/44.70;
+    interface xe-0/0/45.10;
+    interface xe-0/0/45.70;
+    interface xe-0/0/46.10;
+    interface xe-0/0/46.70;
+    interface xe-0/0/47.10;
+    interface xe-0/0/47.70;
+    interface et-0/0/31.10;
+    interface et-0/0/31.70;
+    interface et-0/0/32.10;
+    interface et-0/0/32.70;
+    }
+}
+
+policy-options {
+    policy-statement BGPTTH-OUT-V4 {
+        term ACCEPT-PROVISIONING {
+           from {
+                route-filter 10.144.6.96/27 exact;
+                route-filter 10.144.6.128/25 exact;
+                route-filter 10.144.7.0/27 exact;
+            }
+            then accept;
+        }
+        term ACCEPT-BGP {
+  apply-flags omit;
+    from protocol bgp;
+    then accept;
+}
+
+        then reject;
+    }
+}
+policy-options {
+    policy-statement BGPTTH-IN-V4 {
+        term ACCEPT-BGP {
+  apply-flags omit;
+    from protocol bgp;
+    then accept;
+}
+
+        then reject;
+    }
+}
+
+routing-instances {
+    public {
+        instance-type virtual-router;
+        protocols {
+            bgp {
+                log-updown;
+                local-as 4208992002;
+                                   group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.49 {
+                        peer-as 4208000272;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:331 {
+                        peer-as 4208000272;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.51 {
+                        peer-as 4208000273;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:333 {
+                        peer-as 4208000273;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.53 {
+                        peer-as 4208000274;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:335 {
+                        peer-as 4208000274;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.55 {
+                        peer-as 4208000275;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:337 {
+                        peer-as 4208000275;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.57 {
+                        peer-as 4208000276;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:339 {
+                        peer-as 4208000276;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.59 {
+                        peer-as 4208000277;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:33b {
+                        peer-as 4208000277;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.61 {
+                        peer-as 4208000278;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:33d {
+                        peer-as 4208000278;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.63 {
+                        peer-as 4208000279;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:33f {
+                        peer-as 4208000279;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.65 {
+                        peer-as 4208000280;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:341 {
+                        peer-as 4208000280;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.67 {
+                        peer-as 4208000281;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:343 {
+                        peer-as 4208000281;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.69 {
+                        peer-as 4208000282;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:345 {
+                        peer-as 4208000282;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.71 {
+                        peer-as 4208000283;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:347 {
+                        peer-as 4208000283;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.73 {
+                        peer-as 4208000284;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:349 {
+                        peer-as 4208000284;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.75 {
+                        peer-as 4208000285;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:34b {
+                        peer-as 4208000285;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.77 {
+                        peer-as 4208000286;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:34d {
+                        peer-as 4208000286;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.79 {
+                        peer-as 4208000287;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:34f {
+                        peer-as 4208000287;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.81 {
+                        peer-as 4208000288;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:351 {
+                        peer-as 4208000288;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.83 {
+                        peer-as 4208000289;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:353 {
+                        peer-as 4208000289;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.85 {
+                        peer-as 4208000290;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:355 {
+                        peer-as 4208000290;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.87 {
+                        peer-as 4208000291;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:357 {
+                        peer-as 4208000291;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.89 {
+                        peer-as 4208000292;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:359 {
+                        peer-as 4208000292;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.91 {
+                        peer-as 4208000293;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:35b {
+                        peer-as 4208000293;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.93 {
+                        peer-as 4208000294;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:35d {
+                        peer-as 4208000294;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.95 {
+                        peer-as 4208000295;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:35f {
+                        peer-as 4208000295;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.97 {
+                        peer-as 4208000296;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:361 {
+                        peer-as 4208000296;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.99 {
+                        peer-as 4208000297;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:363 {
+                        peer-as 4208000297;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.101 {
+                        peer-as 4208000298;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:365 {
+                        peer-as 4208000298;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.103 {
+                        peer-as 4208000299;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:367 {
+                        peer-as 4208000299;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.105 {
+                        peer-as 4208000300;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:369 {
+                        peer-as 4208000300;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.107 {
+                        peer-as 4208000301;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:36b {
+                        peer-as 4208000301;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.109 {
+                        peer-as 4208000302;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:36d {
+                        peer-as 4208000302;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.111 {
+                        peer-as 4208000303;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:36f {
+                        peer-as 4208000303;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.113 {
+                        peer-as 4208000304;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:371 {
+                        peer-as 4208000304;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.115 {
+                        peer-as 4208000305;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:373 {
+                        peer-as 4208000305;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.117 {
+                        peer-as 4208000306;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:375 {
+                        peer-as 4208000306;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.119 {
+                        peer-as 4208000307;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:377 {
+                        peer-as 4208000307;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.121 {
+                        peer-as 4208000308;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:379 {
+                        peer-as 4208000308;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.123 {
+                        peer-as 4208000309;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:37b {
+                        peer-as 4208000309;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.125 {
+                        peer-as 4208000310;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:37d {
+                        peer-as 4208000310;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.127 {
+                        peer-as 4208000311;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:37f {
+                        peer-as 4208000311;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.129 {
+                        peer-as 4208000312;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:381 {
+                        peer-as 4208000312;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.131 {
+                        peer-as 4208000313;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:383 {
+                        peer-as 4208000313;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.133 {
+                        peer-as 4208000314;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:385 {
+                        peer-as 4208000314;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.135 {
+                        peer-as 4208000315;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:387 {
+                        peer-as 4208000315;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.137 {
+                        peer-as 4208000316;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:389 {
+                        peer-as 4208000316;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.139 {
+                        peer-as 4208000317;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:38b {
+                        peer-as 4208000317;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.141 {
+                        peer-as 4208000318;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:38d {
+                        peer-as 4208000318;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.3.143 {
+                        peer-as 4208000319;
+                        passive;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:38f {
+                        peer-as 4208000319;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.238.6 {
+                        peer-as 4208999980;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:ee06 {
+                        peer-as 4208999980;
+                        passive;
+                    }
+                }
+               group v4-public-EBGP {
+                    family inet unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 100.72.238.134 {
+                        peer-as 4208999980;
+                    }
+                }
+               group v6-public-EBGP {
+                    family inet6 unicast;
+                    type external;
+                    multipath multiple-as;
+                    enforce-first-as;
+                    hold-time 3;
+                    neighbor 2605:940:500:b1:a:de:6448:ee86 {
+                        peer-as 4208999980;
+                        passive;
+                    }
+                }
+
+            }
+        }
+    interface xe-0/0/0.100;
+    interface xe-0/0/1.100;
+    interface xe-0/0/2.100;
+    interface xe-0/0/3.100;
+    interface xe-0/0/4.100;
+    interface xe-0/0/5.100;
+    interface xe-0/0/6.100;
+    interface xe-0/0/7.100;
+    interface xe-0/0/8.100;
+    interface xe-0/0/9.100;
+    interface xe-0/0/10.100;
+    interface xe-0/0/11.100;
+    interface xe-0/0/12.100;
+    interface xe-0/0/13.100;
+    interface xe-0/0/14.100;
+    interface xe-0/0/15.100;
+    interface xe-0/0/16.100;
+    interface xe-0/0/17.100;
+    interface xe-0/0/18.100;
+    interface xe-0/0/19.100;
+    interface xe-0/0/20.100;
+    interface xe-0/0/21.100;
+    interface xe-0/0/22.100;
+    interface xe-0/0/23.100;
+    interface xe-0/0/24.100;
+    interface xe-0/0/25.100;
+    interface xe-0/0/26.100;
+    interface xe-0/0/27.100;
+    interface xe-0/0/28.100;
+    interface xe-0/0/29.100;
+    interface xe-0/0/30.100;
+    interface xe-0/0/31.100;
+    interface xe-0/0/32.100;
+    interface xe-0/0/33.100;
+    interface xe-0/0/34.100;
+    interface xe-0/0/35.100;
+    interface xe-0/0/36.100;
+    interface xe-0/0/37.100;
+    interface xe-0/0/38.100;
+    interface xe-0/0/39.100;
+    interface xe-0/0/40.100;
+    interface xe-0/0/41.100;
+    interface xe-0/0/42.100;
+    interface xe-0/0/43.100;
+    interface xe-0/0/44.100;
+    interface xe-0/0/45.100;
+    interface xe-0/0/46.100;
+    interface xe-0/0/47.100;
+    interface et-0/0/31.100;
+    interface et-0/0/32.100;
+    }
+}
+
+policy-options {
+    policy-statement BGPTTH-OUT-V4 {
+    }
+}
+policy-options {
+    policy-statement BGPTTH-IN-V4 {
+        term ACCEPT-BGP {
+  apply-flags omit;
+    from protocol bgp;
+    then accept;
+}
+
+        then reject;
+    }
+}
+
+
+
+
+groups {
+   provisioning-dhcp-attributes {
+       routing-instances {
+           private {
+               access {
+                   address-assignment {
+                       pool <*> {
+                           family inet {
+                               dhcp-attributes {
+                                   maximum-lease-time 7200;
+                                   domain-name ussfo03.blade-group.net;
+                                   name-server {
+                                        172.30.20.2;
+                                        172.30.20.3;
+                                     }
+                                   tftp-server 172.30.20.87;
+                                   boot-server 172.30.20.87;
+                                   boot-file undionly.kpxe;
+                                   option 119 hex-string 07757373666f30330b626c6164652d67726f7570036e657400;
+                                   }
+                               }
+                       }
+                   }
+               }
+           }
+       }
+   }
+}
+
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/0.70;
+    access address-assignment pool xe-0-0-0 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.96/30;
+                       range provisioning {
+                           low  10.144.6.98;
+                           high 10.144.6.98;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.97;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/1.70;
+    access address-assignment pool xe-0-0-1 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.100/30;
+                       range provisioning {
+                           low  10.144.6.102;
+                           high 10.144.6.102;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.101;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/2.70;
+    access address-assignment pool xe-0-0-2 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.104/30;
+                       range provisioning {
+                           low  10.144.6.106;
+                           high 10.144.6.106;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.105;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/3.70;
+    access address-assignment pool xe-0-0-3 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.108/30;
+                       range provisioning {
+                           low  10.144.6.110;
+                           high 10.144.6.110;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.109;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/4.70;
+    access address-assignment pool xe-0-0-4 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.112/30;
+                       range provisioning {
+                           low  10.144.6.114;
+                           high 10.144.6.114;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.113;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/5.70;
+    access address-assignment pool xe-0-0-5 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.116/30;
+                       range provisioning {
+                           low  10.144.6.118;
+                           high 10.144.6.118;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.117;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/6.70;
+    access address-assignment pool xe-0-0-6 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.120/30;
+                       range provisioning {
+                           low  10.144.6.122;
+                           high 10.144.6.122;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.121;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/7.70;
+    access address-assignment pool xe-0-0-7 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.124/30;
+                       range provisioning {
+                           low  10.144.6.126;
+                           high 10.144.6.126;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.125;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/8.70;
+    access address-assignment pool xe-0-0-8 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.128/30;
+                       range provisioning {
+                           low  10.144.6.130;
+                           high 10.144.6.130;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.129;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/9.70;
+    access address-assignment pool xe-0-0-9 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.132/30;
+                       range provisioning {
+                           low  10.144.6.134;
+                           high 10.144.6.134;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.133;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/10.70;
+    access address-assignment pool xe-0-0-10 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.136/30;
+                       range provisioning {
+                           low  10.144.6.138;
+                           high 10.144.6.138;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.137;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/11.70;
+    access address-assignment pool xe-0-0-11 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.140/30;
+                       range provisioning {
+                           low  10.144.6.142;
+                           high 10.144.6.142;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.141;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/12.70;
+    access address-assignment pool xe-0-0-12 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.144/30;
+                       range provisioning {
+                           low  10.144.6.146;
+                           high 10.144.6.146;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.145;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/13.70;
+    access address-assignment pool xe-0-0-13 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.148/30;
+                       range provisioning {
+                           low  10.144.6.150;
+                           high 10.144.6.150;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.149;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/14.70;
+    access address-assignment pool xe-0-0-14 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.152/30;
+                       range provisioning {
+                           low  10.144.6.154;
+                           high 10.144.6.154;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.153;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/15.70;
+    access address-assignment pool xe-0-0-15 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.156/30;
+                       range provisioning {
+                           low  10.144.6.158;
+                           high 10.144.6.158;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.157;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/16.70;
+    access address-assignment pool xe-0-0-16 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.160/30;
+                       range provisioning {
+                           low  10.144.6.162;
+                           high 10.144.6.162;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.161;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/17.70;
+    access address-assignment pool xe-0-0-17 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.164/30;
+                       range provisioning {
+                           low  10.144.6.166;
+                           high 10.144.6.166;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.165;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/18.70;
+    access address-assignment pool xe-0-0-18 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.168/30;
+                       range provisioning {
+                           low  10.144.6.170;
+                           high 10.144.6.170;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.169;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/19.70;
+    access address-assignment pool xe-0-0-19 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.172/30;
+                       range provisioning {
+                           low  10.144.6.174;
+                           high 10.144.6.174;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.173;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/20.70;
+    access address-assignment pool xe-0-0-20 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.176/30;
+                       range provisioning {
+                           low  10.144.6.178;
+                           high 10.144.6.178;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.177;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/21.70;
+    access address-assignment pool xe-0-0-21 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.180/30;
+                       range provisioning {
+                           low  10.144.6.182;
+                           high 10.144.6.182;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.181;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/22.70;
+    access address-assignment pool xe-0-0-22 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.184/30;
+                       range provisioning {
+                           low  10.144.6.186;
+                           high 10.144.6.186;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.185;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/23.70;
+    access address-assignment pool xe-0-0-23 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.188/30;
+                       range provisioning {
+                           low  10.144.6.190;
+                           high 10.144.6.190;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.189;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/24.70;
+    access address-assignment pool xe-0-0-24 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.192/30;
+                       range provisioning {
+                           low  10.144.6.194;
+                           high 10.144.6.194;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.193;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/25.70;
+    access address-assignment pool xe-0-0-25 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.196/30;
+                       range provisioning {
+                           low  10.144.6.198;
+                           high 10.144.6.198;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.197;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/26.70;
+    access address-assignment pool xe-0-0-26 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.200/30;
+                       range provisioning {
+                           low  10.144.6.202;
+                           high 10.144.6.202;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.201;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/27.70;
+    access address-assignment pool xe-0-0-27 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.204/30;
+                       range provisioning {
+                           low  10.144.6.206;
+                           high 10.144.6.206;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.205;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/28.70;
+    access address-assignment pool xe-0-0-28 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.208/30;
+                       range provisioning {
+                           low  10.144.6.210;
+                           high 10.144.6.210;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.209;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/29.70;
+    access address-assignment pool xe-0-0-29 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.212/30;
+                       range provisioning {
+                           low  10.144.6.214;
+                           high 10.144.6.214;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.213;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/30.70;
+    access address-assignment pool xe-0-0-30 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.216/30;
+                       range provisioning {
+                           low  10.144.6.218;
+                           high 10.144.6.218;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.217;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/31.70;
+    access address-assignment pool xe-0-0-31 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.220/30;
+                       range provisioning {
+                           low  10.144.6.222;
+                           high 10.144.6.222;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.221;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/32.70;
+    access address-assignment pool xe-0-0-32 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.224/30;
+                       range provisioning {
+                           low  10.144.6.226;
+                           high 10.144.6.226;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.225;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/33.70;
+    access address-assignment pool xe-0-0-33 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.228/30;
+                       range provisioning {
+                           low  10.144.6.230;
+                           high 10.144.6.230;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.229;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/34.70;
+    access address-assignment pool xe-0-0-34 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.232/30;
+                       range provisioning {
+                           low  10.144.6.234;
+                           high 10.144.6.234;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.233;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/35.70;
+    access address-assignment pool xe-0-0-35 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.236/30;
+                       range provisioning {
+                           low  10.144.6.238;
+                           high 10.144.6.238;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.237;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/36.70;
+    access address-assignment pool xe-0-0-36 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.240/30;
+                       range provisioning {
+                           low  10.144.6.242;
+                           high 10.144.6.242;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.241;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/37.70;
+    access address-assignment pool xe-0-0-37 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.244/30;
+                       range provisioning {
+                           low  10.144.6.246;
+                           high 10.144.6.246;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.245;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/38.70;
+    access address-assignment pool xe-0-0-38 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.248/30;
+                       range provisioning {
+                           low  10.144.6.250;
+                           high 10.144.6.250;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.249;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/39.70;
+    access address-assignment pool xe-0-0-39 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.6.252/30;
+                       range provisioning {
+                           low  10.144.6.254;
+                           high 10.144.6.254;
+                       }
+                       dhcp-attributes {
+                           router 10.144.6.253;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/40.70;
+    access address-assignment pool xe-0-0-40 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.7.0/30;
+                       range provisioning {
+                           low  10.144.7.2;
+                           high 10.144.7.2;
+                       }
+                       dhcp-attributes {
+                           router 10.144.7.1;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/41.70;
+    access address-assignment pool xe-0-0-41 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.7.4/30;
+                       range provisioning {
+                           low  10.144.7.6;
+                           high 10.144.7.6;
+                       }
+                       dhcp-attributes {
+                           router 10.144.7.5;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/42.70;
+    access address-assignment pool xe-0-0-42 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.7.8/30;
+                       range provisioning {
+                           low  10.144.7.10;
+                           high 10.144.7.10;
+                       }
+                       dhcp-attributes {
+                           router 10.144.7.9;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/43.70;
+    access address-assignment pool xe-0-0-43 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.7.12/30;
+                       range provisioning {
+                           low  10.144.7.14;
+                           high 10.144.7.14;
+                       }
+                       dhcp-attributes {
+                           router 10.144.7.13;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/44.70;
+    access address-assignment pool xe-0-0-44 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.7.16/30;
+                       range provisioning {
+                           low  10.144.7.18;
+                           high 10.144.7.18;
+                       }
+                       dhcp-attributes {
+                           router 10.144.7.17;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/45.70;
+    access address-assignment pool xe-0-0-45 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.7.20/30;
+                       range provisioning {
+                           low  10.144.7.22;
+                           high 10.144.7.22;
+                       }
+                       dhcp-attributes {
+                           router 10.144.7.21;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/46.70;
+    access address-assignment pool xe-0-0-46 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.7.24/30;
+                       range provisioning {
+                           low  10.144.7.26;
+                           high 10.144.7.26;
+                       }
+                       dhcp-attributes {
+                           router 10.144.7.25;
+                       }
+                   }
+               }
+  }
+routing-instances private {
+    system services dhcp-local-server group provisioning interface xe-0/0/47.70;
+    access address-assignment pool xe-0-0-47 {
+                   apply-groups provisioning-dhcp-attributes;
+                   family inet {
+                       network 10.144.7.28/30;
+                       range provisioning {
+                           low  10.144.7.30;
+                           high 10.144.7.30;
+                       }
+                       dhcp-attributes {
+                           router 10.144.7.29;
+                       }
+                   }
+               }
+  }
+

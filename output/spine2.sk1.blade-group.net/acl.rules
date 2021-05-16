@@ -1,0 +1,46 @@
+
+INGRESS_CHAIN = INPUT
+
+[iptables]
+# Protect BGP peering with s-spines
+-A $INGRESS_CHAIN --in-interface swp31s0.100 -s 100.71.238.189 -d 100.71.238.188 -p tcp --dport 179 -j SETCLASS --class 7
+-A $INGRESS_CHAIN -s 100.71.238.189 -d 100.71.238.188 -p tcp --dport 179 -j POLICE --set-mode pkt --set-rate 2000 --set-burst 2000
+
+-A $INGRESS_CHAIN --in-interface swp31s0.100 -s 100.71.238.189 -d 100.71.238.188 -p tcp --sport 179 -j SETCLASS --class 7
+-A $INGRESS_CHAIN -s 100.71.238.189 -d 100.71.238.188 -p tcp --sport 179 -j POLICE --set-mode pkt --set-rate 2000 --set-burst 2000
+
+-A $INGRESS_CHAIN --in-interface swp31s0.100 -s 100.71.238.189 -d 100.71.238.188 -p icmp -j SETCLASS --class 2
+-A $INGRESS_CHAIN -s 100.71.238.189 -d 100.71.238.188 -p icmp -j POLICE --set-mode pkt --set-rate 100 --set-burst 40
+
+-A $INGRESS_CHAIN --in-interface swp31s0.100 -j DROP
+
+-A $INGRESS_CHAIN --in-interface swp32s0.100 -s 100.71.238.191 -d 100.71.238.190 -p tcp --dport 179 -j SETCLASS --class 7
+-A $INGRESS_CHAIN -s 100.71.238.191 -d 100.71.238.190 -p tcp --dport 179 -j POLICE --set-mode pkt --set-rate 2000 --set-burst 2000
+
+-A $INGRESS_CHAIN --in-interface swp32s0.100 -s 100.71.238.191 -d 100.71.238.190 -p tcp --sport 179 -j SETCLASS --class 7
+-A $INGRESS_CHAIN -s 100.71.238.191 -d 100.71.238.190 -p tcp --sport 179 -j POLICE --set-mode pkt --set-rate 2000 --set-burst 2000
+
+-A $INGRESS_CHAIN --in-interface swp32s0.100 -s 100.71.238.191 -d 100.71.238.190 -p icmp -j SETCLASS --class 2
+-A $INGRESS_CHAIN -s 100.71.238.191 -d 100.71.238.190 -p icmp -j POLICE --set-mode pkt --set-rate 100 --set-burst 40
+
+-A $INGRESS_CHAIN --in-interface swp32s0.100 -j DROP
+
+
+[ip6tables]
+# Protect BGP peering with s-spines
+-A $INGRESS_CHAIN --in-interface swp31s0.100 -s 2406:3bc0:100:b1:a:de:6447:eebd -d 2406:3bc0:100:b1:a:de:6447:eebc -p tcp --dport 179 -j POLICE --set-mode pkt --set-rate 2000 --set-burst 2000 --set-class 7
+-A $INGRESS_CHAIN --in-interface swp31s0.100 -s 2406:3bc0:100:b1:a:de:6447:eebd -d 2406:3bc0:100:b1:a:de:6447:eebc -p tcp --sport 179 -j POLICE --set-mode pkt --set-rate 2000 --set-burst 2000 --set-class 7
+
+-A $INGRESS_CHAIN --in-interface swp31s0.100 -s 2406:3bc0:100:b1:a:de:6447:eebd -p icmpv6 -j POLICE --set-mode pkt --set-rate 400 --set-burst 400 --set-class 2
+-A $INGRESS_CHAIN --in-interface swp31s0.100 -d fe80::/16 -p icmpv6 -j POLICE --set-mode pkt --set-rate 400 --set-burst 400 --set-class 2
+
+-A $INGRESS_CHAIN --in-interface swp31s0.100 -j DROP
+
+-A $INGRESS_CHAIN --in-interface swp32s0.100 -s 2406:3bc0:100:b1:a:de:6447:eebf -d 2406:3bc0:100:b1:a:de:6447:eebe -p tcp --dport 179 -j POLICE --set-mode pkt --set-rate 2000 --set-burst 2000 --set-class 7
+-A $INGRESS_CHAIN --in-interface swp32s0.100 -s 2406:3bc0:100:b1:a:de:6447:eebf -d 2406:3bc0:100:b1:a:de:6447:eebe -p tcp --sport 179 -j POLICE --set-mode pkt --set-rate 2000 --set-burst 2000 --set-class 7
+
+-A $INGRESS_CHAIN --in-interface swp32s0.100 -s 2406:3bc0:100:b1:a:de:6447:eebf -p icmpv6 -j POLICE --set-mode pkt --set-rate 400 --set-burst 400 --set-class 2
+-A $INGRESS_CHAIN --in-interface swp32s0.100 -d fe80::/16 -p icmpv6 -j POLICE --set-mode pkt --set-rate 400 --set-burst 400 --set-class 2
+
+-A $INGRESS_CHAIN --in-interface swp32s0.100 -j DROP
+

@@ -1,0 +1,43 @@
+#!/bin/bash
+function error() {
+    echo -e "\e[0;33mERROR: The Zero Touch Provisioning script failed while running the command $BASH_COMMAND at line $BASH_LINENO.\e[0m" >&2
+    exit 1
+}
+
+# Waiting for NCLU to finish starting up
+last_code=1
+while [ "1" == "$last_code" ]; do
+    net show interface &> /dev/null
+    last_code=$?
+done
+
+
+net show configuration commands \
+     | grep -E "^net add (dns|time ntp|snmp-server) " \
+     | sed -e 's/net add/net del/' -e 's/^\(net del dns .*\) vrf mgmt$/\1/' -e 's/ iburst$//' \
+     | sh -x
+
+# HOSTNAME
+net add hostname to1-p2.sk1.blade-group.net
+
+# DNS
+net add dns nameserver 172.29.64.2 vrf mgmt
+net add dns nameserver 172.29.64.3 vrf mgmt
+
+# NTP
+net add time ntp server 172.29.64.4 iburst
+net add time ntp server 172.29.64.5 iburst
+net add time ntp source eth0
+net add time zone Etc/UTC
+
+# SNMP
+net add snmp-server listening-address 172.29.15.18 vrf mgmt
+net add snmp-server system-name to1-p2.sk1
+net add snmp-server system-location location KINX Dogok-dong, KR;
+net add snmp-server system-contact noc@home.local
+net del snmp-server listening-address localhost
+
+net commit
+
+# CUMULUS-AUTOPROVISIONING
+exit 0

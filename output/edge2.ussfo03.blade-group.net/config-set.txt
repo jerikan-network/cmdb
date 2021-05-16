@@ -1,0 +1,1017 @@
+set chassis aggregated-devices ethernet device-count 64
+set chassis alarm management-ethernet link-down ignore
+set chassis fpc 0 pic 0 port 1 speed 100g
+set chassis fpc 0 pic 0 port 11 speed 100g
+set chassis fpc 0 pic 0 port 13 speed 100g
+set chassis fpc 0 pic 0 port 17 speed 100g
+set chassis fpc 0 pic 0 port 19 speed 100g
+set chassis fpc 0 pic 0 port 23 speed 100g
+set chassis fpc 0 pic 0 port 25 speed 100g
+set chassis fpc 0 pic 0 port 29 speed 100g
+set chassis fpc 0 pic 0 port 3 channel-speed 10g
+set chassis fpc 0 pic 0 port 3 channel-speed 10g
+set chassis fpc 0 pic 0 port 3 channel-speed 10g
+set chassis fpc 0 pic 0 port 3 channel-speed 10g
+set chassis fpc 0 pic 0 port 3 channel-speed 10g
+set chassis fpc 0 pic 0 port 3 channel-speed 10g
+set chassis fpc 0 pic 0 port 3 channel-speed 10g
+set chassis fpc 0 pic 0 port 3 channel-speed 10g
+set chassis fpc 0 pic 0 port 3 channel-speed 10g
+set chassis fpc 0 pic 0 port 3 channel-speed 10g
+set chassis fpc 0 pic 0 port 3 channel-speed 10g
+set chassis fpc 0 pic 0 port 3 channel-speed 10g
+set chassis fpc 0 pic 0 port 31 speed 100g
+set chassis fpc 0 pic 0 port 35 speed 100g
+set chassis fpc 0 pic 0 port 7 speed 100g
+set firewall family inet filter ipv4-accept-bgp term accept-bgp from destination-prefix-list ipv4-router
+set firewall family inet filter ipv4-accept-bgp term accept-bgp from port bgp
+set firewall family inet filter ipv4-accept-bgp term accept-bgp from protocol tcp
+set firewall family inet filter ipv4-accept-bgp term accept-bgp from source-prefix-list ipv4-bgp-neighbors
+set firewall family inet filter ipv4-accept-bgp term accept-bgp from source-prefix-list ipv4-bgp-neighbors-routing-instances
+set firewall family inet filter ipv4-accept-bgp term accept-bgp then accept
+set firewall family inet filter ipv4-accept-bgp term accept-bgp then count ipv4-accept-accept-bgp
+set firewall family inet filter ipv4-accept-common-services term accept-dns from destination-prefix-list ipv4-router
+set firewall family inet filter ipv4-accept-common-services term accept-dns from protocol udp
+set firewall family inet filter ipv4-accept-common-services term accept-dns from source-port 53
+set firewall family inet filter ipv4-accept-common-services term accept-dns from source-prefix-list dns-servers
+set firewall family inet filter ipv4-accept-common-services term accept-dns then accept
+set firewall family inet filter ipv4-accept-common-services term accept-dns then count ipv4-accept-dns
+set firewall family inet filter ipv4-accept-common-services term accept-dns then policer management-1m
+set firewall family inet filter ipv4-accept-common-services term accept-icmp from icmp-type echo-reply
+set firewall family inet filter ipv4-accept-common-services term accept-icmp from icmp-type echo-request
+set firewall family inet filter ipv4-accept-common-services term accept-icmp from icmp-type parameter-problem
+set firewall family inet filter ipv4-accept-common-services term accept-icmp from icmp-type router-advertisement
+set firewall family inet filter ipv4-accept-common-services term accept-icmp from icmp-type source-quench
+set firewall family inet filter ipv4-accept-common-services term accept-icmp from icmp-type time-exceeded
+set firewall family inet filter ipv4-accept-common-services term accept-icmp from icmp-type unreachable
+set firewall family inet filter ipv4-accept-common-services term accept-icmp from protocol icmp
+set firewall family inet filter ipv4-accept-common-services term accept-icmp from ttl-except 1
+set firewall family inet filter ipv4-accept-common-services term accept-icmp then accept
+set firewall family inet filter ipv4-accept-common-services term accept-icmp then count ipv4-accept-icmp
+set firewall family inet filter ipv4-accept-common-services term accept-icmp then policer management-5m
+set firewall family inet filter ipv4-accept-common-services term accept-ntp from destination-prefix-list ipv4-localhost
+set firewall family inet filter ipv4-accept-common-services term accept-ntp from destination-prefix-list ipv4-router
+set firewall family inet filter ipv4-accept-common-services term accept-ntp from port ntp
+set firewall family inet filter ipv4-accept-common-services term accept-ntp from protocol udp
+set firewall family inet filter ipv4-accept-common-services term accept-ntp from source-prefix-list ipv4-localhost
+set firewall family inet filter ipv4-accept-common-services term accept-ntp from source-prefix-list ipv4-router
+set firewall family inet filter ipv4-accept-common-services term accept-ntp from source-prefix-list ntp-servers
+set firewall family inet filter ipv4-accept-common-services term accept-ntp then accept
+set firewall family inet filter ipv4-accept-common-services term accept-ntp then count ipv4-accept-ntp
+set firewall family inet filter ipv4-accept-common-services term accept-ntp then policer management-1m
+set firewall family inet filter ipv4-accept-common-services term accept-snmp from destination-port snmp
+set firewall family inet filter ipv4-accept-common-services term accept-snmp from destination-prefix-list ipv4-router
+set firewall family inet filter ipv4-accept-common-services term accept-snmp from protocol udp
+set firewall family inet filter ipv4-accept-common-services term accept-snmp from source-prefix-list ipv4-snmp
+set firewall family inet filter ipv4-accept-common-services term accept-snmp from source-prefix-list snmp-client-lists
+set firewall family inet filter ipv4-accept-common-services term accept-snmp from source-prefix-list snmp-community-clients
+set firewall family inet filter ipv4-accept-common-services term accept-snmp then accept
+set firewall family inet filter ipv4-accept-common-services term accept-snmp then count ipv4-accept-snmp
+set firewall family inet filter ipv4-accept-common-services term accept-snmp then policer management-5m
+set firewall family inet filter ipv4-accept-common-services term accept-ssh from destination-port 830
+set firewall family inet filter ipv4-accept-common-services term accept-ssh from destination-port ssh
+set firewall family inet filter ipv4-accept-common-services term accept-ssh from protocol tcp
+set firewall family inet filter ipv4-accept-common-services term accept-ssh from source-prefix-list ipv4-admin
+set firewall family inet filter ipv4-accept-common-services term accept-ssh then accept
+set firewall family inet filter ipv4-accept-common-services term accept-ssh then count ipv4-accept-ssh
+set firewall family inet filter ipv4-accept-common-services term accept-ssh then policer management-5m
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-icmp from destination-prefix-list ipv4-router
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-icmp from icmp-type echo-request
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-icmp from icmp-type time-exceeded
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-icmp from icmp-type timestamp
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-icmp from protocol icmp
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-icmp from ttl 1
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-icmp then accept
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-icmp then count ipv4-accept-traceroute-icmp
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-icmp then policer management-5m
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-udp from destination-port 33435-33450
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-udp from destination-prefix-list ipv4-router
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-udp from protocol udp
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-udp from ttl 1
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-udp then accept
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-udp then count ipv4-accept-traceroute-udp
+set firewall family inet filter ipv4-accept-common-services term accept-traceroute-udp then policer management-5m
+set firewall family inet filter ipv4-accept-established term accept-established-tcp-http from destination-prefix-list ipv4-router
+set firewall family inet filter ipv4-accept-established term accept-established-tcp-http from source-port http
+set firewall family inet filter ipv4-accept-established term accept-established-tcp-http from source-port https
+set firewall family inet filter ipv4-accept-established term accept-established-tcp-http from source-prefix-list ipv4-admin
+set firewall family inet filter ipv4-accept-established term accept-established-tcp-http from tcp-established
+set firewall family inet filter ipv4-accept-established term accept-established-tcp-http then accept
+set firewall family inet filter ipv4-accept-established term accept-established-tcp-http then count ipv4-accept-established-tcp-http
+set firewall family inet filter ipv4-accept-established term accept-established-tcp-ssh from destination-prefix-list ipv4-router
+set firewall family inet filter ipv4-accept-established term accept-established-tcp-ssh from source-port ssh
+set firewall family inet filter ipv4-accept-established term accept-established-tcp-ssh from tcp-established
+set firewall family inet filter ipv4-accept-established term accept-established-tcp-ssh then accept
+set firewall family inet filter ipv4-accept-established term accept-established-tcp-ssh then count ipv4-accept-established-tcp-ssh
+set firewall family inet filter ipv4-accept-established term accept-established-tcp-ssh then policer management-5m
+set firewall family inet filter ipv4-accept-established term accept-established-udp-ephemeral from destination-port 49152-65535
+set firewall family inet filter ipv4-accept-established term accept-established-udp-ephemeral from destination-prefix-list ipv4-router
+set firewall family inet filter ipv4-accept-established term accept-established-udp-ephemeral from protocol udp
+set firewall family inet filter ipv4-accept-established term accept-established-udp-ephemeral then accept
+set firewall family inet filter ipv4-accept-established term accept-established-udp-ephemeral then count ipv4-accept-established-udp-ephemeral
+set firewall family inet filter ipv4-accept-established term accept-established-udp-ephemeral then policer management-5m
+set firewall family inet filter ipv4-accept-ospf term accept-ospf from destination-prefix-list ipv4-router
+set firewall family inet filter ipv4-accept-ospf term accept-ospf from destination-prefix-list ospf
+set firewall family inet filter ipv4-accept-ospf term accept-ospf from protocol ospf
+set firewall family inet filter ipv4-accept-ospf term accept-ospf from source-prefix-list ipv4-router
+set firewall family inet filter ipv4-accept-ospf term accept-ospf then accept
+set firewall family inet filter ipv4-accept-ospf term accept-ospf then count ipv4-accept-accept-ospf
+set firewall family inet filter ipv4-accept-rtr term accept-established-tcp-rtr from destination-prefix-list ipv4-router
+set firewall family inet filter ipv4-accept-rtr term accept-established-tcp-rtr from protocol tcp
+set firewall family inet filter ipv4-accept-rtr term accept-established-tcp-rtr from source-port 3323
+set firewall family inet filter ipv4-accept-rtr term accept-established-tcp-rtr from source-prefix-list ipv4-rtr-servers
+set firewall family inet filter ipv4-accept-rtr term accept-established-tcp-rtr from tcp-established
+set firewall family inet filter ipv4-accept-rtr term accept-established-tcp-rtr then accept
+set firewall family inet filter ipv4-accept-rtr term accept-established-tcp-rtr then count ipv6-accept-established-tcp-rtr
+set firewall family inet filter ipv4-discard-all term discard-icmp from protocol icmp
+set firewall family inet filter ipv4-discard-all term discard-icmp then count ipv4-discard-icmp
+set firewall family inet filter ipv4-discard-all term discard-icmp then discard
+set firewall family inet filter ipv4-discard-all term discard-icmp then log
+set firewall family inet filter ipv4-discard-all term discard-tcp from protocol tcp
+set firewall family inet filter ipv4-discard-all term discard-tcp then count ipv4-discard-tcp
+set firewall family inet filter ipv4-discard-all term discard-tcp then discard
+set firewall family inet filter ipv4-discard-all term discard-tcp then log
+set firewall family inet filter ipv4-discard-all term discard-ttl1-unknown from ttl 1
+set firewall family inet filter ipv4-discard-all term discard-ttl1-unknown then count ipv4-discard-ttl1-unknown
+set firewall family inet filter ipv4-discard-all term discard-ttl1-unknown then discard
+set firewall family inet filter ipv4-discard-all term discard-ttl1-unknown then log
+set firewall family inet filter ipv4-discard-all term discard-udp from protocol udp
+set firewall family inet filter ipv4-discard-all term discard-udp then count ipv4-discard-udp
+set firewall family inet filter ipv4-discard-all term discard-udp then discard
+set firewall family inet filter ipv4-discard-all term discard-udp then log
+set firewall family inet filter ipv4-discard-all term discard-unknown then count ipv4-discard-unknown
+set firewall family inet filter ipv4-discard-all term discard-unknown then discard
+set firewall family inet filter ipv4-discard-all term discard-unknown then log
+set firewall family inet filter ipv4-internet-ingress term 1 from destination-port snmp
+set firewall family inet filter ipv4-internet-ingress term 1 from protocol udp
+set firewall family inet filter ipv4-internet-ingress term 1 from source-address 209.50.158.0/23
+set firewall family inet filter ipv4-internet-ingress term 1 then accept
+set firewall family inet filter ipv4-internet-ingress term 2 from destination-port snmp
+set firewall family inet filter ipv4-internet-ingress term 2 from protocol udp
+set firewall family inet filter ipv4-internet-ingress term 2 then count ipv4-reject-dport-snmp
+set firewall family inet filter ipv4-internet-ingress term 2 then reject
+set firewall family inet filter ipv4-internet-ingress term 3 from destination-port ntp
+set firewall family inet filter ipv4-internet-ingress term 3 from protocol udp
+set firewall family inet filter ipv4-internet-ingress term 3 then count ipv4-reject-dport-ntp
+set firewall family inet filter ipv4-internet-ingress term 3 then reject
+set firewall family inet filter ipv4-internet-ingress term 4 from destination-port 7
+set firewall family inet filter ipv4-internet-ingress term 4 from protocol udp
+set firewall family inet filter ipv4-internet-ingress term 4 then count ipv4-reject-dport-7
+set firewall family inet filter ipv4-internet-ingress term 4 then reject
+set firewall family inet filter ipv4-internet-ingress term 5 from destination-port 9
+set firewall family inet filter ipv4-internet-ingress term 5 from protocol udp
+set firewall family inet filter ipv4-internet-ingress term 5 then count ipv4-reject-dport-9
+set firewall family inet filter ipv4-internet-ingress term 5 then reject
+set firewall family inet filter ipv4-internet-ingress term 6 from destination-port 17
+set firewall family inet filter ipv4-internet-ingress term 6 from protocol udp
+set firewall family inet filter ipv4-internet-ingress term 6 then count ipv4-reject-dport-17
+set firewall family inet filter ipv4-internet-ingress term 6 then reject
+set firewall family inet filter ipv4-internet-ingress term 7 from destination-port 19
+set firewall family inet filter ipv4-internet-ingress term 7 from protocol udp
+set firewall family inet filter ipv4-internet-ingress term 7 then count ipv4-reject-dport-19
+set firewall family inet filter ipv4-internet-ingress term 7 then reject
+set firewall family inet filter ipv4-internet-ingress term 8 from destination-port 1900
+set firewall family inet filter ipv4-internet-ingress term 8 from protocol udp
+set firewall family inet filter ipv4-internet-ingress term 8 then count ipv4-reject-dport-1900
+set firewall family inet filter ipv4-internet-ingress term 8 then reject
+set firewall family inet filter ipv4-internet-ingress term accept-remaining then accept
+set firewall family inet filter ipv4-security term discard-frags from is-fragment
+set firewall family inet filter ipv4-security term discard-frags then count ipv4-discard-discard-frags
+set firewall family inet filter ipv4-security term discard-frags then discard
+set firewall family inet filter ipv4-security term discard-frags then log
+set firewall family inet filter ipv4-security term discard-ip-options from ip-options any
+set firewall family inet filter ipv4-security term discard-ip-options then count ipv4-discard-discard-ip-options
+set firewall family inet filter ipv4-security term discard-ip-options then discard
+set firewall family inet filter ipv4-security term discard-ip-options then log
+set firewall family inet6 filter ipv6-accept-bgp term accept-bgp from destination-prefix-list ipv6-router
+set firewall family inet6 filter ipv6-accept-bgp term accept-bgp from next-header tcp
+set firewall family inet6 filter ipv6-accept-bgp term accept-bgp from port bgp
+set firewall family inet6 filter ipv6-accept-bgp term accept-bgp from source-prefix-list ipv6-bgp-neighbors
+set firewall family inet6 filter ipv6-accept-bgp term accept-bgp from source-prefix-list ipv6-bgp-neighbors-routing-instances
+set firewall family inet6 filter ipv6-accept-bgp term accept-bgp then accept
+set firewall family inet6 filter ipv6-accept-bgp term accept-bgp then count ipv6-accept-accept-bgp
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-icmp6 from destination-prefix-list ipv6-router
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-icmp6 from hop-limit 1
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-icmp6 from icmp-type echo-request
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-icmp6 from icmp-type time-exceeded
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-icmp6 from next-header icmp
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-icmp6 then accept
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-icmp6 then count ipv6-accept-traceroute-icmp6
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-icmp6 then policer management-1m
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-udp from destination-port 33435-33450
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-udp from destination-prefix-list ipv6-router
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-udp from hop-limit 1
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-udp from next-header udp
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-udp then accept
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-udp then count ipv6-accept-traceroute-udp
+set firewall family inet6 filter ipv6-accept-common-services term accept-traceroute-udp then policer management-1m
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-dest-unreachable-accept from icmp-type destination-unreachable
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-dest-unreachable-accept from next-header icmpv6
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-dest-unreachable-accept then accept
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-dest-unreachable-accept then count ipv6-accept-icmp6-dest-unreachable
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-dest-unreachable-accept then policer management-1m
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-echo-reply from icmp-type echo-reply
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-echo-reply from next-header icmpv6
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-echo-reply then accept
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-echo-reply then count ipv6-accept-icmp6-echo-reply
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-echo-reply then policer management-1m
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-echo-request from icmp-type echo-request
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-echo-request from next-header icmpv6
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-echo-request then accept
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-echo-request then count ipv6-accept-icmp6-echo-request
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-echo-request then policer management-1m
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-packet-too-big-accept from icmp-type packet-too-big
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-packet-too-big-accept from next-header icmpv6
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-packet-too-big-accept then accept
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-packet-too-big-accept then count ipv6-accept-icmp6-too-big
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-packet-too-big-accept then policer management-1m
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-parameter-problem-accept from icmp-code 1
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-parameter-problem-accept from icmp-code 2
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-parameter-problem-accept from icmp-type parameter-problem
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-parameter-problem-accept from next-header icmpv6
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-parameter-problem-accept then accept
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-parameter-problem-accept then count ipv6-accept-icmp6-parameter-problem
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-parameter-problem-accept then policer management-1m
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-time-exceeded-accept from icmp-code 0
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-time-exceeded-accept from icmp-type time-exceeded
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-time-exceeded-accept from next-header icmpv6
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-time-exceeded-accept then accept
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-time-exceeded-accept then count ipv6-accept-icmp6-time-exceeded
+set firewall family inet6 filter ipv6-accept-icmp6-misc term icmp6-time-exceeded-accept then policer management-1m
+set firewall family inet6 filter ipv6-accept-icmp6-misc term inverse-neigbor-discovery-accept from icmp-type 141-142
+set firewall family inet6 filter ipv6-accept-icmp6-misc term inverse-neigbor-discovery-accept from next-header icmpv6
+set firewall family inet6 filter ipv6-accept-icmp6-misc term inverse-neigbor-discovery-accept then accept
+set firewall family inet6 filter ipv6-accept-icmp6-misc term inverse-neigbor-discovery-accept then count ipv6-accept-icmp6-misc
+set firewall family inet6 filter ipv6-accept-icmp6-misc term inverse-neigbor-discovery-accept then policer management-1m
+set firewall family inet6 filter ipv6-accept-icmp6-misc term neigbor-discovery-accept from icmp-type 133-136
+set firewall family inet6 filter ipv6-accept-icmp6-misc term neigbor-discovery-accept from next-header icmpv6
+set firewall family inet6 filter ipv6-accept-icmp6-misc term neigbor-discovery-accept then accept
+set firewall family inet6 filter ipv6-accept-ospf term accept-ospfv3 from next-header ospf
+set firewall family inet6 filter ipv6-accept-ospf term accept-ospfv3 from source-prefix-list ipv6-link-local
+set firewall family inet6 filter ipv6-accept-ospf term accept-ospfv3 then accept
+set firewall family inet6 filter ipv6-accept-ospf term accept-ospfv3 then count ipv6-accept-accept-ospf
+set firewall family inet6 filter ipv6-discard-all term discard-hoplimit1-unknown from hop-limit 1
+set firewall family inet6 filter ipv6-discard-all term discard-hoplimit1-unknown then count ipv6-discard-hoplimit1-unknown
+set firewall family inet6 filter ipv6-discard-all term discard-hoplimit1-unknown then discard
+set firewall family inet6 filter ipv6-discard-all term discard-hoplimit1-unknown then log
+set firewall family inet6 filter ipv6-discard-all term discard-icmp from next-header icmp
+set firewall family inet6 filter ipv6-discard-all term discard-icmp then count ipv6-discard-icmp
+set firewall family inet6 filter ipv6-discard-all term discard-icmp then discard
+set firewall family inet6 filter ipv6-discard-all term discard-icmp then log
+set firewall family inet6 filter ipv6-discard-all term discard-tcp from next-header tcp
+set firewall family inet6 filter ipv6-discard-all term discard-tcp then count ipv6-discard-tcp
+set firewall family inet6 filter ipv6-discard-all term discard-tcp then discard
+set firewall family inet6 filter ipv6-discard-all term discard-tcp then log
+set firewall family inet6 filter ipv6-discard-all term discard-udp from next-header udp
+set firewall family inet6 filter ipv6-discard-all term discard-udp then count ipv6-discard-udp
+set firewall family inet6 filter ipv6-discard-all term discard-udp then discard
+set firewall family inet6 filter ipv6-discard-all term discard-udp then log
+set firewall family inet6 filter ipv6-discard-all term discard-unknown then count ipv6-discard-unknown
+set firewall family inet6 filter ipv6-discard-all term discard-unknown then discard
+set firewall family inet6 filter ipv6-discard-all term discard-unknown then log
+set firewall family inet6 filter ipv6-security term discard-extension-headers from next-header dstopts
+set firewall family inet6 filter ipv6-security term discard-extension-headers from next-header egp
+set firewall family inet6 filter ipv6-security term discard-extension-headers from next-header fragment
+set firewall family inet6 filter ipv6-security term discard-extension-headers from next-header gre
+set firewall family inet6 filter ipv6-security term discard-extension-headers from next-header icmp
+set firewall family inet6 filter ipv6-security term discard-extension-headers from next-header igmp
+set firewall family inet6 filter ipv6-security term discard-extension-headers from next-header ipip
+set firewall family inet6 filter ipv6-security term discard-extension-headers from next-header ipv6
+set firewall family inet6 filter ipv6-security term discard-extension-headers from next-header no-next-header
+set firewall family inet6 filter ipv6-security term discard-extension-headers from next-header routing
+set firewall family inet6 filter ipv6-security term discard-extension-headers from next-header rsvp
+set firewall family inet6 filter ipv6-security term discard-extension-headers from next-header sctp
+set firewall family inet6 filter ipv6-security term discard-extension-headers then count ipv6-discard-discard-extension-headers
+set firewall family inet6 filter ipv6-security term discard-extension-headers then discard
+set firewall family inet6 filter ipv6-security term discard-extension-headers then log
+set firewall family inet6 filter ipv6-security term icmp-rfc4443-discard from icmp-type 100-101
+set firewall family inet6 filter ipv6-security term icmp-rfc4443-discard from icmp-type 200-201
+set firewall family inet6 filter ipv6-security term icmp-rfc4443-discard from next-header icmpv6
+set firewall family inet6 filter ipv6-security term icmp-rfc4443-discard then count ipv6-discard-icmp6-rfc4443
+set firewall family inet6 filter ipv6-security term icmp-rfc4443-discard then discard
+set firewall family inet6 filter ipv6-security term icmp-rfc4443-discard then log
+set firewall family inet6 filter ipv6-security term icmp6-unassigned-discard from icmp-type 102-106
+set firewall family inet6 filter ipv6-security term icmp6-unassigned-discard from icmp-type 155-199
+set firewall family inet6 filter ipv6-security term icmp6-unassigned-discard from icmp-type 202-254
+set firewall family inet6 filter ipv6-security term icmp6-unassigned-discard from next-header icmpv6
+set firewall family inet6 filter ipv6-security term icmp6-unassigned-discard then count ipv6-discard-icmp6-unassigned-discard
+set firewall family inet6 filter ipv6-security term icmp6-unassigned-discard then discard
+set firewall family inet6 filter ipv6-security term icmp6-unassigned-discard then log
+set firewall policer management-1m if-exceeding bandwidth-limit 1m
+set firewall policer management-1m if-exceeding burst-size-limit 625k
+set firewall policer management-1m then discard
+set firewall policer management-5m if-exceeding bandwidth-limit 5m
+set firewall policer management-5m if-exceeding burst-size-limit 625k
+set firewall policer management-5m then discard
+set groups disable-bgp routing-instances <*> protocols bgp group <*> neighbor <*> export REJECT-ALL
+set groups firewall-ingress-protect interfaces <*> unit <*> family inet filter input-list ipv4-internet-ingress
+set groups protect-re interfaces lo0 unit <*> family inet filter input-list ipv4-accept-bgp
+set groups protect-re interfaces lo0 unit <*> family inet filter input-list ipv4-accept-common-services
+set groups protect-re interfaces lo0 unit <*> family inet filter input-list ipv4-accept-established
+set groups protect-re interfaces lo0 unit <*> family inet filter input-list ipv4-accept-ospf
+set groups protect-re interfaces lo0 unit <*> family inet filter input-list ipv4-accept-rtr
+set groups protect-re interfaces lo0 unit <*> family inet filter input-list ipv4-discard-all
+set groups protect-re interfaces lo0 unit <*> family inet filter input-list ipv4-security
+set groups protect-re interfaces lo0 unit <*> family inet6 filter input-list ipv6-accept-bgp
+set groups protect-re interfaces lo0 unit <*> family inet6 filter input-list ipv6-accept-common-services
+set groups protect-re interfaces lo0 unit <*> family inet6 filter input-list ipv6-accept-icmp6-misc
+set groups protect-re interfaces lo0 unit <*> family inet6 filter input-list ipv6-accept-ospf
+set groups protect-re interfaces lo0 unit <*> family inet6 filter input-list ipv6-discard-all
+set groups protect-re interfaces lo0 unit <*> family inet6 filter input-list ipv6-security
+set interfaces ae0 aggregated-ether-options lacp active
+set interfaces ae0 aggregated-ether-options lacp active
+set interfaces ae0 aggregated-ether-options lacp periodic fast
+set interfaces ae0 aggregated-ether-options lacp periodic fast
+set interfaces ae0 description "Core: edge1 [200G]"
+set interfaces ae0 description "Core: edge1 [200G]"
+set interfaces ae0 mtu 9216
+set interfaces ae0 unit 100 family inet address 69.58.92.9/31
+set interfaces ae0 unit 100 family inet6 address 2605:940:500:b1:a:de:453a:5c09/127
+set interfaces ae0 unit 100 vlan-id 100
+set interfaces ae0 vlan-tagging
+set interfaces em0 unit 0 family inet address 172.30.24.2/21
+set interfaces et-0/0/1 apply-groups firewall-ingress-protect
+set interfaces et-0/0/1 description "Transit: Cogent [100G-LR4] (...) {A.01.05.01.41 port:1,2 ref:...}"
+set interfaces et-0/0/1 unit 0 family inet address 38.140.30.234/29
+set interfaces et-0/0/1 unit 0 family inet6 address 2001:550:2:B::1F9:2/126
+set interfaces et-0/0/11 disable
+set interfaces et-0/0/13 disable
+set interfaces et-0/0/17 disable
+set interfaces et-0/0/19 disable
+set interfaces et-0/0/23 disable
+set interfaces et-0/0/25 description "Core: s-spine2 [100G-SR4]"
+set interfaces et-0/0/25 hold-time up 3000 down 30
+set interfaces et-0/0/25 mtu 9216
+set interfaces et-0/0/25 unit 100 family inet address 100.72.246.127/31
+set interfaces et-0/0/25 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:f67f/127
+set interfaces et-0/0/25 unit 100 vlan-id 100
+set interfaces et-0/0/25 vlan-tagging
+set interfaces et-0/0/29 description "Core: s-spine1 [100G-SR4]"
+set interfaces et-0/0/29 hold-time up 3000 down 30
+set interfaces et-0/0/29 mtu 9216
+set interfaces et-0/0/29 unit 100 family inet address 100.72.246.63/31
+set interfaces et-0/0/29 unit 100 family inet6 address 2605:940:500:b1:a:de:6448:f63f/127
+set interfaces et-0/0/29 unit 100 vlan-id 100
+set interfaces et-0/0/29 vlan-tagging
+set interfaces et-0/0/31 description "Core: edge1 [100G-SR4]"
+set interfaces et-0/0/31 gigether-options 802.3ad ae0
+set interfaces et-0/0/31 hold-time up 3000 down 30
+set interfaces et-0/0/35 description "Core: edge1 [100G-SR4]"
+set interfaces et-0/0/35 gigether-options 802.3ad ae0
+set interfaces et-0/0/35 hold-time up 3000 down 30
+set interfaces et-0/0/7 disable
+set interfaces lo0 apply-groups protect-re
+set interfaces lo0 description "Loopback:"
+set interfaces lo0 description "Loopback:"
+set interfaces lo0 unit 0
+set interfaces lo0 unit 0
+set interfaces lo0 unit 666 family inet address 69.58.92.2/32
+set interfaces lo0 unit 666 family inet6 address 2605:940:500:b1:a:de:453a:5c02/128
+set interfaces xe-0/0/3:0 disable
+set interfaces xe-0/0/3:1 apply-groups firewall-ingress-protect
+set interfaces xe-0/0/3:1 description "IX: SFMIX [10G-LR] {A.01.05.01.41 port:3,4 ref:...}"
+set interfaces xe-0/0/3:1 unit 0 family inet address 206.197.187.98/24
+set interfaces xe-0/0/3:1 unit 0 family inet6 address 2001:504:30::ba39:6919:1/64
+set interfaces xe-0/0/3:2 disable
+set interfaces xe-0/0/3:3 disable
+set interfaces xe-0/0/4:0 disable
+set interfaces xe-0/0/4:1 disable
+set interfaces xe-0/0/4:2 disable
+set interfaces xe-0/0/4:3 disable
+set interfaces xe-0/0/5:0 disable
+set interfaces xe-0/0/5:1 disable
+set interfaces xe-0/0/5:2 disable
+set interfaces xe-0/0/5:3 disable
+set policy-options as-path AS-PATH-ATTUS ".*7018$"
+set policy-options as-path AS-PATH-MODERATE ".{3,}"
+set policy-options as-path AS-PATH-TOO-MANY-HOPS ".{64,}"
+set policy-options as-path-group AS-GROUP-BOGON-ASN as-path bogon1 ".* 0 .*"
+set policy-options as-path-group AS-GROUP-BOGON-ASN as-path bogon2 ".* 23456 .*"
+set policy-options as-path-group AS-GROUP-BOGON-ASN as-path bogon3 ".* [64496-64511] .*"
+set policy-options as-path-group AS-GROUP-BOGON-ASN as-path bogon4 ".* [65536-65551] .*"
+set policy-options as-path-group AS-GROUP-BOGON-ASN as-path bogon5 ".* [64512-65534] .*"
+set policy-options as-path-group AS-GROUP-BOGON-ASN as-path bogon6 ".* [4200000000-4294967294] .*"
+set policy-options as-path-group AS-GROUP-BOGON-ASN as-path bogon7 ".* 65535 .*"
+set policy-options as-path-group AS-GROUP-BOGON-ASN as-path bogon8 ".* 4294967295 .*"
+set policy-options as-path-group AS-GROUP-BOGON-ASN as-path bogon9 ".* [65552-131071] .*"
+set policy-options community COMM-AKAMAI-IN-OUT members 64476:109
+set policy-options community COMM-BSO-IN-OUT members 64476:107
+set policy-options community COMM-COGENT-IN-OUT members 64476:102
+set policy-options community COMM-COMCAST-IN-OUT members 64476:103
+set policy-options community COMM-COMCAST-TRANSIT-IN-OUT members 64476:104
+set policy-options community COMM-CORE-IN-OUT members 64476:1
+set policy-options community COMM-GOOGLE-IN-OUT members 64476:108
+set policy-options community COMM-HOPUS-AMSTERDAM-IN-OUT members 64476:208
+set policy-options community COMM-HOPUS-PARIS-ALL-IN-OUT members 64476:202
+set policy-options community COMM-HOPUS-PARIS-FR-IN-OUT members 64476:201
+set policy-options community COMM-HURRICANE-IN-OUT members 64476:105
+set policy-options community COMM-INAP-IN-OUT members 64476:106
+set policy-options community COMM-IX-EQUINIX-PAOALTO-IN-OUT members 64476:206
+set policy-options community COMM-IX-EQUINIX-PARIS-IN-OUT members 64476:204
+set policy-options community COMM-IX-EQUINIX-SANJOSE-IN-OUT members 64476:207
+set policy-options community COMM-IX-FRANCEIX-PARIS-IN-OUT members 64476:203
+set policy-options community COMM-PROXIMUS-IN-OUT members 64476:111
+set policy-options community COMM-TELIA-IN-OUT members 64476:101
+set policy-options community COMM-TWITCH-IN-OUT members 64476:110
+set policy-options policy-statement AS12276-IX-SFMIX-IN-V4 then reject
+set policy-options policy-statement AS12276-IX-SFMIX-IN-V6 then reject
+set policy-options policy-statement AS12276-IX-SFMIX-OUT-V4 term ACCEPT-BLADE-ONLY from route-filter-list BLADE-SUPERNET-V4
+set policy-options policy-statement AS12276-IX-SFMIX-OUT-V4 term ACCEPT-BLADE-ONLY then accept
+set policy-options policy-statement AS12276-IX-SFMIX-OUT-V4 then reject
+set policy-options policy-statement AS12276-IX-SFMIX-OUT-V6 term ACCEPT-BLADE-ONLY from route-filter-list BLADE-SUPERNET-V6
+set policy-options policy-statement AS12276-IX-SFMIX-OUT-V6 term ACCEPT-BLADE-ONLY then accept
+set policy-options policy-statement AS12276-IX-SFMIX-OUT-V6 then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term ACCEPT-SPECIFIC-ATTUS from as-path AS-PATH-ATTUS
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term ACCEPT-SPECIFIC-ATTUS then accept
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term ACCEPT-SPECIFIC-ATTUS then local-preference add 50
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-BLADE-SUPERNET-V4 from route-filter-list BLADE-SUPERNET-V4
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-BLADE-SUPERNET-V4 then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-BOGON-ASN from as-path-group AS-GROUP-BOGON-ASN
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-BOGON-ASN then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-BOGON-V4 from route-filter-list BOGON-V4
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-BOGON-V4 then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-DEFAULT-V4 from route-filter-list DEFAULT-V4
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-DEFAULT-V4 then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-LONG-AS-PATH from as-path AS-PATH-TOO-MANY-HOPS
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-LONG-AS-PATH then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-RPKI-INVALID from validation-database invalid
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-RPKI-INVALID then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-RPKI-INVALID then validation-state invalid
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-TOO-SPECIFIC-V4 from route-filter-list TOO-SPECIFIC-V4
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term REJECT-TOO-SPECIFIC-V4 then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V4 term SET-ATTRIBUTES then community add COMM-COGENT-IN-OUT
+set policy-options policy-statement AS174-TRANSIT-IN-V4 then accept
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term ACCEPT-SPECIFIC-ATTUS from as-path AS-PATH-ATTUS
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term ACCEPT-SPECIFIC-ATTUS then accept
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term ACCEPT-SPECIFIC-ATTUS then local-preference add 50
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-BLADE-SUPERNET-V6 from route-filter-list BLADE-SUPERNET-V6
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-BLADE-SUPERNET-V6 then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-BOGON-ASN from as-path-group AS-GROUP-BOGON-ASN
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-BOGON-ASN then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-BOGON-V6 from route-filter-list BOGON-V6
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-BOGON-V6 then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-DEFAULT-V6 from route-filter-list DEFAULT-V6
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-DEFAULT-V6 then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-LONG-AS-PATH from as-path AS-PATH-TOO-MANY-HOPS
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-LONG-AS-PATH then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-RPKI-INVALID from validation-database invalid
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-RPKI-INVALID then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-RPKI-INVALID then validation-state invalid
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-TOO-SPECIFIC-V6 from route-filter-list TOO-SPECIFIC-V6
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term REJECT-TOO-SPECIFIC-V6 then reject
+set policy-options policy-statement AS174-TRANSIT-IN-V6 term SET-ATTRIBUTES then community add COMM-COGENT-IN-OUT
+set policy-options policy-statement AS174-TRANSIT-IN-V6 then accept
+set policy-options policy-statement AS174-TRANSIT-OUT-V4 term ACCEPT-BLADE-ONLY from route-filter-list BLADE-SUPERNET-V4
+set policy-options policy-statement AS174-TRANSIT-OUT-V4 term ACCEPT-BLADE-ONLY then accept
+set policy-options policy-statement AS174-TRANSIT-OUT-V4 term ACCEPT-BLADE-ONLY then community add COMM-COGENT-IN-OUT
+set policy-options policy-statement AS174-TRANSIT-OUT-V4 then reject
+set policy-options policy-statement AS174-TRANSIT-OUT-V6 term ACCEPT-BLADE-ONLY from route-filter-list BLADE-SUPERNET-V6
+set policy-options policy-statement AS174-TRANSIT-OUT-V6 term ACCEPT-BLADE-ONLY then accept
+set policy-options policy-statement AS174-TRANSIT-OUT-V6 term ACCEPT-BLADE-ONLY then community add COMM-COGENT-IN-OUT
+set policy-options policy-statement AS174-TRANSIT-OUT-V6 then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-BLADE-SUPERNET-V4 from route-filter-list BLADE-SUPERNET-V4
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-BLADE-SUPERNET-V4 then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-BOGON-ASN from as-path-group AS-GROUP-BOGON-ASN
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-BOGON-ASN then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-BOGON-V4 from route-filter-list BOGON-V4
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-BOGON-V4 then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-DEFAULT-V4 from route-filter-list DEFAULT-V4
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-DEFAULT-V4 then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-LONG-AS-PATH from as-path AS-PATH-TOO-MANY-HOPS
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-LONG-AS-PATH then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-NOT-AS49544-IRR-V4 from policy NOT-AS49544-IRR-V4
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-NOT-AS49544-IRR-V4 then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-RPKI-INVALID from validation-database invalid
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-RPKI-INVALID then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-RPKI-INVALID then validation-state invalid
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-TOO-SPECIFIC-V4 from route-filter-list TOO-SPECIFIC-V4
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term REJECT-TOO-SPECIFIC-V4 then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 term SET-ATTRIBUTES then local-preference 200
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V4 then accept
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-BLADE-SUPERNET-V6 from route-filter-list BLADE-SUPERNET-V6
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-BLADE-SUPERNET-V6 then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-BOGON-ASN from as-path-group AS-GROUP-BOGON-ASN
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-BOGON-ASN then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-BOGON-V6 from route-filter-list BOGON-V6
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-BOGON-V6 then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-DEFAULT-V6 from route-filter-list DEFAULT-V6
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-DEFAULT-V6 then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-LONG-AS-PATH from as-path AS-PATH-TOO-MANY-HOPS
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-LONG-AS-PATH then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-NOT-AS49544-IRR-V6 from policy NOT-AS49544-IRR-V6
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-NOT-AS49544-IRR-V6 then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-RPKI-INVALID from validation-database invalid
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-RPKI-INVALID then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-RPKI-INVALID then validation-state invalid
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-TOO-SPECIFIC-V6 from route-filter-list TOO-SPECIFIC-V6
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term REJECT-TOO-SPECIFIC-V6 then reject
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 term SET-ATTRIBUTES then local-preference 200
+set policy-options policy-statement AS49544-IX-SFMIX-IN-V6 then accept
+set policy-options policy-statement AS49544-IX-SFMIX-OUT-V4 term ACCEPT-BLADE-ONLY from route-filter-list BLADE-SUPERNET-V4
+set policy-options policy-statement AS49544-IX-SFMIX-OUT-V4 term ACCEPT-BLADE-ONLY then accept
+set policy-options policy-statement AS49544-IX-SFMIX-OUT-V4 then reject
+set policy-options policy-statement AS49544-IX-SFMIX-OUT-V6 term ACCEPT-BLADE-ONLY from route-filter-list BLADE-SUPERNET-V6
+set policy-options policy-statement AS49544-IX-SFMIX-OUT-V6 term ACCEPT-BLADE-ONLY then accept
+set policy-options policy-statement AS49544-IX-SFMIX-OUT-V6 then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-BLADE-SUPERNET-V4 from route-filter-list BLADE-SUPERNET-V4
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-BLADE-SUPERNET-V4 then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-BOGON-ASN from as-path-group AS-GROUP-BOGON-ASN
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-BOGON-ASN then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-BOGON-V4 from route-filter-list BOGON-V4
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-BOGON-V4 then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-DEFAULT-V4 from route-filter-list DEFAULT-V4
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-DEFAULT-V4 then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-LONG-AS-PATH from as-path AS-PATH-TOO-MANY-HOPS
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-LONG-AS-PATH then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-NOT-AS57976-IRR-V4 from policy NOT-AS57976-IRR-V4
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-NOT-AS57976-IRR-V4 then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-RPKI-INVALID from validation-database invalid
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-RPKI-INVALID then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-RPKI-INVALID then validation-state invalid
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-TOO-SPECIFIC-V4 from route-filter-list TOO-SPECIFIC-V4
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term REJECT-TOO-SPECIFIC-V4 then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 term SET-ATTRIBUTES then local-preference 200
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V4 then accept
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-BLADE-SUPERNET-V6 from route-filter-list BLADE-SUPERNET-V6
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-BLADE-SUPERNET-V6 then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-BOGON-ASN from as-path-group AS-GROUP-BOGON-ASN
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-BOGON-ASN then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-BOGON-V6 from route-filter-list BOGON-V6
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-BOGON-V6 then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-DEFAULT-V6 from route-filter-list DEFAULT-V6
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-DEFAULT-V6 then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-LONG-AS-PATH from as-path AS-PATH-TOO-MANY-HOPS
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-LONG-AS-PATH then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-NOT-AS57976-IRR-V6 from policy NOT-AS57976-IRR-V6
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-NOT-AS57976-IRR-V6 then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-RPKI-INVALID from validation-database invalid
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-RPKI-INVALID then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-RPKI-INVALID then validation-state invalid
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-TOO-SPECIFIC-V6 from route-filter-list TOO-SPECIFIC-V6
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term REJECT-TOO-SPECIFIC-V6 then reject
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 term SET-ATTRIBUTES then local-preference 200
+set policy-options policy-statement AS57976-IX-SFMIX-IN-V6 then accept
+set policy-options policy-statement AS57976-IX-SFMIX-OUT-V4 term ACCEPT-BLADE-ONLY from route-filter-list BLADE-SUPERNET-V4
+set policy-options policy-statement AS57976-IX-SFMIX-OUT-V4 term ACCEPT-BLADE-ONLY then accept
+set policy-options policy-statement AS57976-IX-SFMIX-OUT-V4 then reject
+set policy-options policy-statement AS57976-IX-SFMIX-OUT-V6 term ACCEPT-BLADE-ONLY from route-filter-list BLADE-SUPERNET-V6
+set policy-options policy-statement AS57976-IX-SFMIX-OUT-V6 term ACCEPT-BLADE-ONLY then accept
+set policy-options policy-statement AS57976-IX-SFMIX-OUT-V6 then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-BLADE-SUPERNET-V4 from route-filter-list BLADE-SUPERNET-V4
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-BLADE-SUPERNET-V4 then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-BOGON-ASN from as-path-group AS-GROUP-BOGON-ASN
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-BOGON-ASN then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-BOGON-V4 from route-filter-list BOGON-V4
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-BOGON-V4 then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-DEFAULT-V4 from route-filter-list DEFAULT-V4
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-DEFAULT-V4 then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-LONG-AS-PATH from as-path AS-PATH-TOO-MANY-HOPS
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-LONG-AS-PATH then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-RPKI-INVALID from validation-database invalid
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-RPKI-INVALID then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-RPKI-INVALID then validation-state invalid
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-TOO-SPECIFIC-V4 from route-filter-list TOO-SPECIFIC-V4
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term REJECT-TOO-SPECIFIC-V4 then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 term SET-ATTRIBUTES then local-preference 200
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V4 then accept
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-BLADE-SUPERNET-V6 from route-filter-list BLADE-SUPERNET-V6
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-BLADE-SUPERNET-V6 then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-BOGON-ASN from as-path-group AS-GROUP-BOGON-ASN
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-BOGON-ASN then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-BOGON-V6 from route-filter-list BOGON-V6
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-BOGON-V6 then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-DEFAULT-V6 from route-filter-list DEFAULT-V6
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-DEFAULT-V6 then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-LONG-AS-PATH from as-path AS-PATH-TOO-MANY-HOPS
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-LONG-AS-PATH then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-RPKI-INVALID from validation-database invalid
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-RPKI-INVALID then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-RPKI-INVALID then validation-state invalid
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-TOO-SPECIFIC-V6 from route-filter-list TOO-SPECIFIC-V6
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term REJECT-TOO-SPECIFIC-V6 then reject
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 term SET-ATTRIBUTES then local-preference 200
+set policy-options policy-statement AS63055-IX-SFMIX-IN-V6 then accept
+set policy-options policy-statement AS63055-IX-SFMIX-OUT-V4 term ACCEPT-BLADE-ONLY from route-filter-list BLADE-SUPERNET-V4
+set policy-options policy-statement AS63055-IX-SFMIX-OUT-V4 term ACCEPT-BLADE-ONLY then accept
+set policy-options policy-statement AS63055-IX-SFMIX-OUT-V4 then reject
+set policy-options policy-statement AS63055-IX-SFMIX-OUT-V6 term ACCEPT-BLADE-ONLY from route-filter-list BLADE-SUPERNET-V6
+set policy-options policy-statement AS63055-IX-SFMIX-OUT-V6 term ACCEPT-BLADE-ONLY then accept
+set policy-options policy-statement AS63055-IX-SFMIX-OUT-V6 then reject
+set policy-options policy-statement CORE-IN-V4 term REJECT-NOT-BLADE-SUPERNET-ORLONGER-V4 from policy NOT-BLADE-SUPERNET-ORLONGER-V4
+set policy-options policy-statement CORE-IN-V4 term REJECT-NOT-BLADE-SUPERNET-ORLONGER-V4 then reject
+set policy-options policy-statement CORE-IN-V4 then accept
+set policy-options policy-statement CORE-IN-V4 then community add COMM-CORE-IN-OUT
+set policy-options policy-statement CORE-IN-V4 then local-preference 1000
+set policy-options policy-statement CORE-IN-V6 term REJECT-NOT-BLADE-SUPERNET-ORLONGER-V6 from policy NOT-BLADE-SUPERNET-ORLONGER-V6
+set policy-options policy-statement CORE-IN-V6 term REJECT-NOT-BLADE-SUPERNET-ORLONGER-V6 then reject
+set policy-options policy-statement CORE-IN-V6 then accept
+set policy-options policy-statement CORE-IN-V6 then community add COMM-CORE-IN-OUT
+set policy-options policy-statement CORE-IN-V6 then local-preference 1000
+set policy-options policy-statement CORE-OUT-V4 term ACCEPT-DEFAULT-V4 from route-filter-list DEFAULT-V4
+set policy-options policy-statement CORE-OUT-V4 term ACCEPT-DEFAULT-V4 then accept
+set policy-options policy-statement CORE-OUT-V4 then reject
+set policy-options policy-statement CORE-OUT-V6 term ACCEPT-DEFAULT-V6 from route-filter-list DEFAULT-V6
+set policy-options policy-statement CORE-OUT-V6 term ACCEPT-DEFAULT-V6 then accept
+set policy-options policy-statement CORE-OUT-V6 then reject
+set policy-options policy-statement DEFAULT-ROUTE-GENERATE-V4 term TRANSIT-V4 from as-path AS-PATH-MODERATE
+set policy-options policy-statement DEFAULT-ROUTE-GENERATE-V4 term TRANSIT-V4 from protocol bgp
+set policy-options policy-statement DEFAULT-ROUTE-GENERATE-V4 term TRANSIT-V4 from route-filter 0.0.0.0/0 prefix-length-range /8-/12
+set policy-options policy-statement DEFAULT-ROUTE-GENERATE-V4 term TRANSIT-V4 then accept
+set policy-options policy-statement DEFAULT-ROUTE-GENERATE-V4 then reject
+set policy-options policy-statement DEFAULT-ROUTE-GENERATE-V6 term TRANSIT-V6 from as-path AS-PATH-MODERATE
+set policy-options policy-statement DEFAULT-ROUTE-GENERATE-V6 term TRANSIT-V6 from protocol bgp
+set policy-options policy-statement DEFAULT-ROUTE-GENERATE-V6 term TRANSIT-V6 from route-filter ::0/0 prefix-length-range /32-/32
+set policy-options policy-statement DEFAULT-ROUTE-GENERATE-V6 term TRANSIT-V6 then accept
+set policy-options policy-statement DEFAULT-ROUTE-GENERATE-V6 then reject
+set policy-options policy-statement IBGP-IN-V4 then accept
+set policy-options policy-statement IBGP-IN-V6 then accept
+set policy-options policy-statement IBGP-OUT-V4 term ACCEPT-BGP from protocol bgp
+set policy-options policy-statement IBGP-OUT-V4 term ACCEPT-BGP then accept
+set policy-options policy-statement IBGP-OUT-V4 term ACCEPT-BLADE-SUPERNET-V4 from route-filter-list BLADE-SUPERNET-V4
+set policy-options policy-statement IBGP-OUT-V4 term ACCEPT-BLADE-SUPERNET-V4 then accept
+set policy-options policy-statement IBGP-OUT-V4 term ACCEPT-CONNECTED from protocol direct
+set policy-options policy-statement IBGP-OUT-V4 term ACCEPT-CONNECTED then accept
+set policy-options policy-statement IBGP-OUT-V4 term SET-NEXT-HOP-SELF from protocol bgp
+set policy-options policy-statement IBGP-OUT-V4 term SET-NEXT-HOP-SELF then next-hop self
+set policy-options policy-statement IBGP-OUT-V4 then reject
+set policy-options policy-statement IBGP-OUT-V6 term ACCEPT-BGP from protocol bgp
+set policy-options policy-statement IBGP-OUT-V6 term ACCEPT-BGP then accept
+set policy-options policy-statement IBGP-OUT-V6 term ACCEPT-BLADE-SUPERNET-V6 from route-filter-list BLADE-SUPERNET-V6
+set policy-options policy-statement IBGP-OUT-V6 term ACCEPT-BLADE-SUPERNET-V6 then accept
+set policy-options policy-statement IBGP-OUT-V6 term ACCEPT-CONNECTED from protocol direct
+set policy-options policy-statement IBGP-OUT-V6 term ACCEPT-CONNECTED then accept
+set policy-options policy-statement IBGP-OUT-V6 term SET-NEXT-HOP-SELF from protocol bgp
+set policy-options policy-statement IBGP-OUT-V6 term SET-NEXT-HOP-SELF then next-hop self
+set policy-options policy-statement IBGP-OUT-V6 then reject
+set policy-options policy-statement NOT-AS49544-IRR-V4 term REJECT-VALID from route-filter-list AS49544-IRR-V4
+set policy-options policy-statement NOT-AS49544-IRR-V4 term REJECT-VALID then reject
+set policy-options policy-statement NOT-AS49544-IRR-V4 then accept
+set policy-options policy-statement NOT-AS49544-IRR-V6 term REJECT-VALID from route-filter-list AS49544-IRR-V6
+set policy-options policy-statement NOT-AS49544-IRR-V6 term REJECT-VALID then reject
+set policy-options policy-statement NOT-AS49544-IRR-V6 then accept
+set policy-options policy-statement NOT-AS57976-IRR-V4 term REJECT-VALID from route-filter-list AS57976-IRR-V4
+set policy-options policy-statement NOT-AS57976-IRR-V4 term REJECT-VALID then reject
+set policy-options policy-statement NOT-AS57976-IRR-V4 then accept
+set policy-options policy-statement NOT-AS57976-IRR-V6 term REJECT-VALID from route-filter-list AS57976-IRR-V6
+set policy-options policy-statement NOT-AS57976-IRR-V6 term REJECT-VALID then reject
+set policy-options policy-statement NOT-AS57976-IRR-V6 then accept
+set policy-options policy-statement NOT-BLADE-SUPERNET-ORLONGER-V4 term REJECT-BLADE-SUPERNET from route-filter-list BLADE-SUPERNET-ORLONGER-V4
+set policy-options policy-statement NOT-BLADE-SUPERNET-ORLONGER-V4 term REJECT-BLADE-SUPERNET then reject
+set policy-options policy-statement NOT-BLADE-SUPERNET-ORLONGER-V4 then accept
+set policy-options policy-statement NOT-BLADE-SUPERNET-ORLONGER-V6 term REJECT-BLADE-SUPERNET from route-filter-list BLADE-SUPERNET-ORLONGER-V6
+set policy-options policy-statement NOT-BLADE-SUPERNET-ORLONGER-V6 term REJECT-BLADE-SUPERNET then reject
+set policy-options policy-statement NOT-BLADE-SUPERNET-ORLONGER-V6 then accept
+set policy-options policy-statement NOT-BLADE-SUPERNET-V4 term REJECT-BLADE-SUPERNET from route-filter-list BLADE-SUPERNET-V4
+set policy-options policy-statement NOT-BLADE-SUPERNET-V4 term REJECT-BLADE-SUPERNET then reject
+set policy-options policy-statement NOT-BLADE-SUPERNET-V4 then accept
+set policy-options policy-statement NOT-BLADE-SUPERNET-V6 term REJECT-BLADE-SUPERNET from route-filter-list BLADE-SUPERNET-V6
+set policy-options policy-statement NOT-BLADE-SUPERNET-V6 term REJECT-BLADE-SUPERNET then reject
+set policy-options policy-statement NOT-BLADE-SUPERNET-V6 then accept
+set policy-options policy-statement REJECT-ALL then reject
+set policy-options policy-statement ecmp-default then load-balance per-packet
+set policy-options prefix-list dns-servers apply-path "system name-server <*>"
+set policy-options prefix-list ipv4-admin 172.30.24.0/21
+set policy-options prefix-list ipv4-admin 203.0.113.11/32
+set policy-options prefix-list ipv4-bgp-neighbors apply-path "protocols bgp group <ipv4-*> neighbor <*>"
+set policy-options prefix-list ipv4-bgp-neighbors-routing-instances apply-path "routing-instances <*> protocols bgp group <ipv4-*> neighbor <*>"
+set policy-options prefix-list ipv4-localhost 127.0.0.1/32
+set policy-options prefix-list ipv4-router apply-path "interfaces <*> unit <*> family inet address <*>"
+set policy-options prefix-list ipv4-rtr-servers apply-path "routing-options validation group validators session <*>"
+set policy-options prefix-list ipv6-bgp-neighbors apply-path "protocols bgp group <ipv6-*> neighbor <*>"
+set policy-options prefix-list ipv6-bgp-neighbors-routing-instances apply-path "routing-instances <*> protocols bgp group <ipv6-*> neighbor <*>"
+set policy-options prefix-list ipv6-link-local fe80::/64
+set policy-options prefix-list ipv6-router apply-path "interfaces <*> unit <*> family inet6 address <*>"
+set policy-options prefix-list ntp-servers apply-path "system ntp server <*>"
+set policy-options prefix-list ospf 224.0.0.5/32
+set policy-options prefix-list ospf 224.0.0.6/32
+set policy-options prefix-list snmp-client-lists apply-path "snmp client-list <*> <*>"
+set policy-options prefix-list snmp-community-clients apply-path "snmp community <*> clients <*>"
+set policy-options route-filter-list BLADE-SUPERNET-ORLONGER-V4 69.58.92.0/23 orlonger
+set policy-options route-filter-list BLADE-SUPERNET-ORLONGER-V6 2605:940:500::/40 orlonger
+set policy-options route-filter-list BLADE-SUPERNET-ORLONGER-V6 2605:940::/40 orlonger
+set policy-options route-filter-list BLADE-SUPERNET-V4 69.58.92.0/23 exact
+set policy-options route-filter-list BLADE-SUPERNET-V6 2605:940:500::/40 exact
+set policy-options route-filter-list BLADE-SUPERNET-V6 2605:940::/40 exact
+set policy-options route-filter-list BOGON-V4 0.0.0.0/8 orlonger
+set policy-options route-filter-list BOGON-V4 10.0.0.0/8 orlonger
+set policy-options route-filter-list BOGON-V4 100.64.0.0/10 orlonger
+set policy-options route-filter-list BOGON-V4 127.0.0.0/8 orlonger
+set policy-options route-filter-list BOGON-V4 169.254.0.0/16 orlonger
+set policy-options route-filter-list BOGON-V4 172.16.0.0/12 orlonger
+set policy-options route-filter-list BOGON-V4 192.0.2.0/24 orlonger
+set policy-options route-filter-list BOGON-V4 192.168.0.0/16 orlonger
+set policy-options route-filter-list BOGON-V4 192.88.99.0/24 orlonger
+set policy-options route-filter-list BOGON-V4 198.18.0.0/15 orlonger
+set policy-options route-filter-list BOGON-V4 198.51.100.0/24 orlonger
+set policy-options route-filter-list BOGON-V4 203.0.113.0/24 orlonger
+set policy-options route-filter-list BOGON-V4 224.0.0.0/4 orlonger
+set policy-options route-filter-list BOGON-V4 240.0.0.0/4 orlonger
+set policy-options route-filter-list BOGON-V6 100::/64 orlonger
+set policy-options route-filter-list BOGON-V6 2001:10::/28 orlonger
+set policy-options route-filter-list BOGON-V6 2001:2::/48 orlonger
+set policy-options route-filter-list BOGON-V6 2001:db8::/32 orlonger
+set policy-options route-filter-list BOGON-V6 2002::/16 orlonger
+set policy-options route-filter-list BOGON-V6 3ffe::/16 orlonger
+set policy-options route-filter-list BOGON-V6 ::/8 orlonger
+set policy-options route-filter-list BOGON-V6 fc00::/7 orlonger
+set policy-options route-filter-list BOGON-V6 fe80::/10 orlonger
+set policy-options route-filter-list BOGON-V6 fec0::/10 orlonger
+set policy-options route-filter-list BOGON-V6 ff00::/8 orlonger
+set policy-options route-filter-list DEFAULT-V4 0.0.0.0/0 exact
+set policy-options route-filter-list DEFAULT-V6 ::0/0 exact
+set policy-options route-filter-list TOO-SPECIFIC-V4 0.0.0.0/0 prefix-length-range /25-/32
+set policy-options route-filter-list TOO-SPECIFIC-V6 ::/0 prefix-length-range /49-/128
+set protocols lldp interface ae0
+set protocols lldp interface et-0/0/1
+set protocols lldp interface et-0/0/25
+set protocols lldp interface et-0/0/29
+set protocols lldp port-description-type interface-alias
+set protocols lldp port-id-subtype interface-name
+set routing-instances internet instance-type virtual-router
+set routing-instances internet instance-type virtual-router
+set routing-instances internet instance-type virtual-router
+set routing-instances internet instance-type virtual-router
+set routing-instances internet instance-type virtual-router
+set routing-instances internet instance-type virtual-router
+set routing-instances internet interface ae0.100
+set routing-instances internet interface et-0/0/1.0
+set routing-instances internet interface et-0/0/25.100
+set routing-instances internet interface et-0/0/29.100
+set routing-instances internet interface lo0.666
+set routing-instances internet interface xe-0/0/3:1.0
+set routing-instances internet protocols bgp group ipv4-blizzard description "blizzard AS57976"
+set routing-instances internet protocols bgp group ipv4-blizzard enforce-first-as
+set routing-instances internet protocols bgp group ipv4-blizzard export AS57976-IX-SFMIX-OUT-V4
+set routing-instances internet protocols bgp group ipv4-blizzard family inet unicast prefix-limit maximum 200
+set routing-instances internet protocols bgp group ipv4-blizzard family inet unicast prefix-limit teardown 80 idle-timeout 15
+set routing-instances internet protocols bgp group ipv4-blizzard import AS57976-IX-SFMIX-IN-V4
+set routing-instances internet protocols bgp group ipv4-blizzard local-as 396919
+set routing-instances internet protocols bgp group ipv4-blizzard multipath
+set routing-instances internet protocols bgp group ipv4-blizzard neighbor 206.197.187.42
+set routing-instances internet protocols bgp group ipv4-blizzard peer-as 57976
+set routing-instances internet protocols bgp group ipv4-blizzard remove-private
+set routing-instances internet protocols bgp group ipv4-blizzard type external
+set routing-instances internet protocols bgp group ipv4-cogent description "cogent AS174"
+set routing-instances internet protocols bgp group ipv4-cogent enforce-first-as
+set routing-instances internet protocols bgp group ipv4-cogent export AS174-TRANSIT-OUT-V4
+set routing-instances internet protocols bgp group ipv4-cogent family inet unicast loops 5
+set routing-instances internet protocols bgp group ipv4-cogent import AS174-TRANSIT-IN-V4
+set routing-instances internet protocols bgp group ipv4-cogent local-as 396919
+set routing-instances internet protocols bgp group ipv4-cogent multipath
+set routing-instances internet protocols bgp group ipv4-cogent neighbor 38.140.30.233
+set routing-instances internet protocols bgp group ipv4-cogent peer-as 174
+set routing-instances internet protocols bgp group ipv4-cogent remove-private
+set routing-instances internet protocols bgp group ipv4-cogent type external
+set routing-instances internet protocols bgp group ipv4-edges-IBGP description "IPv4 - iBGP AS396919"
+set routing-instances internet protocols bgp group ipv4-edges-IBGP export IBGP-OUT-V4
+set routing-instances internet protocols bgp group ipv4-edges-IBGP family inet unicast loops 5
+set routing-instances internet protocols bgp group ipv4-edges-IBGP import IBGP-IN-V4
+set routing-instances internet protocols bgp group ipv4-edges-IBGP local-address 69.58.92.2
+set routing-instances internet protocols bgp group ipv4-edges-IBGP local-as 396919
+set routing-instances internet protocols bgp group ipv4-edges-IBGP neighbor 69.58.92.1 description "IPv4 - iBGP session to edge1.ussfo03.blade-group.net"
+set routing-instances internet protocols bgp group ipv4-edges-IBGP peer-as 396919
+set routing-instances internet protocols bgp group ipv4-edges-IBGP type internal
+set routing-instances internet protocols bgp group ipv4-i3dnet description "i3d.net AS49544"
+set routing-instances internet protocols bgp group ipv4-i3dnet enforce-first-as
+set routing-instances internet protocols bgp group ipv4-i3dnet export AS49544-IX-SFMIX-OUT-V4
+set routing-instances internet protocols bgp group ipv4-i3dnet family inet unicast prefix-limit maximum 500
+set routing-instances internet protocols bgp group ipv4-i3dnet family inet unicast prefix-limit teardown 80 idle-timeout 15
+set routing-instances internet protocols bgp group ipv4-i3dnet import AS49544-IX-SFMIX-IN-V4
+set routing-instances internet protocols bgp group ipv4-i3dnet local-as 396919
+set routing-instances internet protocols bgp group ipv4-i3dnet multipath
+set routing-instances internet protocols bgp group ipv4-i3dnet neighbor 206.197.187.87
+set routing-instances internet protocols bgp group ipv4-i3dnet peer-as 49544
+set routing-instances internet protocols bgp group ipv4-i3dnet remove-private
+set routing-instances internet protocols bgp group ipv4-i3dnet type external
+set routing-instances internet protocols bgp group ipv4-lookingglasssfmix description "looking-glass-sfmix AS12276"
+set routing-instances internet protocols bgp group ipv4-lookingglasssfmix enforce-first-as
+set routing-instances internet protocols bgp group ipv4-lookingglasssfmix export AS12276-IX-SFMIX-OUT-V4
+set routing-instances internet protocols bgp group ipv4-lookingglasssfmix import AS12276-IX-SFMIX-IN-V4
+set routing-instances internet protocols bgp group ipv4-lookingglasssfmix local-as 396919
+set routing-instances internet protocols bgp group ipv4-lookingglasssfmix multipath
+set routing-instances internet protocols bgp group ipv4-lookingglasssfmix neighbor 206.197.187.1
+set routing-instances internet protocols bgp group ipv4-lookingglasssfmix peer-as 12276
+set routing-instances internet protocols bgp group ipv4-lookingglasssfmix remove-private
+set routing-instances internet protocols bgp group ipv4-lookingglasssfmix type external
+set routing-instances internet protocols bgp group ipv4-rssfmix description "rs-sfmix AS63055"
+set routing-instances internet protocols bgp group ipv4-rssfmix export AS63055-IX-SFMIX-OUT-V4
+set routing-instances internet protocols bgp group ipv4-rssfmix family inet unicast prefix-limit maximum 100000
+set routing-instances internet protocols bgp group ipv4-rssfmix family inet unicast prefix-limit teardown 80 idle-timeout 15
+set routing-instances internet protocols bgp group ipv4-rssfmix import AS63055-IX-SFMIX-IN-V4
+set routing-instances internet protocols bgp group ipv4-rssfmix local-as 396919
+set routing-instances internet protocols bgp group ipv4-rssfmix multipath
+set routing-instances internet protocols bgp group ipv4-rssfmix neighbor 206.197.187.253
+set routing-instances internet protocols bgp group ipv4-rssfmix neighbor 206.197.187.254
+set routing-instances internet protocols bgp group ipv4-rssfmix peer-as 63055
+set routing-instances internet protocols bgp group ipv4-rssfmix remove-private
+set routing-instances internet protocols bgp group ipv4-rssfmix type external
+set routing-instances internet protocols bgp group ipv4-s-spine1 description "s-spine1 AS4208999992"
+set routing-instances internet protocols bgp group ipv4-s-spine1 export CORE-OUT-V4
+set routing-instances internet protocols bgp group ipv4-s-spine1 import CORE-IN-V4
+set routing-instances internet protocols bgp group ipv4-s-spine1 multipath multiple-as
+set routing-instances internet protocols bgp group ipv4-s-spine1 neighbor 100.72.246.62 description s-spine1
+set routing-instances internet protocols bgp group ipv4-s-spine1 neighbor 100.72.246.62 local-as 4208999995
+set routing-instances internet protocols bgp group ipv4-s-spine1 neighbor 100.72.246.62 peer-as 4208999992
+set routing-instances internet protocols bgp group ipv4-s-spine1 type external
+set routing-instances internet protocols bgp group ipv4-s-spine2 description "s-spine2 AS4208999992"
+set routing-instances internet protocols bgp group ipv4-s-spine2 export CORE-OUT-V4
+set routing-instances internet protocols bgp group ipv4-s-spine2 import CORE-IN-V4
+set routing-instances internet protocols bgp group ipv4-s-spine2 multipath multiple-as
+set routing-instances internet protocols bgp group ipv4-s-spine2 neighbor 100.72.246.126 description s-spine2
+set routing-instances internet protocols bgp group ipv4-s-spine2 neighbor 100.72.246.126 local-as 4208999995
+set routing-instances internet protocols bgp group ipv4-s-spine2 neighbor 100.72.246.126 peer-as 4208999992
+set routing-instances internet protocols bgp group ipv4-s-spine2 type external
+set routing-instances internet protocols bgp group ipv6-blizzard description "blizzard AS57976"
+set routing-instances internet protocols bgp group ipv6-blizzard enforce-first-as
+set routing-instances internet protocols bgp group ipv6-blizzard export AS57976-IX-SFMIX-OUT-V6
+set routing-instances internet protocols bgp group ipv6-blizzard family inet6 unicast prefix-limit maximum 50
+set routing-instances internet protocols bgp group ipv6-blizzard family inet6 unicast prefix-limit teardown 80 idle-timeout 15
+set routing-instances internet protocols bgp group ipv6-blizzard import AS57976-IX-SFMIX-IN-V6
+set routing-instances internet protocols bgp group ipv6-blizzard local-as 396919
+set routing-instances internet protocols bgp group ipv6-blizzard multipath
+set routing-instances internet protocols bgp group ipv6-blizzard neighbor 2001:504:30::ba05:7976:1
+set routing-instances internet protocols bgp group ipv6-blizzard peer-as 57976
+set routing-instances internet protocols bgp group ipv6-blizzard remove-private
+set routing-instances internet protocols bgp group ipv6-blizzard type external
+set routing-instances internet protocols bgp group ipv6-cogent description "cogent AS174"
+set routing-instances internet protocols bgp group ipv6-cogent enforce-first-as
+set routing-instances internet protocols bgp group ipv6-cogent export AS174-TRANSIT-OUT-V6
+set routing-instances internet protocols bgp group ipv6-cogent family inet6 unicast loops 5
+set routing-instances internet protocols bgp group ipv6-cogent import AS174-TRANSIT-IN-V6
+set routing-instances internet protocols bgp group ipv6-cogent local-as 396919
+set routing-instances internet protocols bgp group ipv6-cogent multipath
+set routing-instances internet protocols bgp group ipv6-cogent neighbor 2001:550:2:B::1F9:1
+set routing-instances internet protocols bgp group ipv6-cogent peer-as 174
+set routing-instances internet protocols bgp group ipv6-cogent remove-private
+set routing-instances internet protocols bgp group ipv6-cogent type external
+set routing-instances internet protocols bgp group ipv6-edges-IBGP description "IPv6 - iBGP AS396919"
+set routing-instances internet protocols bgp group ipv6-edges-IBGP export IBGP-OUT-V6
+set routing-instances internet protocols bgp group ipv6-edges-IBGP family inet6 unicast loops 5
+set routing-instances internet protocols bgp group ipv6-edges-IBGP import IBGP-IN-V6
+set routing-instances internet protocols bgp group ipv6-edges-IBGP local-address 2605:940:500:b1:a:de:453a:5c02
+set routing-instances internet protocols bgp group ipv6-edges-IBGP local-as 396919
+set routing-instances internet protocols bgp group ipv6-edges-IBGP neighbor 2605:940:500:b1:a:de:453a:5c01 description "IPv6 - iBGP session to edge1.ussfo03.blade-group.net"
+set routing-instances internet protocols bgp group ipv6-edges-IBGP peer-as 396919
+set routing-instances internet protocols bgp group ipv6-edges-IBGP type internal
+set routing-instances internet protocols bgp group ipv6-i3dnet description "i3d.net AS49544"
+set routing-instances internet protocols bgp group ipv6-i3dnet enforce-first-as
+set routing-instances internet protocols bgp group ipv6-i3dnet export AS49544-IX-SFMIX-OUT-V6
+set routing-instances internet protocols bgp group ipv6-i3dnet family inet6 unicast prefix-limit maximum 200
+set routing-instances internet protocols bgp group ipv6-i3dnet family inet6 unicast prefix-limit teardown 80 idle-timeout 15
+set routing-instances internet protocols bgp group ipv6-i3dnet import AS49544-IX-SFMIX-IN-V6
+set routing-instances internet protocols bgp group ipv6-i3dnet local-as 396919
+set routing-instances internet protocols bgp group ipv6-i3dnet multipath
+set routing-instances internet protocols bgp group ipv6-i3dnet neighbor 2001:504:30::ba04:9544:1
+set routing-instances internet protocols bgp group ipv6-i3dnet peer-as 49544
+set routing-instances internet protocols bgp group ipv6-i3dnet remove-private
+set routing-instances internet protocols bgp group ipv6-i3dnet type external
+set routing-instances internet protocols bgp group ipv6-lookingglasssfmix description "looking-glass-sfmix AS12276"
+set routing-instances internet protocols bgp group ipv6-lookingglasssfmix enforce-first-as
+set routing-instances internet protocols bgp group ipv6-lookingglasssfmix export AS12276-IX-SFMIX-OUT-V6
+set routing-instances internet protocols bgp group ipv6-lookingglasssfmix import AS12276-IX-SFMIX-IN-V6
+set routing-instances internet protocols bgp group ipv6-lookingglasssfmix local-as 396919
+set routing-instances internet protocols bgp group ipv6-lookingglasssfmix multipath
+set routing-instances internet protocols bgp group ipv6-lookingglasssfmix neighbor 2001:504:30::ba01:2276:1
+set routing-instances internet protocols bgp group ipv6-lookingglasssfmix peer-as 12276
+set routing-instances internet protocols bgp group ipv6-lookingglasssfmix remove-private
+set routing-instances internet protocols bgp group ipv6-lookingglasssfmix type external
+set routing-instances internet protocols bgp group ipv6-rssfmix description "rs-sfmix AS63055"
+set routing-instances internet protocols bgp group ipv6-rssfmix export AS63055-IX-SFMIX-OUT-V6
+set routing-instances internet protocols bgp group ipv6-rssfmix family inet6 unicast prefix-limit maximum 50000
+set routing-instances internet protocols bgp group ipv6-rssfmix family inet6 unicast prefix-limit teardown 80 idle-timeout 15
+set routing-instances internet protocols bgp group ipv6-rssfmix import AS63055-IX-SFMIX-IN-V6
+set routing-instances internet protocols bgp group ipv6-rssfmix local-as 396919
+set routing-instances internet protocols bgp group ipv6-rssfmix multipath
+set routing-instances internet protocols bgp group ipv6-rssfmix neighbor 2001:504:30::ba06:3055:1
+set routing-instances internet protocols bgp group ipv6-rssfmix neighbor 2001:504:30::ba06:3055:2
+set routing-instances internet protocols bgp group ipv6-rssfmix peer-as 63055
+set routing-instances internet protocols bgp group ipv6-rssfmix remove-private
+set routing-instances internet protocols bgp group ipv6-rssfmix type external
+set routing-instances internet protocols bgp group ipv6-s-spine1 description "s-spine1 AS4208999992"
+set routing-instances internet protocols bgp group ipv6-s-spine1 export CORE-OUT-V6
+set routing-instances internet protocols bgp group ipv6-s-spine1 import CORE-IN-V6
+set routing-instances internet protocols bgp group ipv6-s-spine1 multipath multiple-as
+set routing-instances internet protocols bgp group ipv6-s-spine1 neighbor 2605:940:500:b1:a:de:6448:f63e description s-spine1
+set routing-instances internet protocols bgp group ipv6-s-spine1 neighbor 2605:940:500:b1:a:de:6448:f63e local-as 4208999995
+set routing-instances internet protocols bgp group ipv6-s-spine1 neighbor 2605:940:500:b1:a:de:6448:f63e peer-as 4208999992
+set routing-instances internet protocols bgp group ipv6-s-spine1 type external
+set routing-instances internet protocols bgp group ipv6-s-spine2 description "s-spine2 AS4208999992"
+set routing-instances internet protocols bgp group ipv6-s-spine2 export CORE-OUT-V6
+set routing-instances internet protocols bgp group ipv6-s-spine2 import CORE-IN-V6
+set routing-instances internet protocols bgp group ipv6-s-spine2 multipath multiple-as
+set routing-instances internet protocols bgp group ipv6-s-spine2 neighbor 2605:940:500:b1:a:de:6448:f67e description s-spine2
+set routing-instances internet protocols bgp group ipv6-s-spine2 neighbor 2605:940:500:b1:a:de:6448:f67e local-as 4208999995
+set routing-instances internet protocols bgp group ipv6-s-spine2 neighbor 2605:940:500:b1:a:de:6448:f67e peer-as 4208999992
+set routing-instances internet protocols bgp group ipv6-s-spine2 type external
+set routing-instances internet protocols bgp log-updown
+set routing-instances internet protocols bgp traceoptions file bgplog size 10k files 10
+set routing-instances internet protocols ospf area 0.0.0.0 interface ae0.100 interface-type p2p
+set routing-instances internet protocols ospf area 0.0.0.0 interface ae0.100 metric 10
+set routing-instances internet protocols ospf area 0.0.0.0 interface lo0.666 passive
+set routing-instances internet protocols ospf3 area 0.0.0.0 interface ae0.100 interface-type p2p
+set routing-instances internet protocols ospf3 area 0.0.0.0 interface ae0.100 metric 10
+set routing-instances internet protocols ospf3 area 0.0.0.0 interface lo0.666 passive
+set routing-instances internet routing-options generate route 0.0.0.0/0 discard
+set routing-instances internet routing-options generate route 0.0.0.0/0 policy DEFAULT-ROUTE-GENERATE-V4
+set routing-instances internet routing-options rib internet.inet6.0 generate route ::0/0 discard
+set routing-instances internet routing-options rib internet.inet6.0 generate route ::0/0 policy DEFAULT-ROUTE-GENERATE-V6
+set routing-instances internet routing-options rib internet.inet6.0 static route 2605:940:500::/40 community 64476:64476
+set routing-instances internet routing-options rib internet.inet6.0 static route 2605:940:500::/40 discard
+set routing-instances internet routing-options rib internet.inet6.0 static route 2605:940:500::/40 no-install
+set routing-instances internet routing-options rib internet.inet6.0 static route 2605:940:500::/40 preference 200
+set routing-instances internet routing-options rib internet.inet6.0 static route 2605:940::/40 community 64476:64476
+set routing-instances internet routing-options rib internet.inet6.0 static route 2605:940::/40 discard
+set routing-instances internet routing-options rib internet.inet6.0 static route 2605:940::/40 no-install
+set routing-instances internet routing-options rib internet.inet6.0 static route 2605:940::/40 preference 200
+set routing-instances internet routing-options static route 69.58.92.0/23 community 64476:64476
+set routing-instances internet routing-options static route 69.58.92.0/23 discard
+set routing-instances internet routing-options static route 69.58.92.0/23 no-install
+set routing-instances internet routing-options static route 69.58.92.0/23 preference 200
+set routing-options forwarding-table ecmp-fast-reroute
+set routing-options forwarding-table export ecmp-default
+set routing-options forwarding-table indirect-next-hop
+set routing-options static route 10.0.0.0/8 next-hop 172.30.31.254
+set routing-options static route 172.16.0.0/12 next-hop 172.30.31.254
+set routing-options validation group validators session 10.0.0.31 port 3323
+set routing-options validation notification-rib internet.inet.0
+set routing-options validation notification-rib internet.inet6.0
+set snmp community 67dskf8fds78fdn authorization read-only
+set snmp location "San Francisco, US"
+set snmp routing-instance-access
+set system domain-name blade-group.net
+set system host-name edge2.ussfo03
+set system location country-code US
+set system login class backup permissions secret
+set system login class backup permissions view
+set system login class backup permissions view-configuration
+set system login message "______ _           _\n| ___ \\ |         | |\n| |_/ / | __ _  __| | ___      This is a private system.\n| ___ \\ |/ _` |/ _` |/ _ \\     Use by unauthorized persons is prohibited.\n| |_/ / | (_| | (_| |  __/     Go away.\n\\____/|_|\\__,_|\\__,_|\\___|\n"
+set system login retry-options backoff-factor 5
+set system login retry-options backoff-threshold 3
+set system login retry-options maximum-time 20
+set system login retry-options tries-before-disconnect 3
+set system login user alfred authentication ssh-rsa "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDlfgjPITduKHmK7PYagxJrX/pPxRcY64Ccwad8NhBWEO/op/VkgECHlOVdw/nJ90EOI/UXkwqCQBLVzr+TeogI4dKAjLtwMikTQznxSfCgrjybPp/+WPWDFC9N08rwLlj3HWNrPp30CFzljun82Ljo6ykPd2lb2TH+xvliNAseWJiTmLx9nWmOV/oAGLX7lGZ6NYV8HNSjfpWwIjLp1xhnyur71kVoWAI0D9S6JIcw4AXc2mfC91Io9JshUCNnKdCY6Eae9YCCj+T+JXOh5KBU66plv4gFyDF/RJ+LD2yhu0WOCAre0t0wSiJ6M7AdplUgDtM4aYwLNU79miXLpULhHFpgqlpKxvxJW56lLh1QtxJZBK7ppM4Q69d3s/S1+Zo6ekfnzDFqQibltuF10srOuJNUKEGY3jVq8U0pwlqilelTUtAN7vRTTZIsueLGHF4gTJKcOqxJMPIroaEebVESy7wrAE0y9u+mH9QlcLTZzudypN18ll7bagAAhw8QC1c= alfred"
+set system login user alfred class super-user
+set system login user blade authentication encrypted-password "$5$.............."
+set system login user blade class super-user
+set system login user roger authentication ssh-rsa "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC1k62F1WguJ0seuCtzuFLfOzI1MHCpQR3qeW3OjzqtEIl5h6/whKayzYP++as8X8Y5YKVSp5g2mjCRAkB9C5/hfwI4yI381rm3wT8dRJGR/yUy6l0qDbS+kQTJtoQbsz4j+NAsk2utRb8OAYBwYVVbKVaIj8cywYmfYRL86DVdzN8XU0vvU3OZcmjRTOhJQ5WkhU3phMAs3aFo/3v11g3VllpDPRcB0w4iP6Qsay8iDUUr6EFO/k7N/IS3QxmOlziPj7JHTqc/jftAwsizLsq+WFKFNDdDJ0RLDbUUMasnvJ3jbIgaxiwkuO/ObknZI1MCWNcocRy+Ch2PvgXrcdMB1+UP1f3IZZF5S1h7it1VpfZFKD9v9qEnukoVIlfJxJkq4dp8jOqyPgoV4s7a5shdqCF5OKiY+fgAVf6oOM8naJ0FlPRE5twbYkeDsvCmzztWqeJO/vXj3qtFmjq5ZbuUJa4xCpppI20yGMVfTqkTb7YbTCCdaqVhXzzYWcFjUXE= roger"
+set system login user roger class super-user
+set system name-server 172.30.20.2
+set system name-server 172.30.20.3
+set system ntp server 172.30.20.4
+set system ntp server 172.30.20.5
+set system ports console log-out-on-disconnect
+set system ports console type vt100
+set system root-authentication encrypted-password "$5$......"
+set system services netconf ssh
+set system services ssh authentication-order password
+set system services ssh connection-limit 10
+set system services ssh protocol-version v2
+set system services ssh rate-limit 10
+set system services ssh root-login deny
+set system syslog archive size 10m files 10 world-readable
+set system syslog console authorization info
+set system syslog file * user emergency
+set system syslog file commands explicit-priority
+set system syslog file commands interactive-commands info
+set system syslog file console any critical
+set system syslog file console authorization info
+set system syslog file default-log-messages any any
+set system syslog file default-log-messages structured-data
+set system syslog file filter explicit-priority
+set system syslog file filter firewall any
+set system syslog file interactive-commands interactive-commands any
+set system syslog file interfaces any info
+set system syslog file interfaces archive size 1m files 10
+set system syslog file interfaces daemon info
+set system syslog file interfaces explicit-priority
+set system syslog file interfaces match .*SNMP_TRAP_LINK.*
+set system syslog file messages any any
+set system syslog file messages archive size 1m files 10
+set system syslog file messages authorization none
+set system syslog file messages change-log notice
+set system syslog file messages explicit-priority
+set system syslog file messages firewall none
+set system syslog file messages interactive-commands none
+set system syslog file messages match "!(Virtual Chassis Fabric usage requires a license|Receive FX craftd set alarm message|color: 2 class: 50 object: 50 slot: 126 id=0 reason=168|downward spike received from pfe for ibytes_reply)"
+set system syslog file security authorization info
+set system syslog file security explicit-priority
+set system syslog file security interactive-commands info
+set system syslog file updown any info
+set system syslog file updown match "LINK_DOWN|LINK_UP"
+set system syslog host 172.30.20.10 any warning
+set system syslog host 172.30.20.10 authorization notice
+set system syslog host 172.30.20.10 firewall any
+set system syslog host 172.30.20.10 interactive-commands any
+set system syslog host 172.30.20.10 port 514
+set system syslog host 172.30.20.10 source-address 172.30.24.2
+set system syslog host 172.30.20.10 structured-data
+set system syslog host 172.30.20.9 any warning
+set system syslog host 172.30.20.9 authorization notice
+set system syslog host 172.30.20.9 firewall any
+set system syslog host 172.30.20.9 interactive-commands any
+set system syslog host 172.30.20.9 port 514
+set system syslog host 172.30.20.9 source-address 172.30.24.2
+set system syslog host 172.30.20.9 structured-data
+set system syslog time-format year millisecond
+set system syslog user * any emergency
+set system time-zone UTC

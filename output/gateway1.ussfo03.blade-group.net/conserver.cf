@@ -1,0 +1,63 @@
+default * {
+        timestamp 1hab;
+        master localhost;
+        logfile /var/log/conserver/devices/&;
+        rw *;                           # allow all users
+}
+access * {
+        trusted 127.0.0.1;
+}
+default opengear {
+        portinc 1;
+        type exec;
+        exec /usr/bin/ssh -l root -p P H;
+        execsubst H=hs,P=Pd;
+        portbase 3000;
+}
+
+default con1-n1.ussfo03.blade-group.net {
+        include opengear ;
+        host con1-n1.ussfo03.blade-group.net;
+}
+
+console edge1 { include con1-n1.ussfo03.blade-group.net ;port 1; }
+console s-spine1 { include con1-n1.ussfo03.blade-group.net ;port 2; }
+console to1-ap1 { include con1-n1.ussfo03.blade-group.net ;port 3; }
+console ob1-n1 { include con1-n1.ussfo03.blade-group.net ;port 4; }
+default con1-n2.ussfo03.blade-group.net {
+        include opengear ;
+        host con1-n2.ussfo03.blade-group.net;
+}
+
+console edge2 { include con1-n2.ussfo03.blade-group.net ;port 1; }
+console s-spine2 { include con1-n2.ussfo03.blade-group.net ;port 2; }
+console to2-ap1 { include con1-n2.ussfo03.blade-group.net ;port 3; }
+console ob1-n2 { include con1-n2.ussfo03.blade-group.net ;port 4; }
+default con1-ag1.ussfo03.blade-group.net {
+        include opengear ;
+        host con1-ag1.ussfo03.blade-group.net;
+}
+
+console spine1 { include con1-ag1.ussfo03.blade-group.net ;port 1; }
+console ob1-ag1 { include con1-ag1.ussfo03.blade-group.net ;port 2; }
+console to1-p1 { include con1-ag1.ussfo03.blade-group.net ;port 3; }
+console to1-p2 { include con1-ag1.ussfo03.blade-group.net ;port 4; }
+console to1-p3 { include con1-ag1.ussfo03.blade-group.net ;port 5; }
+console to1-p5 { include con1-ag1.ussfo03.blade-group.net ;port 7; }
+console to1-p8 { include con1-ag1.ussfo03.blade-group.net ;port 10; }
+console to1-sp2 { include con1-ag1.ussfo03.blade-group.net ;port 14; }
+console to1-sp3 { include con1-ag1.ussfo03.blade-group.net ;port 15; }
+default con1-ag2.ussfo03.blade-group.net {
+        include opengear ;
+        host con1-ag2.ussfo03.blade-group.net;
+}
+
+console spine2 { include con1-ag2.ussfo03.blade-group.net ;port 1; }
+console ob1-ag2 { include con1-ag2.ussfo03.blade-group.net ;port 2; }
+console to2-p1 { include con1-ag2.ussfo03.blade-group.net ;port 3; }
+console to2-p2 { include con1-ag2.ussfo03.blade-group.net ;port 4; }
+console to2-p3 { include con1-ag2.ussfo03.blade-group.net ;port 5; }
+console to2-p5 { include con1-ag2.ussfo03.blade-group.net ;port 7; }
+console to2-p8 { include con1-ag2.ussfo03.blade-group.net ;port 10; }
+console to2-sp2 { include con1-ag2.ussfo03.blade-group.net ;port 14; }
+console to2-sp3 { include con1-ag2.ussfo03.blade-group.net ;port 15; }

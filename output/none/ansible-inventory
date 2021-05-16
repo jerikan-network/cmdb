@@ -1,0 +1,786 @@
+ob1-n1.sk1.blade-group.net  ansible_host=172.29.15.12  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob2-n1.sk1.blade-group.net  ansible_host=172.29.15.13  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob1-p1.sk1.blade-group.net  ansible_host=172.29.15.3  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob2-p1.sk1.blade-group.net  ansible_host=172.29.15.4  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob1-p2.sk1.blade-group.net  ansible_host=172.29.15.5  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob2-p2.sk1.blade-group.net  ansible_host=172.29.15.6  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+spine1.sk1.blade-group.net  ansible_host=172.29.15.14  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!
+spine2.sk1.blade-group.net  ansible_host=172.29.15.15  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!
+to1-p1.sk1.blade-group.net  ansible_host=172.29.15.16  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!
+to2-p1.sk1.blade-group.net  ansible_host=172.29.15.17  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!
+to1-p2.sk1.blade-group.net  ansible_host=172.29.15.18  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!
+to2-p2.sk1.blade-group.net  ansible_host=172.29.15.19  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!
+to1-sp2.sk1.blade-group.net  ansible_host=172.29.15.30  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!
+to2-sp2.sk1.blade-group.net  ansible_host=172.29.15.32  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!
+to1-ap1.sk1.blade-group.net  ansible_host=172.29.15.26  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!
+to2-ap1.sk1.blade-group.net  ansible_host=172.29.15.27  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!
+con1-n1.sk1.blade-group.net  ansible_host=172.29.15.10  ansible_user=root  ansible_password=default
+gateway1.sk1.blade-group.net  ansible_host=172.29.64.4  ansible_user=root
+gateway2.sk1.blade-group.net  ansible_host=172.29.64.5  ansible_user=root
+ob1-n1.ussfo03.blade-group.net  ansible_host=172.30.24.9  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob1-n2.ussfo03.blade-group.net  ansible_host=172.30.24.10  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob1-ag1.ussfo03.blade-group.net  ansible_host=172.30.24.11  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob1-ag2.ussfo03.blade-group.net  ansible_host=172.30.24.12  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob1-p1.ussfo03.blade-group.net  ansible_host=172.30.24.31  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob2-p1.ussfo03.blade-group.net  ansible_host=172.30.24.32  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob3-p1.ussfo03.blade-group.net  ansible_host=172.30.24.33  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob4-p1.ussfo03.blade-group.net  ansible_host=172.30.24.34  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob1-p2.ussfo03.blade-group.net  ansible_host=172.30.24.37  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob2-p2.ussfo03.blade-group.net  ansible_host=172.30.24.38  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob3-p2.ussfo03.blade-group.net  ansible_host=172.30.24.39  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob4-p2.ussfo03.blade-group.net  ansible_host=172.30.24.40  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob1-p3.ussfo03.blade-group.net  ansible_host=172.30.24.43  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob2-p3.ussfo03.blade-group.net  ansible_host=172.30.24.44  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob3-p3.ussfo03.blade-group.net  ansible_host=172.30.24.45  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob4-p3.ussfo03.blade-group.net  ansible_host=172.30.24.46  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob1-p5.ussfo03.blade-group.net  ansible_host=172.30.24.49  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob2-p5.ussfo03.blade-group.net  ansible_host=172.30.24.50  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob3-p5.ussfo03.blade-group.net  ansible_host=172.30.24.51  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob4-p5.ussfo03.blade-group.net  ansible_host=172.30.24.52  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob1-p8.ussfo03.blade-group.net  ansible_host=172.30.24.55  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob2-p8.ussfo03.blade-group.net  ansible_host=172.30.24.56  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob3-p8.ussfo03.blade-group.net  ansible_host=172.30.24.57  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob4-p8.ussfo03.blade-group.net  ansible_host=172.30.24.58  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob1-sp2.ussfo03.blade-group.net  ansible_host=172.30.24.61  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob2-sp2.ussfo03.blade-group.net  ansible_host=172.30.24.62  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob3-sp2.ussfo03.blade-group.net  ansible_host=172.30.24.63  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob4-sp2.ussfo03.blade-group.net  ansible_host=172.30.24.64  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob1-sp3.ussfo03.blade-group.net  ansible_host=172.30.24.67  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob2-sp3.ussfo03.blade-group.net  ansible_host=172.30.24.68  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob3-sp3.ussfo03.blade-group.net  ansible_host=172.30.24.69  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+ob4-sp3.ussfo03.blade-group.net  ansible_host=172.30.24.70  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=ios
+spine1.ussfo03.blade-group.net  ansible_host=172.30.24.5  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::8eea:1bff:fe8d:d95c
+spine2.ussfo03.blade-group.net  ansible_host=172.30.24.6  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::8eea:1bff:fe80:d31f
+s-spine1.ussfo03.blade-group.net  ansible_host=172.30.24.3  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::8eea:1bff:fe5d:6151
+s-spine2.ussfo03.blade-group.net  ansible_host=172.30.24.4  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::ce37:abff:fedd:b841
+to1-ap1.ussfo03.blade-group.net  ansible_host=172.30.24.7  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::aa2b:b5ff:fe43:9fee
+to2-ap1.ussfo03.blade-group.net  ansible_host=172.30.24.8  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::ce37:abff:fee1:10a7
+to1-p1.ussfo03.blade-group.net  ansible_host=172.30.24.29  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::ce37:abff:fedd:a317
+to2-p1.ussfo03.blade-group.net  ansible_host=172.30.24.30  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::aa2b:b5ff:fe2f:7c70
+to1-p2.ussfo03.blade-group.net  ansible_host=172.30.24.35  ansible_user=blade  ansible_connection=netconf  ansible_network_os=junos
+to2-p2.ussfo03.blade-group.net  ansible_host=172.30.24.36  ansible_user=blade  ansible_connection=netconf  ansible_network_os=junos
+to1-p3.ussfo03.blade-group.net  ansible_host=172.30.24.41  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::8eea:1bff:fe36:76de
+to2-p3.ussfo03.blade-group.net  ansible_host=172.30.24.42  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::aa2b:b5ff:fe29:1f7b
+to1-p5.ussfo03.blade-group.net  ansible_host=172.30.24.47  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::aa2b:b5ff:fe2f:a8c8
+to2-p5.ussfo03.blade-group.net  ansible_host=172.30.24.48  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::ce37:abff:fed5:c25f
+to1-p8.ussfo03.blade-group.net  ansible_host=172.30.24.53  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::aa2b:b5ff:fe5f:e757
+to2-p8.ussfo03.blade-group.net  ansible_host=172.30.24.54  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::aa2b:b5ff:fe4c:9060
+to1-sp2.ussfo03.blade-group.net  ansible_host=172.30.24.59  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::aa2b:b5ff:fe5f:9dc5
+to2-sp2.ussfo03.blade-group.net  ansible_host=172.30.24.60  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::aa2b:b5ff:fe58:a557
+to1-sp3.ussfo03.blade-group.net  ansible_host=172.30.24.65  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::aa2b:b5ff:fe29:32a1
+to2-sp3.ussfo03.blade-group.net  ansible_host=172.30.24.66  ansible_user=cumulus  ansible_become=yes  ansible_password=CumulusLinux!  ansible_become_password=CumulusLinux!  bmc_ipv6=fe80::aa2b:b5ff:fe4c:474f
+con1-n1.ussfo03.blade-group.net  ansible_host=172.30.24.13  ansible_user=root  ansible_password=default
+con1-n2.ussfo03.blade-group.net  ansible_host=172.30.24.15  ansible_user=root  ansible_password=default
+con1-ag1.ussfo03.blade-group.net  ansible_host=172.30.24.17  ansible_user=root  ansible_password=default
+con1-ag2.ussfo03.blade-group.net  ansible_host=172.30.24.19  ansible_user=root  ansible_password=default
+gateway1.ussfo03.blade-group.net  ansible_host=172.30.20.4  ansible_user=root
+gateway2.ussfo03.blade-group.net  ansible_host=172.30.20.5  ansible_user=root
+edge1.sk1.blade-group.net  ansible_host=172.29.15.28  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=iosxr
+edge2.sk1.blade-group.net  ansible_host=172.29.15.29  ansible_user=blade  ansible_connection=network_cli  ansible_network_os=iosxr
+edge1.ussfo03.blade-group.net  ansible_host=172.30.24.1  ansible_user=blade  ansible_connection=netconf  ansible_network_os=junos
+edge2.ussfo03.blade-group.net  ansible_host=172.30.24.2  ansible_user=blade  ansible_connection=netconf  ansible_network_os=junos
+none  ansible_connection=local
+
+
+[oob]
+ob1-n1.sk1.blade-group.net
+ob2-n1.sk1.blade-group.net
+ob1-p1.sk1.blade-group.net
+ob2-p1.sk1.blade-group.net
+ob1-p2.sk1.blade-group.net
+ob2-p2.sk1.blade-group.net
+ob1-n1.ussfo03.blade-group.net
+ob1-n2.ussfo03.blade-group.net
+ob1-ag1.ussfo03.blade-group.net
+ob1-ag2.ussfo03.blade-group.net
+ob1-p1.ussfo03.blade-group.net
+ob2-p1.ussfo03.blade-group.net
+ob3-p1.ussfo03.blade-group.net
+ob4-p1.ussfo03.blade-group.net
+ob1-p2.ussfo03.blade-group.net
+ob2-p2.ussfo03.blade-group.net
+ob3-p2.ussfo03.blade-group.net
+ob4-p2.ussfo03.blade-group.net
+ob1-p3.ussfo03.blade-group.net
+ob2-p3.ussfo03.blade-group.net
+ob3-p3.ussfo03.blade-group.net
+ob4-p3.ussfo03.blade-group.net
+ob1-p5.ussfo03.blade-group.net
+ob2-p5.ussfo03.blade-group.net
+ob3-p5.ussfo03.blade-group.net
+ob4-p5.ussfo03.blade-group.net
+ob1-p8.ussfo03.blade-group.net
+ob2-p8.ussfo03.blade-group.net
+ob3-p8.ussfo03.blade-group.net
+ob4-p8.ussfo03.blade-group.net
+ob1-sp2.ussfo03.blade-group.net
+ob2-sp2.ussfo03.blade-group.net
+ob3-sp2.ussfo03.blade-group.net
+ob4-sp2.ussfo03.blade-group.net
+ob1-sp3.ussfo03.blade-group.net
+ob2-sp3.ussfo03.blade-group.net
+ob3-sp3.ussfo03.blade-group.net
+ob4-sp3.ussfo03.blade-group.net
+
+[spine]
+spine1.sk1.blade-group.net
+spine2.sk1.blade-group.net
+spine1.ussfo03.blade-group.net
+spine2.ussfo03.blade-group.net
+
+[spine-bgp]
+spine1.sk1.blade-group.net
+spine2.sk1.blade-group.net
+spine1.ussfo03.blade-group.net
+spine2.ussfo03.blade-group.net
+
+[tor]
+to1-p1.sk1.blade-group.net
+to2-p1.sk1.blade-group.net
+to1-p2.sk1.blade-group.net
+to2-p2.sk1.blade-group.net
+to1-sp2.sk1.blade-group.net
+to2-sp2.sk1.blade-group.net
+to1-ap1.sk1.blade-group.net
+to2-ap1.sk1.blade-group.net
+to1-ap1.ussfo03.blade-group.net
+to2-ap1.ussfo03.blade-group.net
+to1-p1.ussfo03.blade-group.net
+to2-p1.ussfo03.blade-group.net
+to1-p2.ussfo03.blade-group.net
+to2-p2.ussfo03.blade-group.net
+to1-p3.ussfo03.blade-group.net
+to2-p3.ussfo03.blade-group.net
+to1-p5.ussfo03.blade-group.net
+to2-p5.ussfo03.blade-group.net
+to1-p8.ussfo03.blade-group.net
+to2-p8.ussfo03.blade-group.net
+to1-sp2.ussfo03.blade-group.net
+to2-sp2.ussfo03.blade-group.net
+to1-sp3.ussfo03.blade-group.net
+to2-sp3.ussfo03.blade-group.net
+
+[tor-bgp]
+to1-p1.sk1.blade-group.net
+to2-p1.sk1.blade-group.net
+to1-p2.sk1.blade-group.net
+to2-p2.sk1.blade-group.net
+to1-sp2.sk1.blade-group.net
+to2-sp2.sk1.blade-group.net
+to1-ap1.sk1.blade-group.net
+to2-ap1.sk1.blade-group.net
+to1-ap1.ussfo03.blade-group.net
+to2-ap1.ussfo03.blade-group.net
+to1-p1.ussfo03.blade-group.net
+to2-p1.ussfo03.blade-group.net
+to1-p2.ussfo03.blade-group.net
+to2-p2.ussfo03.blade-group.net
+to1-p3.ussfo03.blade-group.net
+to2-p3.ussfo03.blade-group.net
+to1-p5.ussfo03.blade-group.net
+to2-p5.ussfo03.blade-group.net
+to1-p8.ussfo03.blade-group.net
+to2-p8.ussfo03.blade-group.net
+to1-sp2.ussfo03.blade-group.net
+to2-sp2.ussfo03.blade-group.net
+to1-sp3.ussfo03.blade-group.net
+to2-sp3.ussfo03.blade-group.net
+
+[tor-bgp-compute]
+to1-p1.sk1.blade-group.net
+to2-p1.sk1.blade-group.net
+to1-p2.sk1.blade-group.net
+to2-p2.sk1.blade-group.net
+to1-p1.ussfo03.blade-group.net
+to2-p1.ussfo03.blade-group.net
+to1-p2.ussfo03.blade-group.net
+to2-p2.ussfo03.blade-group.net
+to1-p3.ussfo03.blade-group.net
+to2-p3.ussfo03.blade-group.net
+to1-p5.ussfo03.blade-group.net
+to2-p5.ussfo03.blade-group.net
+to1-p8.ussfo03.blade-group.net
+to2-p8.ussfo03.blade-group.net
+
+[tor-bgp-storage]
+to1-sp2.sk1.blade-group.net
+to2-sp2.sk1.blade-group.net
+to1-sp2.ussfo03.blade-group.net
+to2-sp2.ussfo03.blade-group.net
+to1-sp3.ussfo03.blade-group.net
+to2-sp3.ussfo03.blade-group.net
+
+[tor-bgp-admin]
+to1-ap1.sk1.blade-group.net
+to2-ap1.sk1.blade-group.net
+to1-ap1.ussfo03.blade-group.net
+to2-ap1.ussfo03.blade-group.net
+
+[console]
+con1-n1.sk1.blade-group.net
+con1-n1.ussfo03.blade-group.net
+con1-n2.ussfo03.blade-group.net
+
+[adm-gateway]
+gateway1.sk1.blade-group.net
+gateway2.sk1.blade-group.net
+gateway1.ussfo03.blade-group.net
+gateway2.ussfo03.blade-group.net
+
+[sspine]
+s-spine1.ussfo03.blade-group.net
+s-spine2.ussfo03.blade-group.net
+
+[sspine-bgp]
+s-spine1.ussfo03.blade-group.net
+s-spine2.ussfo03.blade-group.net
+
+[edge]
+edge1.sk1.blade-group.net
+edge2.sk1.blade-group.net
+edge1.ussfo03.blade-group.net
+edge2.ussfo03.blade-group.net
+
+[os-ios]
+ob1-n1.sk1.blade-group.net
+ob2-n1.sk1.blade-group.net
+ob1-p1.sk1.blade-group.net
+ob2-p1.sk1.blade-group.net
+ob1-p2.sk1.blade-group.net
+ob2-p2.sk1.blade-group.net
+ob1-n1.ussfo03.blade-group.net
+ob1-n2.ussfo03.blade-group.net
+ob1-ag1.ussfo03.blade-group.net
+ob1-ag2.ussfo03.blade-group.net
+ob1-p1.ussfo03.blade-group.net
+ob2-p1.ussfo03.blade-group.net
+ob3-p1.ussfo03.blade-group.net
+ob4-p1.ussfo03.blade-group.net
+ob1-p2.ussfo03.blade-group.net
+ob2-p2.ussfo03.blade-group.net
+ob3-p2.ussfo03.blade-group.net
+ob4-p2.ussfo03.blade-group.net
+ob1-p3.ussfo03.blade-group.net
+ob2-p3.ussfo03.blade-group.net
+ob3-p3.ussfo03.blade-group.net
+ob4-p3.ussfo03.blade-group.net
+ob1-p5.ussfo03.blade-group.net
+ob2-p5.ussfo03.blade-group.net
+ob3-p5.ussfo03.blade-group.net
+ob4-p5.ussfo03.blade-group.net
+ob1-p8.ussfo03.blade-group.net
+ob2-p8.ussfo03.blade-group.net
+ob3-p8.ussfo03.blade-group.net
+ob4-p8.ussfo03.blade-group.net
+ob1-sp2.ussfo03.blade-group.net
+ob2-sp2.ussfo03.blade-group.net
+ob3-sp2.ussfo03.blade-group.net
+ob4-sp2.ussfo03.blade-group.net
+ob1-sp3.ussfo03.blade-group.net
+ob2-sp3.ussfo03.blade-group.net
+ob3-sp3.ussfo03.blade-group.net
+ob4-sp3.ussfo03.blade-group.net
+
+[os-cumulus]
+spine1.sk1.blade-group.net
+spine2.sk1.blade-group.net
+to1-p1.sk1.blade-group.net
+to2-p1.sk1.blade-group.net
+to1-p2.sk1.blade-group.net
+to2-p2.sk1.blade-group.net
+to1-sp2.sk1.blade-group.net
+to2-sp2.sk1.blade-group.net
+to1-ap1.sk1.blade-group.net
+to2-ap1.sk1.blade-group.net
+spine1.ussfo03.blade-group.net
+spine2.ussfo03.blade-group.net
+s-spine1.ussfo03.blade-group.net
+s-spine2.ussfo03.blade-group.net
+to1-ap1.ussfo03.blade-group.net
+to2-ap1.ussfo03.blade-group.net
+to1-p1.ussfo03.blade-group.net
+to2-p1.ussfo03.blade-group.net
+to1-p3.ussfo03.blade-group.net
+to2-p3.ussfo03.blade-group.net
+to1-p5.ussfo03.blade-group.net
+to2-p5.ussfo03.blade-group.net
+to1-p8.ussfo03.blade-group.net
+to2-p8.ussfo03.blade-group.net
+to1-sp2.ussfo03.blade-group.net
+to2-sp2.ussfo03.blade-group.net
+to1-sp3.ussfo03.blade-group.net
+to2-sp3.ussfo03.blade-group.net
+
+[os-opengear]
+con1-n1.sk1.blade-group.net
+con1-n1.ussfo03.blade-group.net
+con1-n2.ussfo03.blade-group.net
+con1-ag1.ussfo03.blade-group.net
+con1-ag2.ussfo03.blade-group.net
+
+[os-linux]
+gateway1.sk1.blade-group.net
+gateway2.sk1.blade-group.net
+gateway1.ussfo03.blade-group.net
+gateway2.ussfo03.blade-group.net
+
+[os-junos]
+to1-p2.ussfo03.blade-group.net
+to2-p2.ussfo03.blade-group.net
+edge1.ussfo03.blade-group.net
+edge2.ussfo03.blade-group.net
+
+[os-iosxr]
+edge1.sk1.blade-group.net
+edge2.sk1.blade-group.net
+
+[model-c2960s]
+ob1-n1.sk1.blade-group.net
+ob2-n1.sk1.blade-group.net
+ob1-p1.sk1.blade-group.net
+ob2-p1.sk1.blade-group.net
+ob1-p2.sk1.blade-group.net
+ob2-p2.sk1.blade-group.net
+ob1-n1.ussfo03.blade-group.net
+ob1-n2.ussfo03.blade-group.net
+ob1-ag1.ussfo03.blade-group.net
+ob1-ag2.ussfo03.blade-group.net
+ob1-p1.ussfo03.blade-group.net
+ob2-p1.ussfo03.blade-group.net
+ob3-p1.ussfo03.blade-group.net
+ob4-p1.ussfo03.blade-group.net
+ob1-p2.ussfo03.blade-group.net
+ob2-p2.ussfo03.blade-group.net
+ob3-p2.ussfo03.blade-group.net
+ob4-p2.ussfo03.blade-group.net
+ob1-p3.ussfo03.blade-group.net
+ob2-p3.ussfo03.blade-group.net
+ob3-p3.ussfo03.blade-group.net
+ob4-p3.ussfo03.blade-group.net
+ob1-p5.ussfo03.blade-group.net
+ob2-p5.ussfo03.blade-group.net
+ob3-p5.ussfo03.blade-group.net
+ob4-p5.ussfo03.blade-group.net
+ob1-p8.ussfo03.blade-group.net
+ob2-p8.ussfo03.blade-group.net
+ob3-p8.ussfo03.blade-group.net
+ob4-p8.ussfo03.blade-group.net
+ob1-sp2.ussfo03.blade-group.net
+ob2-sp2.ussfo03.blade-group.net
+ob3-sp2.ussfo03.blade-group.net
+ob4-sp2.ussfo03.blade-group.net
+ob1-sp3.ussfo03.blade-group.net
+ob2-sp3.ussfo03.blade-group.net
+ob3-sp3.ussfo03.blade-group.net
+ob4-sp3.ussfo03.blade-group.net
+
+[model-dell-s6010]
+spine1.sk1.blade-group.net
+spine2.sk1.blade-group.net
+to1-sp2.sk1.blade-group.net
+to2-sp2.sk1.blade-group.net
+
+[model-dell-s4048]
+to1-p1.sk1.blade-group.net
+to2-p1.sk1.blade-group.net
+to1-p2.sk1.blade-group.net
+to2-p2.sk1.blade-group.net
+to1-ap1.sk1.blade-group.net
+to2-ap1.sk1.blade-group.net
+
+[model-cm7116-2-sac]
+con1-n1.sk1.blade-group.net
+
+[model-wedge100]
+spine1.ussfo03.blade-group.net
+spine2.ussfo03.blade-group.net
+s-spine1.ussfo03.blade-group.net
+s-spine2.ussfo03.blade-group.net
+to1-ap1.ussfo03.blade-group.net
+to2-ap1.ussfo03.blade-group.net
+to1-p1.ussfo03.blade-group.net
+to2-p1.ussfo03.blade-group.net
+to1-p3.ussfo03.blade-group.net
+to2-p3.ussfo03.blade-group.net
+to1-p5.ussfo03.blade-group.net
+to2-p5.ussfo03.blade-group.net
+to1-p8.ussfo03.blade-group.net
+to2-p8.ussfo03.blade-group.net
+to1-sp2.ussfo03.blade-group.net
+to2-sp2.ussfo03.blade-group.net
+to1-sp3.ussfo03.blade-group.net
+to2-sp3.ussfo03.blade-group.net
+
+[model-qfx5110-48s]
+to1-p2.ussfo03.blade-group.net
+to2-p2.ussfo03.blade-group.net
+
+[model-cm7116-2-dac]
+con1-n1.ussfo03.blade-group.net
+con1-n2.ussfo03.blade-group.net
+
+[model-cm7132-2-dac]
+con1-ag1.ussfo03.blade-group.net
+con1-ag2.ussfo03.blade-group.net
+
+[model-asr9k]
+edge1.sk1.blade-group.net
+edge2.sk1.blade-group.net
+
+[model-qfx10002-36q]
+edge1.ussfo03.blade-group.net
+edge2.ussfo03.blade-group.net
+
+[location-sk1]
+ob1-n1.sk1.blade-group.net
+ob2-n1.sk1.blade-group.net
+ob1-p1.sk1.blade-group.net
+ob2-p1.sk1.blade-group.net
+ob1-p2.sk1.blade-group.net
+ob2-p2.sk1.blade-group.net
+spine1.sk1.blade-group.net
+spine2.sk1.blade-group.net
+to1-p1.sk1.blade-group.net
+to2-p1.sk1.blade-group.net
+to1-p2.sk1.blade-group.net
+to2-p2.sk1.blade-group.net
+to1-sp2.sk1.blade-group.net
+to2-sp2.sk1.blade-group.net
+to1-ap1.sk1.blade-group.net
+to2-ap1.sk1.blade-group.net
+con1-n1.sk1.blade-group.net
+gateway1.sk1.blade-group.net
+gateway2.sk1.blade-group.net
+edge1.sk1.blade-group.net
+edge2.sk1.blade-group.net
+
+[location-ussfo03]
+ob1-n1.ussfo03.blade-group.net
+ob1-n2.ussfo03.blade-group.net
+ob1-ag1.ussfo03.blade-group.net
+ob1-ag2.ussfo03.blade-group.net
+ob1-p1.ussfo03.blade-group.net
+ob2-p1.ussfo03.blade-group.net
+ob3-p1.ussfo03.blade-group.net
+ob4-p1.ussfo03.blade-group.net
+ob1-p2.ussfo03.blade-group.net
+ob2-p2.ussfo03.blade-group.net
+ob3-p2.ussfo03.blade-group.net
+ob4-p2.ussfo03.blade-group.net
+ob1-p3.ussfo03.blade-group.net
+ob2-p3.ussfo03.blade-group.net
+ob3-p3.ussfo03.blade-group.net
+ob4-p3.ussfo03.blade-group.net
+ob1-p5.ussfo03.blade-group.net
+ob2-p5.ussfo03.blade-group.net
+ob3-p5.ussfo03.blade-group.net
+ob4-p5.ussfo03.blade-group.net
+ob1-p8.ussfo03.blade-group.net
+ob2-p8.ussfo03.blade-group.net
+ob3-p8.ussfo03.blade-group.net
+ob4-p8.ussfo03.blade-group.net
+ob1-sp2.ussfo03.blade-group.net
+ob2-sp2.ussfo03.blade-group.net
+ob3-sp2.ussfo03.blade-group.net
+ob4-sp2.ussfo03.blade-group.net
+ob1-sp3.ussfo03.blade-group.net
+ob2-sp3.ussfo03.blade-group.net
+ob3-sp3.ussfo03.blade-group.net
+ob4-sp3.ussfo03.blade-group.net
+spine1.ussfo03.blade-group.net
+spine2.ussfo03.blade-group.net
+s-spine1.ussfo03.blade-group.net
+s-spine2.ussfo03.blade-group.net
+to1-ap1.ussfo03.blade-group.net
+to2-ap1.ussfo03.blade-group.net
+to1-p1.ussfo03.blade-group.net
+to2-p1.ussfo03.blade-group.net
+to1-p2.ussfo03.blade-group.net
+to2-p2.ussfo03.blade-group.net
+to1-p3.ussfo03.blade-group.net
+to2-p3.ussfo03.blade-group.net
+to1-p5.ussfo03.blade-group.net
+to2-p5.ussfo03.blade-group.net
+to1-p8.ussfo03.blade-group.net
+to2-p8.ussfo03.blade-group.net
+to1-sp2.ussfo03.blade-group.net
+to2-sp2.ussfo03.blade-group.net
+to1-sp3.ussfo03.blade-group.net
+to2-sp3.ussfo03.blade-group.net
+con1-n1.ussfo03.blade-group.net
+con1-n2.ussfo03.blade-group.net
+con1-ag1.ussfo03.blade-group.net
+con1-ag2.ussfo03.blade-group.net
+gateway1.ussfo03.blade-group.net
+gateway2.ussfo03.blade-group.net
+edge1.ussfo03.blade-group.net
+edge2.ussfo03.blade-group.net
+
+[environment-prod]
+ob1-n1.sk1.blade-group.net
+ob2-n1.sk1.blade-group.net
+ob1-p1.sk1.blade-group.net
+ob2-p1.sk1.blade-group.net
+ob1-p2.sk1.blade-group.net
+ob2-p2.sk1.blade-group.net
+spine1.sk1.blade-group.net
+spine2.sk1.blade-group.net
+to1-p1.sk1.blade-group.net
+to2-p1.sk1.blade-group.net
+to1-p2.sk1.blade-group.net
+to2-p2.sk1.blade-group.net
+to1-sp2.sk1.blade-group.net
+to2-sp2.sk1.blade-group.net
+to1-ap1.sk1.blade-group.net
+to2-ap1.sk1.blade-group.net
+con1-n1.sk1.blade-group.net
+gateway1.sk1.blade-group.net
+gateway2.sk1.blade-group.net
+ob1-n1.ussfo03.blade-group.net
+ob1-n2.ussfo03.blade-group.net
+ob1-ag1.ussfo03.blade-group.net
+ob1-ag2.ussfo03.blade-group.net
+ob1-p1.ussfo03.blade-group.net
+ob2-p1.ussfo03.blade-group.net
+ob3-p1.ussfo03.blade-group.net
+ob4-p1.ussfo03.blade-group.net
+ob1-p2.ussfo03.blade-group.net
+ob2-p2.ussfo03.blade-group.net
+ob3-p2.ussfo03.blade-group.net
+ob4-p2.ussfo03.blade-group.net
+ob1-p3.ussfo03.blade-group.net
+ob2-p3.ussfo03.blade-group.net
+ob3-p3.ussfo03.blade-group.net
+ob4-p3.ussfo03.blade-group.net
+ob1-p5.ussfo03.blade-group.net
+ob2-p5.ussfo03.blade-group.net
+ob3-p5.ussfo03.blade-group.net
+ob4-p5.ussfo03.blade-group.net
+ob1-p8.ussfo03.blade-group.net
+ob2-p8.ussfo03.blade-group.net
+ob3-p8.ussfo03.blade-group.net
+ob4-p8.ussfo03.blade-group.net
+ob1-sp2.ussfo03.blade-group.net
+ob2-sp2.ussfo03.blade-group.net
+ob3-sp2.ussfo03.blade-group.net
+ob4-sp2.ussfo03.blade-group.net
+ob1-sp3.ussfo03.blade-group.net
+ob2-sp3.ussfo03.blade-group.net
+ob3-sp3.ussfo03.blade-group.net
+ob4-sp3.ussfo03.blade-group.net
+spine1.ussfo03.blade-group.net
+spine2.ussfo03.blade-group.net
+s-spine1.ussfo03.blade-group.net
+s-spine2.ussfo03.blade-group.net
+to1-ap1.ussfo03.blade-group.net
+to2-ap1.ussfo03.blade-group.net
+to1-p1.ussfo03.blade-group.net
+to2-p1.ussfo03.blade-group.net
+to1-p2.ussfo03.blade-group.net
+to2-p2.ussfo03.blade-group.net
+to1-p3.ussfo03.blade-group.net
+to2-p3.ussfo03.blade-group.net
+to1-p5.ussfo03.blade-group.net
+to2-p5.ussfo03.blade-group.net
+to1-p8.ussfo03.blade-group.net
+to2-p8.ussfo03.blade-group.net
+to1-sp2.ussfo03.blade-group.net
+to2-sp2.ussfo03.blade-group.net
+to1-sp3.ussfo03.blade-group.net
+to2-sp3.ussfo03.blade-group.net
+con1-n1.ussfo03.blade-group.net
+con1-n2.ussfo03.blade-group.net
+con1-ag1.ussfo03.blade-group.net
+con1-ag2.ussfo03.blade-group.net
+gateway1.ussfo03.blade-group.net
+gateway2.ussfo03.blade-group.net
+edge1.sk1.blade-group.net
+edge2.sk1.blade-group.net
+edge1.ussfo03.blade-group.net
+edge2.ussfo03.blade-group.net
+
+[member-1]
+ob1-n1.sk1.blade-group.net
+ob2-n1.sk1.blade-group.net
+ob1-p1.sk1.blade-group.net
+ob2-p1.sk1.blade-group.net
+spine1.sk1.blade-group.net
+to1-p1.sk1.blade-group.net
+to1-p2.sk1.blade-group.net
+to1-sp2.sk1.blade-group.net
+to1-ap1.sk1.blade-group.net
+con1-n1.sk1.blade-group.net
+gateway1.sk1.blade-group.net
+ob1-n1.ussfo03.blade-group.net
+ob1-ag1.ussfo03.blade-group.net
+ob1-p1.ussfo03.blade-group.net
+ob2-p1.ussfo03.blade-group.net
+ob3-p1.ussfo03.blade-group.net
+ob4-p1.ussfo03.blade-group.net
+spine1.ussfo03.blade-group.net
+s-spine1.ussfo03.blade-group.net
+to1-ap1.ussfo03.blade-group.net
+to1-p1.ussfo03.blade-group.net
+to1-p2.ussfo03.blade-group.net
+to1-p3.ussfo03.blade-group.net
+to1-p5.ussfo03.blade-group.net
+to1-p8.ussfo03.blade-group.net
+to1-sp2.ussfo03.blade-group.net
+to1-sp3.ussfo03.blade-group.net
+con1-n1.ussfo03.blade-group.net
+con1-ag1.ussfo03.blade-group.net
+gateway1.ussfo03.blade-group.net
+edge1.sk1.blade-group.net
+edge1.ussfo03.blade-group.net
+
+[member-2]
+ob1-p2.sk1.blade-group.net
+ob2-p2.sk1.blade-group.net
+spine2.sk1.blade-group.net
+to2-p1.sk1.blade-group.net
+to2-p2.sk1.blade-group.net
+to2-sp2.sk1.blade-group.net
+to2-ap1.sk1.blade-group.net
+gateway2.sk1.blade-group.net
+ob1-n2.ussfo03.blade-group.net
+ob1-ag2.ussfo03.blade-group.net
+ob1-p2.ussfo03.blade-group.net
+ob2-p2.ussfo03.blade-group.net
+ob3-p2.ussfo03.blade-group.net
+ob4-p2.ussfo03.blade-group.net
+ob1-sp2.ussfo03.blade-group.net
+ob2-sp2.ussfo03.blade-group.net
+ob3-sp2.ussfo03.blade-group.net
+ob4-sp2.ussfo03.blade-group.net
+spine2.ussfo03.blade-group.net
+s-spine2.ussfo03.blade-group.net
+to2-ap1.ussfo03.blade-group.net
+to2-p1.ussfo03.blade-group.net
+to2-p2.ussfo03.blade-group.net
+to2-p3.ussfo03.blade-group.net
+to2-p5.ussfo03.blade-group.net
+to2-p8.ussfo03.blade-group.net
+to2-sp2.ussfo03.blade-group.net
+to2-sp3.ussfo03.blade-group.net
+con1-n2.ussfo03.blade-group.net
+con1-ag2.ussfo03.blade-group.net
+gateway2.ussfo03.blade-group.net
+edge2.sk1.blade-group.net
+edge2.ussfo03.blade-group.net
+
+[member-3]
+ob1-p3.ussfo03.blade-group.net
+ob2-p3.ussfo03.blade-group.net
+ob3-p3.ussfo03.blade-group.net
+ob4-p3.ussfo03.blade-group.net
+ob1-sp3.ussfo03.blade-group.net
+ob2-sp3.ussfo03.blade-group.net
+ob3-sp3.ussfo03.blade-group.net
+ob4-sp3.ussfo03.blade-group.net
+
+[member-5]
+ob1-p5.ussfo03.blade-group.net
+ob2-p5.ussfo03.blade-group.net
+ob3-p5.ussfo03.blade-group.net
+ob4-p5.ussfo03.blade-group.net
+
+[member-8]
+ob1-p8.ussfo03.blade-group.net
+ob2-p8.ussfo03.blade-group.net
+ob3-p8.ussfo03.blade-group.net
+ob4-p8.ussfo03.blade-group.net
+
+
+[in-sync]
+ob1-n1.sk1.blade-group.net
+ob2-n1.sk1.blade-group.net
+ob1-p1.sk1.blade-group.net
+ob2-p1.sk1.blade-group.net
+ob1-p2.sk1.blade-group.net
+ob2-p2.sk1.blade-group.net
+spine1.sk1.blade-group.net
+spine2.sk1.blade-group.net
+to1-p1.sk1.blade-group.net
+to2-p1.sk1.blade-group.net
+to1-p2.sk1.blade-group.net
+to2-p2.sk1.blade-group.net
+to1-sp2.sk1.blade-group.net
+to2-sp2.sk1.blade-group.net
+to1-ap1.sk1.blade-group.net
+to2-ap1.sk1.blade-group.net
+con1-n1.sk1.blade-group.net
+gateway1.sk1.blade-group.net
+gateway2.sk1.blade-group.net
+ob1-n1.ussfo03.blade-group.net
+ob1-n2.ussfo03.blade-group.net
+ob1-ag1.ussfo03.blade-group.net
+ob1-ag2.ussfo03.blade-group.net
+ob1-p1.ussfo03.blade-group.net
+ob2-p1.ussfo03.blade-group.net
+ob3-p1.ussfo03.blade-group.net
+ob4-p1.ussfo03.blade-group.net
+ob1-p2.ussfo03.blade-group.net
+ob2-p2.ussfo03.blade-group.net
+ob3-p2.ussfo03.blade-group.net
+ob4-p2.ussfo03.blade-group.net
+ob1-p3.ussfo03.blade-group.net
+ob2-p3.ussfo03.blade-group.net
+ob3-p3.ussfo03.blade-group.net
+ob4-p3.ussfo03.blade-group.net
+ob1-p5.ussfo03.blade-group.net
+ob2-p5.ussfo03.blade-group.net
+ob3-p5.ussfo03.blade-group.net
+ob4-p5.ussfo03.blade-group.net
+ob1-p8.ussfo03.blade-group.net
+ob2-p8.ussfo03.blade-group.net
+ob3-p8.ussfo03.blade-group.net
+ob4-p8.ussfo03.blade-group.net
+ob1-sp2.ussfo03.blade-group.net
+ob2-sp2.ussfo03.blade-group.net
+ob3-sp2.ussfo03.blade-group.net
+ob4-sp2.ussfo03.blade-group.net
+ob1-sp3.ussfo03.blade-group.net
+ob2-sp3.ussfo03.blade-group.net
+ob3-sp3.ussfo03.blade-group.net
+ob4-sp3.ussfo03.blade-group.net
+spine1.ussfo03.blade-group.net
+spine2.ussfo03.blade-group.net
+s-spine1.ussfo03.blade-group.net
+s-spine2.ussfo03.blade-group.net
+to1-ap1.ussfo03.blade-group.net
+to2-ap1.ussfo03.blade-group.net
+to1-p1.ussfo03.blade-group.net
+to2-p1.ussfo03.blade-group.net
+to1-p2.ussfo03.blade-group.net
+to2-p2.ussfo03.blade-group.net
+to1-p3.ussfo03.blade-group.net
+to2-p3.ussfo03.blade-group.net
+to1-p5.ussfo03.blade-group.net
+to2-p5.ussfo03.blade-group.net
+to1-p8.ussfo03.blade-group.net
+to2-p8.ussfo03.blade-group.net
+to1-sp2.ussfo03.blade-group.net
+to2-sp2.ussfo03.blade-group.net
+to1-sp3.ussfo03.blade-group.net
+to2-sp3.ussfo03.blade-group.net
+con1-n1.ussfo03.blade-group.net
+con1-n2.ussfo03.blade-group.net
+con1-ag1.ussfo03.blade-group.net
+con1-ag2.ussfo03.blade-group.net
+gateway1.ussfo03.blade-group.net
+gateway2.ussfo03.blade-group.net
+edge1.sk1.blade-group.net
+edge2.sk1.blade-group.net
+edge1.ussfo03.blade-group.net
+edge2.ussfo03.blade-group.net
+none
+# Count: 82
+
+[unclassified]
+con1-ag1.ussfo03.blade-group.net
+con1-ag2.ussfo03.blade-group.net
+# Count: 2
+
+[model-unknown]
+
+[done]

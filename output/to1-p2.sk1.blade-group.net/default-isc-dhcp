@@ -1,0 +1,4 @@
+DHCPD_CONF="-cf /etc/dhcp/dhcpd.conf"
+DHCPD_PID="-pf /run/dhcpd.pid"
+OPTIONS=""
+INTERFACES="swp1 swp2 swp3 swp4 swp5 swp6 swp7 swp8 swp9 swp10 swp11 swp12 swp13 swp14 swp15 swp16 swp17 swp18 swp19 swp20 swp21 swp22 swp23 swp24 swp25 swp26 swp27 swp28 swp29 swp30 swp31 swp32 swp33 swp34 swp35 swp36 swp37 swp38 swp39 swp40 swp41 swp42 swp43 swp44 swp45 swp46 swp47 swp48"

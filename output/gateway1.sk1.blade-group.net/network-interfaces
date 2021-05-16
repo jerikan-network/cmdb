@@ -1,0 +1,51 @@
+auto lo
+iface lo inet loopback
+
+source /etc/network/interfaces.d/*
+
+
+
+auto lo:1
+iface lo:1 inet static
+    address 172.29.64.4/32
+    up sysctl -qw net.ipv4.icmp_errors_use_inbound_ifaddr=1
+    up sysctl -qw net.ipv4.conf.all.accept_redirects=0
+    up sysctl -qw net.ipv4.conf.all.send_redirects=0
+    up sysctl -qw net.ipv4.conf.default.send_redirects=0
+    up sysctl -qw net.ipv6.conf.all.disable_ipv6=1
+    up sysctl -qw net.ipv4.conf.all.forwarding=1
+    up ip route add blackhole default metric 4278198272
+    up ip route add blackhole 10.0.0.0/8
+    up ip route add blackhole 172.16.0.0/12
+    up ip route add blackhole 192.168.0.0/16
+    up ip rule add iif lo to 192.168.0.0/16 table main priority 12
+    up ip rule add iif lo to 10.0.0.0/8     table main priority 12
+    up ip rule add iif lo to 172.16.0.0/12  table main priority 12
+    up ip rule add iif lo to 169.254.0.0/16 table main priority 12
+    up ip rule add iif lo to 100.64.0.0/10  table main priority 12
+    up ip rule add fwmark 0x2/0x2           table main priority 15
+
+auto public
+iface public inet static
+    mtu 1500
+    address 198.51.100.4/32
+    pre-up ip link add public type dummy
+    up ip route add blackhole default metric 4278198272 table public
+    up ip rule add iif lo table public priority 13
+    up ip rule add fwmark 0x1/0x1 table public priority 15
+    up ip rule add iif eno1.100 table public priority 100 && ip rule add iif eno2.100 table public priority 100 && :
+
+auto ens1f0
+iface ens1f0 inet static
+    address 121.78.242.10/29
+    up ip route add default via 121.78.242.9 metric 4278198271 table public
+    up ip route add default via 121.78.242.9 table rescue
+    up ip rule add from 121.78.242.10 table rescue priority 10
+
+
+auto oob
+iface oob inet static
+  address 172.29.15.253/21
+  bond-mode active-backup
+  bond-miimon 100
+  bond-slaves eno3 eno4

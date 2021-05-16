@@ -1,0 +1,213 @@
+version 15.0
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+service unsupported-transceiver
+no errdisable detect cause gbic-invalid
+no service dhcp
+no service pad
+!
+hostname ob3-p1.ussfo03
+!
+boot-start-marker
+boot-end-marker
+!
+no aaa new-model
+switch 1 provision ws-c2960s-48ts-l
+!
+crypto pki trustpoint TP-self-signed-211224320
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-211224320
+ revocation-check none
+ rsakeypair TP-self-signed-211224320
+!
+!
+crypto pki certificate chain TP-self-signed-211224320
+!
+enable secret 5 $1$................
+!
+username roger privilege 15 
+username alfred privilege 15 
+username blade privilege 15 secret 9 $9$.............. 
+!
+ip ssh version 2
+ip ssh pubkey-chain
+  username roger
+   key-hash ssh-rsa 5476A332A7CEF315C7A8186E9DCB41E9 roger
+  username alfred
+   key-hash ssh-rsa A78EF9E9CFF15DCF3E135A3AB9404BED alfred
+ip scp server enable
+!
+!
+no ip domain-lookup
+ip domain-name blade-group.net
+login block-for 100 attempts 30 within 100
+login on-failure log
+file prompt quiet
+!
+archive
+ path flash:archive
+ write-memory
+!
+vlan internal allocation policy ascending
+lldp run
+!
+no ip http server
+no ip http secure-server
+!
+ip access-list standard SNMP
+ permit 172.16.0.0 0.15.255.255
+ip access-list standard SSH
+ permit 172.16.0.0 0.15.255.255
+ permit 10.0.0.0 0.0.255.255
+ permit 10.1.0.0 0.0.255.255
+!
+banner motd 
+______ _           _
+| ___ \ |         | |
+| |_/ / | __ _  __| | ___      This is a private system.
+| ___ \ |/ _` |/ _` |/ _ \     Use by unauthorized persons is prohibited.
+| |_/ / | (_| | (_| |  __/     Go away.
+\____/|_|\__,_|\__,_|\___|
+
+
+!
+snmp-server community 67dskf8fds78fdn RO SNMP
+!
+line con 0
+ exec-timeout 15 0
+ login local
+line vty 0 4
+ access-class SSH in
+ exec-timeout 15 0
+ login local
+ transport input ssh
+line vty 5 15
+ access-class SSH in
+ exec-timeout 15 0
+ login local
+ transport input ssh
+!
+ntp server 172.30.20.4
+ntp server 172.30.20.5
+!
+logging host 172.30.20.9
+logging host 172.30.20.10
+!
+interface Vlan1
+ description OOB
+ ip address 172.30.24.33 255.255.248.0
+!
+ip default-gateway 172.30.31.254
+!
+interface GigabitEthernet1/0/1
+ switchport mode access
+interface GigabitEthernet1/0/2
+ switchport mode access
+interface GigabitEthernet1/0/3
+ switchport mode access
+interface GigabitEthernet1/0/4
+ switchport mode access
+interface GigabitEthernet1/0/5
+ switchport mode access
+interface GigabitEthernet1/0/6
+ switchport mode access
+interface GigabitEthernet1/0/7
+ switchport mode access
+interface GigabitEthernet1/0/8
+ switchport mode access
+interface GigabitEthernet1/0/9
+ switchport mode access
+interface GigabitEthernet1/0/10
+ switchport mode access
+interface GigabitEthernet1/0/11
+ switchport mode access
+interface GigabitEthernet1/0/12
+ switchport mode access
+interface GigabitEthernet1/0/13
+ switchport mode access
+interface GigabitEthernet1/0/14
+ switchport mode access
+interface GigabitEthernet1/0/15
+ switchport mode access
+interface GigabitEthernet1/0/16
+ switchport mode access
+interface GigabitEthernet1/0/17
+ switchport mode access
+interface GigabitEthernet1/0/18
+ switchport mode access
+interface GigabitEthernet1/0/19
+ switchport mode access
+interface GigabitEthernet1/0/20
+ switchport mode access
+interface GigabitEthernet1/0/21
+ switchport mode access
+interface GigabitEthernet1/0/22
+ switchport mode access
+interface GigabitEthernet1/0/23
+ switchport mode access
+interface GigabitEthernet1/0/24
+ switchport mode access
+interface GigabitEthernet1/0/25
+ switchport mode access
+interface GigabitEthernet1/0/26
+ switchport mode access
+interface GigabitEthernet1/0/27
+ switchport mode access
+interface GigabitEthernet1/0/28
+ switchport mode access
+interface GigabitEthernet1/0/29
+ switchport mode access
+interface GigabitEthernet1/0/30
+ switchport mode access
+interface GigabitEthernet1/0/31
+ switchport mode access
+interface GigabitEthernet1/0/32
+ switchport mode access
+interface GigabitEthernet1/0/33
+ switchport mode access
+interface GigabitEthernet1/0/34
+ switchport mode access
+interface GigabitEthernet1/0/35
+ switchport mode access
+interface GigabitEthernet1/0/36
+ switchport mode access
+interface GigabitEthernet1/0/37
+ switchport mode access
+interface GigabitEthernet1/0/38
+ switchport mode access
+interface GigabitEthernet1/0/39
+ switchport mode access
+interface GigabitEthernet1/0/40
+ switchport mode access
+interface GigabitEthernet1/0/41
+ switchport mode access
+interface GigabitEthernet1/0/42
+ switchport mode access
+interface GigabitEthernet1/0/43
+ switchport mode access
+interface GigabitEthernet1/0/44
+ switchport mode access
+interface GigabitEthernet1/0/45
+ description Uplink
+ spanning-tree portfast disable
+ switchport mode access
+interface GigabitEthernet1/0/46
+ description Uplink
+ spanning-tree portfast disable
+ switchport mode access
+interface GigabitEthernet1/0/47
+ description Uplink
+ spanning-tree portfast disable
+ switchport mode access
+interface GigabitEthernet1/0/48
+ description Uplink
+ spanning-tree portfast disable
+ switchport mode access
+!
+spanning-tree mode mst
+spanning-tree portfast default
+spanning-tree portfast bpduguard default
+spanning-tree extend system-id
+!
+end

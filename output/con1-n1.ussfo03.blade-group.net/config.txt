@@ -1,0 +1,148 @@
+## other
+config.ntp.enabled on
+config.ntp.servers.server1.address 172.30.20.4
+config.ntp.servers.server1.key_id 0
+config.ntp.servers.server2.address 172.30.20.5
+config.ntp.servers.server2.key_id 0
+config.ntp.servers.total 2
+
+## Interfaces
+config.interfaces.wan.address 172.30.24.13
+config.interfaces.wan.gateway 172.30.31.254
+config.interfaces.wan.media Auto
+config.interfaces.wan.mode static
+config.interfaces.wan.netmask 255.255.248.0
+config.interfaces.wan.dns1 172.30.20.2
+config.interfaces.wan.dns2 172.30.20.3
+config.wan.services.https.enabled on
+config.wan.services.lldp.enabled on
+config.wan.services.modified true
+config.wan.services.ping.enabled on
+config.wan.services.rfc2217_ports.enabled on
+config.wan.services.snmp.enabled on
+config.wan.services.ssh.enabled on
+config.wan.services.ssh_ports.enabled on
+config.wan.services.tcp_ports.enabled on
+
+config.interfaces.lan.address 172.30.24.14
+config.interfaces.lan.gateway 172.30.31.254
+config.interfaces.lan.media Auto
+config.interfaces.lan.mode static
+config.interfaces.lan.netmask 255.255.248.0
+config.interfaces.lan.device.type marvell
+config.interfaces.lan.dns1 172.30.20.2
+config.interfaces.lan.dns2 172.30.20.3
+config.lan.services.https.enabled on
+config.lan.services.lldp.enabled on
+config.lan.services.modified true
+config.lan.services.ping.enabled on
+config.lan.services.rfc2217_ports.enabled on
+config.lan.services.snmp.enabled on
+config.lan.services.ssh.enabled on
+config.lan.services.ssh_ports.enabled on
+config.lan.services.tcp_ports.enabled on
+
+
+# Disable service on unused interfaces
+
+config.vpn.services.modified true
+config.dialin.services.modified true
+config.dialout.services.modified true
+
+## console ports
+
+config.ports.port1.charsize 8
+config.ports.port1.dtrmode alwayson
+config.ports.port1.flowcontrol None
+config.ports.port1.label edge1
+config.ports.port1.loglevel 0
+config.ports.port1.mode portmanager
+config.ports.port1.parity None
+config.ports.port1.pinout X2
+config.ports.port1.protocol RS232
+config.ports.port1.speed 9600
+config.ports.port1.ssh on
+config.ports.port1.stop 1
+config.ports.port1.syslog.facility Default
+config.ports.port1.syslog.priority Default
+config.ports.port1.terminal vt220
+config.ports.port1.webshell on
+
+config.ports.port2.charsize 8
+config.ports.port2.dtrmode alwayson
+config.ports.port2.flowcontrol None
+config.ports.port2.label s-spine1
+config.ports.port2.loglevel 0
+config.ports.port2.mode portmanager
+config.ports.port2.parity None
+config.ports.port2.pinout X2
+config.ports.port2.protocol RS232
+config.ports.port2.speed 9600
+config.ports.port2.ssh on
+config.ports.port2.stop 1
+config.ports.port2.syslog.facility Default
+config.ports.port2.syslog.priority Default
+config.ports.port2.terminal vt220
+config.ports.port2.webshell on
+
+config.ports.port3.charsize 8
+config.ports.port3.dtrmode alwayson
+config.ports.port3.flowcontrol None
+config.ports.port3.label to1-ap1
+config.ports.port3.loglevel 0
+config.ports.port3.mode portmanager
+config.ports.port3.parity None
+config.ports.port3.pinout X2
+config.ports.port3.protocol RS232
+config.ports.port3.speed 9600
+config.ports.port3.ssh on
+config.ports.port3.stop 1
+config.ports.port3.syslog.facility Default
+config.ports.port3.syslog.priority Default
+config.ports.port3.terminal vt220
+config.ports.port3.webshell on
+
+config.ports.port4.charsize 8
+config.ports.port4.dtrmode alwayson
+config.ports.port4.flowcontrol None
+config.ports.port4.label ob1-n1
+config.ports.port4.loglevel 0
+config.ports.port4.mode portmanager
+config.ports.port4.parity None
+config.ports.port4.pinout X2
+config.ports.port4.protocol RS232
+config.ports.port4.speed 9600
+config.ports.port4.ssh on
+config.ports.port4.stop 1
+config.ports.port4.syslog.facility Default
+config.ports.port4.syslog.priority Default
+config.ports.port4.terminal vt220
+config.ports.port4.webshell on
+
+## server services 
+
+config.services.http.enabled on
+config.services.https.enabled on
+config.services.lldp.enabled on
+config.services.snmp.enabled on
+config.services.snmp.protocol UDP
+config.services.snmp.roauthprotocol SHA
+config.services.snmp.rocommunity 67dskf8fds78fdn
+config.services.snmp.roprivprotocol DES
+config.services.snmp.syscontact someone@example.com
+config.services.snmp.syslocation San Francisco, US
+config.services.ssh.enabled on
+config.services.telnet.enabled off
+
+
+## global system
+
+config.system.name con1-n1.ussfo03.blade-group.net
+config.system.timezone UTC
+
+
+## user
+config.users.user1.description Root User
+config.users.user1.username root
+config.users.user1.password $1$...........
+config.users.total 1

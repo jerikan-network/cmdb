@@ -1,0 +1,98 @@
+
+
+
+
+
+
+
+route:          69.58.92.0/23
+descr:          Blade Global Corporation
+descr:          67 E Evelyn Ave, #7
+descr:          Mountain View, CA 64041
+descr:          US
+origin:         AS396919
+mnt-by:         MNT-BGC-107
+remarks:        synced with cmdb
+changed:        someone@example.com
+source:         ARIN
+
+route6:         2605:940::/40
+descr:          Blade Global Corporation
+descr:          67 E Evelyn Ave, #7
+descr:          Mountain View, CA 64041
+descr:          US
+origin:         AS396919
+mnt-by:         MNT-BGC-107
+remarks:        synced with cmdb
+changed:        someone@example.com
+source:         ARIN
+
+route6:         2605:940:500::/40
+descr:          Blade Global Corporation
+descr:          67 E Evelyn Ave, #7
+descr:          Mountain View, CA 64041
+descr:          US
+origin:         AS396919
+mnt-by:         MNT-BGC-107
+remarks:        synced with cmdb
+changed:        someone@example.com
+source:         ARIN
+
+
+
+
+
+aut-num:        AS396919
+as-name:        BLADE
+descr:          BLADE ARIN AS
+remarks:
+remarks:        -----------
+remarks:        - TRANSIT -
+remarks:        -----------
+remarks:
+remarks:        KINX-DOM
+import:         from AS9286 accept ANY
+export:         to AS9286 announce AS-BLADE
+remarks:
+remarks:        KINX-INT
+import:         from AS9957 accept ANY
+export:         to AS9957 announce AS-BLADE
+remarks:
+remarks:        TELIA
+import:         from AS1299 accept ANY
+export:         to AS1299 announce AS-BLADE
+remarks:
+remarks:        COGENT
+import:         from AS174 accept ANY
+export:         to AS174 announce AS-BLADE
+remarks:
+remarks:        ------------
+remarks:        - PEERINGS -
+remarks:        ------------
+remarks:
+remarks:        Blade has a 'mostly-open' peering policy, mainly
+remarks:        targeting at ISPs & available at:
+remarks:
+remarks:        http://as396919.peeringdb.com
+remarks:
+admin-c:        BERNA184-ARIN
+tech-c:         BERNA184-ARIN
+mnt-by:         MNT-BGC-107
+remarks:        synced with cmdb
+changed:        someone@example.com
+source:         ARIN
+
+mntner:         MNT-BGC-107
+descr:          Blade Global Corporation
+admin-c:        BERNA184-ARIN
+tech-c:         BERNA184-ARIN
+tech-c:         HASCO-ARIN
+upd-to:         someone@example.com
+mnt-nfy:        someone@example.com
+auth:           MD5-PW @MD5PASSWORD@
+notify:         someone@example.com
+mnt-by:         MNT-BGC-107
+referral-by:    MNT-BGC-107
+remarks:        synced with cmdb
+changed:        someone@example.com
+source:         ARIN

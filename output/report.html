@@ -1,0 +1,2978 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Test Report</title>
+    <style>body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  /* do not increase min-width as some may use split screens */
+  min-width: 800px;
+  color: #999;
+}
+
+h1 {
+  font-size: 24px;
+  color: black;
+}
+
+h2 {
+  font-size: 16px;
+  color: black;
+}
+
+p {
+  color: black;
+}
+
+a {
+  color: #999;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+/******************************
+ * SUMMARY INFORMATION
+ ******************************/
+#environment td {
+  padding: 5px;
+  border: 1px solid #E6E6E6;
+}
+#environment tr:nth-child(odd) {
+  background-color: #f6f6f6;
+}
+
+/******************************
+ * TEST RESULT COLORS
+ ******************************/
+span.passed,
+.passed .col-result {
+  color: green;
+}
+
+span.skipped,
+span.xfailed,
+span.rerun,
+.skipped .col-result,
+.xfailed .col-result,
+.rerun .col-result {
+  color: orange;
+}
+
+span.error,
+span.failed,
+span.xpassed,
+.error .col-result,
+.failed .col-result,
+.xpassed .col-result {
+  color: red;
+}
+
+/******************************
+ * RESULTS TABLE
+ *
+ * 1. Table Layout
+ * 2. Extra
+ * 3. Sorting items
+ *
+ ******************************/
+/*------------------
+ * 1. Table Layout
+ *------------------*/
+#results-table {
+  border: 1px solid #e6e6e6;
+  color: #999;
+  font-size: 12px;
+  width: 100%;
+}
+#results-table th,
+#results-table td {
+  padding: 5px;
+  border: 1px solid #E6E6E6;
+  text-align: left;
+}
+#results-table th {
+  font-weight: bold;
+}
+
+/*------------------
+ * 2. Extra
+ *------------------*/
+.log {
+  background-color: #e6e6e6;
+  border: 1px solid #e6e6e6;
+  color: black;
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  height: 230px;
+  overflow-y: scroll;
+  padding: 5px;
+  white-space: pre-wrap;
+}
+.log:only-child {
+  height: inherit;
+}
+
+div.image {
+  border: 1px solid #e6e6e6;
+  float: right;
+  height: 240px;
+  margin-left: 5px;
+  overflow: hidden;
+  width: 320px;
+}
+div.image img {
+  width: 320px;
+}
+
+div.video {
+  border: 1px solid #e6e6e6;
+  float: right;
+  height: 240px;
+  margin-left: 5px;
+  overflow: hidden;
+  width: 320px;
+}
+div.video video {
+  overflow: hidden;
+  width: 320px;
+  height: 240px;
+}
+
+.collapsed {
+  display: none;
+}
+
+.expander::after {
+  content: " (show details)";
+  color: #BBB;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.collapser::after {
+  content: " (hide details)";
+  color: #BBB;
+  font-style: italic;
+  cursor: pointer;
+}
+
+/*------------------
+ * 3. Sorting items
+ *------------------*/
+.sortable {
+  cursor: pointer;
+}
+
+.sort-icon {
+  font-size: 0px;
+  float: left;
+  margin-right: 5px;
+  margin-top: 5px;
+  /*triangle*/
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+}
+.inactive .sort-icon {
+  /*finish triangle*/
+  border-top: 8px solid #E6E6E6;
+}
+.asc.active .sort-icon {
+  /*finish triangle*/
+  border-bottom: 8px solid #999;
+}
+.desc.active .sort-icon {
+  /*finish triangle*/
+  border-top: 8px solid #999;
+}
+</style></head>
+  <body onLoad="init()">
+    <script>/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+function toArray(iter) {
+    if (iter === null) {
+        return null;
+    }
+    return Array.prototype.slice.call(iter);
+}
+
+function find(selector, elem) { // eslint-disable-line no-redeclare
+    if (!elem) {
+        elem = document;
+    }
+    return elem.querySelector(selector);
+}
+
+function findAll(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return toArray(elem.querySelectorAll(selector));
+}
+
+function sortColumn(elem) {
+    toggleSortStates(elem);
+    const colIndex = toArray(elem.parentNode.childNodes).indexOf(elem);
+    let key;
+    if (elem.classList.contains('result')) {
+        key = keyResult;
+    } else if (elem.classList.contains('links')) {
+        key = keyLink;
+    } else {
+        key = keyAlpha;
+    }
+    sortTable(elem, key(colIndex));
+}
+
+function showAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(showExtras);
+}
+
+function hideAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(hideExtras);
+}
+
+function showExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.remove('collapsed');
+    expandcollapse.classList.remove('expander');
+    expandcollapse.classList.add('collapser');
+}
+
+function hideExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.add('collapsed');
+    expandcollapse.classList.remove('collapser');
+    expandcollapse.classList.add('expander');
+}
+
+function showFilters() {
+    const filterItems = document.getElementsByClassName('filter');
+    for (let i = 0; i < filterItems.length; i++)
+        filterItems[i].hidden = false;
+}
+
+function addCollapse() {
+    // Add links for show/hide all
+    const resulttable = find('table#results-table');
+    const showhideall = document.createElement('p');
+    showhideall.innerHTML = '<a href="javascript:showAllExtras()">Show all details</a> / ' +
+                            '<a href="javascript:hideAllExtras()">Hide all details</a>';
+    resulttable.parentElement.insertBefore(showhideall, resulttable);
+
+    // Add show/hide link to each result
+    findAll('.col-result').forEach(function(elem) {
+        const collapsed = getQueryParameter('collapsed') || 'Passed';
+        const extras = elem.parentNode.nextElementSibling;
+        const expandcollapse = document.createElement('span');
+        if (extras.classList.contains('collapsed')) {
+            expandcollapse.classList.add('expander');
+        } else if (collapsed.includes(elem.innerHTML)) {
+            extras.classList.add('collapsed');
+            expandcollapse.classList.add('expander');
+        } else {
+            expandcollapse.classList.add('collapser');
+        }
+        elem.appendChild(expandcollapse);
+
+        elem.addEventListener('click', function(event) {
+            if (event.currentTarget.parentNode.nextElementSibling.classList.contains('collapsed')) {
+                showExtras(event.currentTarget);
+            } else {
+                hideExtras(event.currentTarget);
+            }
+        });
+    });
+}
+
+function getQueryParameter(name) {
+    const match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function init () { // eslint-disable-line no-unused-vars
+    resetSortHeaders();
+
+    addCollapse();
+
+    showFilters();
+
+    sortColumn(find('.initial-sort'));
+
+    findAll('.sortable').forEach(function(elem) {
+        elem.addEventListener('click',
+            function() {
+                sortColumn(elem);
+            }, false);
+    });
+}
+
+function sortTable(clicked, keyFunc) {
+    const rows = findAll('.results-table-row');
+    const reversed = !clicked.classList.contains('asc');
+    const sortedRows = sort(rows, keyFunc, reversed);
+    /* Whole table is removed here because browsers acts much slower
+     * when appending existing elements.
+     */
+    const thead = document.getElementById('results-table-head');
+    document.getElementById('results-table').remove();
+    const parent = document.createElement('table');
+    parent.id = 'results-table';
+    parent.appendChild(thead);
+    sortedRows.forEach(function(elem) {
+        parent.appendChild(elem);
+    });
+    document.getElementsByTagName('BODY')[0].appendChild(parent);
+}
+
+function sort(items, keyFunc, reversed) {
+    const sortArray = items.map(function(item, i) {
+        return [keyFunc(item), i];
+    });
+
+    sortArray.sort(function(a, b) {
+        const keyA = a[0];
+        const keyB = b[0];
+
+        if (keyA == keyB) return 0;
+
+        if (reversed) {
+            return keyA < keyB ? 1 : -1;
+        } else {
+            return keyA > keyB ? 1 : -1;
+        }
+    });
+
+    return sortArray.map(function(item) {
+        const index = item[1];
+        return items[index];
+    });
+}
+
+function keyAlpha(colIndex) {
+    return function(elem) {
+        return elem.childNodes[1].childNodes[colIndex].firstChild.data.toLowerCase();
+    };
+}
+
+function keyLink(colIndex) {
+    return function(elem) {
+        const dataCell = elem.childNodes[1].childNodes[colIndex].firstChild;
+        return dataCell == null ? '' : dataCell.innerText.toLowerCase();
+    };
+}
+
+function keyResult(colIndex) {
+    return function(elem) {
+        const strings = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed',
+            'Skipped', 'Passed'];
+        return strings.indexOf(elem.childNodes[1].childNodes[colIndex].firstChild.data);
+    };
+}
+
+function resetSortHeaders() {
+    findAll('.sort-icon').forEach(function(elem) {
+        elem.parentNode.removeChild(elem);
+    });
+    findAll('.sortable').forEach(function(elem) {
+        const icon = document.createElement('div');
+        icon.className = 'sort-icon';
+        icon.textContent = 'vvv';
+        elem.insertBefore(icon, elem.firstChild);
+        elem.classList.remove('desc', 'active');
+        elem.classList.add('asc', 'inactive');
+    });
+}
+
+function toggleSortStates(elem) {
+    //if active, toggle between asc and desc
+    if (elem.classList.contains('active')) {
+        elem.classList.toggle('asc');
+        elem.classList.toggle('desc');
+    }
+
+    //if inactive, reset all other functions and add ascending active
+    if (elem.classList.contains('inactive')) {
+        resetSortHeaders();
+        elem.classList.remove('inactive');
+        elem.classList.add('active');
+    }
+}
+
+function isAllRowsHidden(value) {
+    return value.hidden == false;
+}
+
+function filterTable(elem) { // eslint-disable-line no-unused-vars
+    const outcomeAtt = 'data-test-result';
+    const outcome = elem.getAttribute(outcomeAtt);
+    const classOutcome = outcome + ' results-table-row';
+    const outcomeRows = document.getElementsByClassName(classOutcome);
+
+    for(let i = 0; i < outcomeRows.length; i++){
+        outcomeRows[i].hidden = !elem.checked;
+    }
+
+    const rows = findAll('.results-table-row').filter(isAllRowsHidden);
+    const allRowsHidden = rows.length == 0 ? true : false;
+    const notFoundMessage = document.getElementById('not-found-message');
+    notFoundMessage.hidden = !allRowsHidden;
+}
+</script>
+    <h1>report.html</h1>
+    <p>Report generated on 18-May-2021 at 18:35:25 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.1.1</p>
+    <h2>Environment</h2>
+    <table id="environment">
+      <tr>
+        <td>Packages</td>
+        <td>{"pluggy": "0.13.1", "py": "1.10.0", "pytest": "6.2.4"}</td></tr>
+      <tr>
+        <td>Platform</td>
+        <td>Linux-5.10.0-6-amd64-x86_64-with-glibc2.2.5</td></tr>
+      <tr>
+        <td>Plugins</td>
+        <td>{"html": "3.1.1", "metadata": "1.11.0"}</td></tr>
+      <tr>
+        <td>Python</td>
+        <td>3.8.9</td></tr></table>
+    <h2>Summary</h2>
+    <p>82 tests ran in 22.69 seconds. </p>
+    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="passed">82 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
+    <h2>Results</h2>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable result initial-sort" col="result">Result</th>
+          <th class="sortable" col="name">Test</th>
+          <th class="sortable" col="duration">Duration</th>
+          <th class="sortable links" col="links">Links</th></tr>
+        <tr hidden="true" id="not-found-message">
+          <th colspan="4">No results found. Try to check the filters</th></tr></thead>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob1-n1.sk1.blade-group.net]</td>
+          <td class="col-duration">0.05</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob1-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob1-n1.sk1.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob1-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob1-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob1-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob1-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob1-n1.sk1.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob2-n1.sk1.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob2-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob2-n1.sk1.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob2-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob2-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob2-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob2-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob2-n1.sk1.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob1-p1.sk1.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob1-p1.sk1.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob1-p1.sk1.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob2-p1.sk1.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob2-p1.sk1.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob2-p1.sk1.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob1-p2.sk1.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob1-p2.sk1.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob1-p2.sk1.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob2-p2.sk1.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob2-p2.sk1.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob2-p2.sk1.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[spine1.sk1.blade-group.net]</td>
+          <td class="col-duration">0.13</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr spine1.sk1.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: 
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml spine1.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for spine1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for spine1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for spine1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for spine1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for spine1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for spine1.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template spine1.sk1.blade-group.net for cumulus/dhcp.j2
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for spine1.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template spine1.sk1.blade-group.net for cumulus/default-isc-dhcp.j2
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for spine1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for spine1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for spine1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for spine1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on spine1.sk1.blade-group.net
+INFO     jerikan.build:build.py:50 skip check dhcpd.conf syntax check on spine1.sk1.blade-group.net due to missing input dhcpd.conf
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on spine1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on spine1.sk1.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[spine2.sk1.blade-group.net]</td>
+          <td class="col-duration">0.05</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr spine2.sk1.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: 
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml spine2.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for spine2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for spine2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for spine2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for spine2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for spine2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for spine2.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template spine2.sk1.blade-group.net for cumulus/dhcp.j2
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for spine2.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template spine2.sk1.blade-group.net for cumulus/default-isc-dhcp.j2
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for spine2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for spine2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for spine2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for spine2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on spine2.sk1.blade-group.net
+INFO     jerikan.build:build.py:50 skip check dhcpd.conf syntax check on spine2.sk1.blade-group.net due to missing input dhcpd.conf
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on spine2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on spine2.sk1.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to1-p1.sk1.blade-group.net]</td>
+          <td class="col-duration">0.17</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to1-p1.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to1-p1.sk1.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to1-p1.sk1.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 470: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to1-p1.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to1-p1.sk1.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to1-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to1-p1.sk1.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to2-p1.sk1.blade-group.net]</td>
+          <td class="col-duration">0.14</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to2-p1.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to2-p1.sk1.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to2-p1.sk1.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 474: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to2-p1.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to2-p1.sk1.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to2-p1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to2-p1.sk1.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to1-p2.sk1.blade-group.net]</td>
+          <td class="col-duration">0.16</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to1-p2.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to1-p2.sk1.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to1-p2.sk1.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 470: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to1-p2.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to1-p2.sk1.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to1-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to1-p2.sk1.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to2-p2.sk1.blade-group.net]</td>
+          <td class="col-duration">0.14</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to2-p2.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to2-p2.sk1.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to2-p2.sk1.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 472: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to2-p2.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to2-p2.sk1.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to2-p2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to2-p2.sk1.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to1-sp2.sk1.blade-group.net]</td>
+          <td class="col-duration">0.05</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to1-sp2.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to1-sp2.sk1.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to1-sp2.sk1.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 61: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to1-sp2.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to1-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to1-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to1-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to1-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to1-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to1-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to1-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to1-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to1-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to1-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to1-sp2.sk1.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to1-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to1-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to1-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to1-sp2.sk1.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to2-sp2.sk1.blade-group.net]</td>
+          <td class="col-duration">0.05</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to2-sp2.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to2-sp2.sk1.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to2-sp2.sk1.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 61: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to2-sp2.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to2-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to2-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to2-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to2-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to2-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to2-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to2-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to2-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to2-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to2-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to2-sp2.sk1.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to2-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to2-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to2-sp2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to2-sp2.sk1.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to1-ap1.sk1.blade-group.net]</td>
+          <td class="col-duration">0.04</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to1-ap1.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to1-ap1.sk1.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to1-ap1.sk1.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 92: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to1-ap1.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to1-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to1-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to1-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to1-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to1-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to1-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to1-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to1-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to1-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to1-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to1-ap1.sk1.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to1-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to1-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to1-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to1-ap1.sk1.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to2-ap1.sk1.blade-group.net]</td>
+          <td class="col-duration">0.04</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to2-ap1.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to2-ap1.sk1.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to2-ap1.sk1.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 92: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to2-ap1.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to2-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to2-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to2-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to2-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to2-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to2-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to2-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to2-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to2-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to2-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to2-ap1.sk1.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to2-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to2-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to2-ap1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to2-ap1.sk1.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[con1-n1.sk1.blade-group.net]</td>
+          <td class="col-duration">0.03</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for con1-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template con1-n1.sk1.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template opengear/config.j2 to config.txt for con1-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template opengear/motd.j2 to motd for con1-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template opengear/ssh_authorized_keys.j2 to ssh_authorized_keys for con1-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on con1-n1.sk1.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on con1-n1.sk1.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[gateway1.sk1.blade-group.net]</td>
+          <td class="col-duration">0.27</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------Captured /etc/network/interfaces syntax check call--------------- <br/>P: checks/linux-interfaces gateway1.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip link set dev lo up
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 172.29.64.4/255.255.255.255 broadcast 172.29.64.4 	  dev lo:1 label lo:1
+E: /sbin/ip link set dev lo:1   up
+E: 
+E: sysctl -qw net.ipv4.icmp_errors_use_inbound_ifaddr=1
+E: sysctl -qw net.ipv4.conf.all.accept_redirects=0
+E: sysctl -qw net.ipv4.conf.all.send_redirects=0
+E: sysctl -qw net.ipv4.conf.default.send_redirects=0
+E: sysctl -qw net.ipv6.conf.all.disable_ipv6=1
+E: sysctl -qw net.ipv4.conf.all.forwarding=1
+E: ip route add blackhole default metric 4278198272
+E: ip route add blackhole 10.0.0.0/8
+E: ip route add blackhole 172.16.0.0/12
+E: ip route add blackhole 192.168.0.0/16
+E: ip rule add iif lo to 192.168.0.0/16 table main priority 12
+E: ip rule add iif lo to 10.0.0.0/8     table main priority 12
+E: ip rule add iif lo to 172.16.0.0/12  table main priority 12
+E: ip rule add iif lo to 169.254.0.0/16 table main priority 12
+E: ip rule add iif lo to 100.64.0.0/10  table main priority 12
+E: ip rule add fwmark 0x2/0x2           table main priority 15
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: ip link add public type dummy
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 198.51.100.4/255.255.255.255 broadcast 198.51.100.4 	  dev public label public
+E: /sbin/ip link set dev public mtu 1500  up
+E: 
+E: ip route add blackhole default metric 4278198272 table public
+E: ip rule add iif lo table public priority 13
+E: ip rule add fwmark 0x1/0x1 table public priority 15
+E: ip rule add iif eno1.100 table public priority 100 &amp;&amp; ip rule add iif eno2.100 table public priority 100 &amp;&amp; :
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 121.78.242.10/255.255.255.248 broadcast 121.78.242.15 	  dev ens1f0 label ens1f0
+E: /sbin/ip link set dev ens1f0   up
+E: 
+E: ip route add default via 121.78.242.9 metric 4278198271 table public
+E: ip route add default via 121.78.242.9 table rescue
+E: ip rule add from 121.78.242.10 table rescue priority 10
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 172.29.15.253/255.255.248.0 broadcast 172.29.15.255 	  dev oob label oob
+E: /sbin/ip link set dev oob   up
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+S: 0
+<br/> -----------------Captured SSH authorized_keys syntax check call----------------- <br/>P: checks/linux-authorized_keys gateway1.sk1.blade-group.net
+C: /app/jerikan
+O: 3072 SHA256:XeU8KCd5pPT14QKDVJLC0BSgg3sidfuKK+IXARQdoSI roger (RSA)
+O: 3072 SHA256:6cIEUUjK2tGyscAxQw0FLRUzS8BvNcLhLQTm4DprNWc alfred (RSA)
+E: 
+S: 0
+<br/> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf gateway1.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/gateway1.sk1.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> --------------------Captured nftables.conf syntax check call-------------------- <br/>P: checks/linux-nftables gateway1.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml gateway1.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for gateway1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/interfaces.j2 to network-interfaces for gateway1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/keepalived.j2 to keepalived.conf for gateway1.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template gateway1.sk1.blade-group.net for linux/keepalived.j2
+INFO     jerikan.build:build.py:112 build template linux/authorized-keys.j2 to authorized_keys for gateway1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/nftables-rules-v4.j2 to nftables.conf for gateway1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/sysctl.conf.j2 to sysctl.conf for gateway1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for gateway1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/dhcp.j2 to dhcpd.conf for gateway1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/nginx.j2 to nginx.conf for gateway1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/conserver.j2 to conserver.cf for gateway1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `/etc/network/interfaces syntax check&#x27; on gateway1.sk1.blade-group.net
+INFO     jerikan.utils:utils.py:20 check /etc/network/interfaces syntax check on gateway1.sk1.blade-group.net: 0min 0sec
+INFO     jerikan.build:build.py:123 execute check `keepalived.conf syntax check&#x27; on gateway1.sk1.blade-group.net
+INFO     jerikan.build:build.py:50 skip check keepalived.conf syntax check on gateway1.sk1.blade-group.net due to missing input keepalived.conf
+INFO     jerikan.build:build.py:123 execute check `SSH authorized_keys syntax check&#x27; on gateway1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on gateway1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `nftables.conf syntax check&#x27; on gateway1.sk1.blade-group.net
+INFO     jerikan.utils:utils.py:20 check nftables.conf syntax check on gateway1.sk1.blade-group.net: 0min 0sec
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on gateway1.sk1.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[gateway2.sk1.blade-group.net]</td>
+          <td class="col-duration">0.17</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------Captured /etc/network/interfaces syntax check call--------------- <br/>P: checks/linux-interfaces gateway2.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip link set dev lo up
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 172.29.64.5/255.255.255.255 broadcast 172.29.64.5 	  dev lo:1 label lo:1
+E: /sbin/ip link set dev lo:1   up
+E: 
+E: sysctl -qw net.ipv4.icmp_errors_use_inbound_ifaddr=1
+E: sysctl -qw net.ipv4.conf.all.accept_redirects=0
+E: sysctl -qw net.ipv4.conf.all.send_redirects=0
+E: sysctl -qw net.ipv4.conf.default.send_redirects=0
+E: sysctl -qw net.ipv6.conf.all.disable_ipv6=1
+E: sysctl -qw net.ipv4.conf.all.forwarding=1
+E: ip route add blackhole default metric 4278198272
+E: ip route add blackhole 10.0.0.0/8
+E: ip route add blackhole 172.16.0.0/12
+E: ip route add blackhole 192.168.0.0/16
+E: ip rule add iif lo to 192.168.0.0/16 table main priority 12
+E: ip rule add iif lo to 10.0.0.0/8     table main priority 12
+E: ip rule add iif lo to 172.16.0.0/12  table main priority 12
+E: ip rule add iif lo to 169.254.0.0/16 table main priority 12
+E: ip rule add iif lo to 100.64.0.0/10  table main priority 12
+E: ip rule add fwmark 0x2/0x2           table main priority 15
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: ip link add public type dummy
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 198.51.100.5/255.255.255.255 broadcast 198.51.100.5 	  dev public label public
+E: /sbin/ip link set dev public mtu 1500  up
+E: 
+E: ip route add blackhole default metric 4278198272 table public
+E: ip rule add iif lo table public priority 13
+E: ip rule add fwmark 0x1/0x1 table public priority 15
+E: ip rule add iif eno1.100 table public priority 100 &amp;&amp; ip rule add iif eno2.100 table public priority 100 &amp;&amp; :
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 121.78.242.11/255.255.255.248 broadcast 121.78.242.15 	  dev ens1f0 label ens1f0
+E: /sbin/ip link set dev ens1f0   up
+E: 
+E: ip route add default via 121.78.242.9 metric 4278198271 table public
+E: ip route add default via 121.78.242.9 table rescue
+E: ip rule add from 121.78.242.11 table rescue priority 10
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 172.29.15.252/255.255.248.0 broadcast 172.29.15.255 	  dev oob label oob
+E: /sbin/ip link set dev oob   up
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+S: 0
+<br/> -----------------Captured SSH authorized_keys syntax check call----------------- <br/>P: checks/linux-authorized_keys gateway2.sk1.blade-group.net
+C: /app/jerikan
+O: 3072 SHA256:XeU8KCd5pPT14QKDVJLC0BSgg3sidfuKK+IXARQdoSI roger (RSA)
+O: 3072 SHA256:6cIEUUjK2tGyscAxQw0FLRUzS8BvNcLhLQTm4DprNWc alfred (RSA)
+E: 
+S: 0
+<br/> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf gateway2.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/gateway2.sk1.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> --------------------Captured nftables.conf syntax check call-------------------- <br/>P: checks/linux-nftables gateway2.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml gateway2.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for gateway2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/interfaces.j2 to network-interfaces for gateway2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/keepalived.j2 to keepalived.conf for gateway2.sk1.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template gateway2.sk1.blade-group.net for linux/keepalived.j2
+INFO     jerikan.build:build.py:112 build template linux/authorized-keys.j2 to authorized_keys for gateway2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/nftables-rules-v4.j2 to nftables.conf for gateway2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/sysctl.conf.j2 to sysctl.conf for gateway2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for gateway2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/dhcp.j2 to dhcpd.conf for gateway2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/nginx.j2 to nginx.conf for gateway2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/conserver.j2 to conserver.cf for gateway2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `/etc/network/interfaces syntax check&#x27; on gateway2.sk1.blade-group.net
+INFO     jerikan.utils:utils.py:20 check /etc/network/interfaces syntax check on gateway2.sk1.blade-group.net: 0min 0sec
+INFO     jerikan.build:build.py:123 execute check `keepalived.conf syntax check&#x27; on gateway2.sk1.blade-group.net
+INFO     jerikan.build:build.py:50 skip check keepalived.conf syntax check on gateway2.sk1.blade-group.net due to missing input keepalived.conf
+INFO     jerikan.build:build.py:123 execute check `SSH authorized_keys syntax check&#x27; on gateway2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on gateway2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `nftables.conf syntax check&#x27; on gateway2.sk1.blade-group.net
+INFO     jerikan.utils:utils.py:20 check nftables.conf syntax check on gateway2.sk1.blade-group.net: 0min 0sec
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on gateway2.sk1.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob1-n1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.02</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob1-n1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob1-n1.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob1-n1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob1-n1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob1-n1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob1-n1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob1-n1.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob1-n2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob1-n2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob1-n2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob1-n2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob1-n2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob1-n2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob1-n2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob1-n2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob1-ag1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob1-ag1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob1-ag1.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob1-ag1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob1-ag1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob1-ag1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob1-ag1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob1-ag1.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob1-ag2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob1-ag2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob1-ag2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob1-ag2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob1-ag2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob1-ag2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob1-ag2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob1-ag2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob1-p1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob1-p1.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob1-p1.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob2-p1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob2-p1.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob2-p1.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob3-p1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob3-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob3-p1.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob3-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob3-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob3-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob3-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob3-p1.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob4-p1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob4-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob4-p1.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob4-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob4-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob4-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob4-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob4-p1.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob1-p2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob1-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob1-p2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob1-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob1-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob1-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob1-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob1-p2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob2-p2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob2-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob2-p2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob2-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob2-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob2-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob2-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob2-p2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob3-p2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob3-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob3-p2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob3-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob3-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob3-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob3-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob3-p2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob4-p2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob4-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob4-p2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob4-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob4-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob4-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob4-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob4-p2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob1-p3.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob1-p3.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob1-p3.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob2-p3.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob2-p3.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob2-p3.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob3-p3.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob3-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob3-p3.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob3-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob3-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob3-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob3-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob3-p3.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob4-p3.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob4-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob4-p3.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob4-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob4-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob4-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob4-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob4-p3.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob1-p5.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob1-p5.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob1-p5.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob2-p5.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob2-p5.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob2-p5.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob3-p5.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob3-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob3-p5.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob3-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob3-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob3-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob3-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob3-p5.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob4-p5.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob4-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob4-p5.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob4-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob4-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob4-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob4-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob4-p5.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob1-p8.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob1-p8.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob1-p8.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob2-p8.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob2-p8.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob2-p8.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob3-p8.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob3-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob3-p8.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob3-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob3-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob3-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob3-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob3-p8.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob4-p8.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob4-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob4-p8.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob4-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob4-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob4-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob4-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob4-p8.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob1-sp2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob1-sp2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob1-sp2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob2-sp2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob2-sp2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob2-sp2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob3-sp2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob3-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob3-sp2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob3-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob3-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob3-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob3-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob3-sp2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob4-sp2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob4-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob4-sp2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob4-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob4-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob4-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob4-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob4-sp2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob1-sp3.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob1-sp3.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob1-sp3.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob2-sp3.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob2-sp3.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob2-sp3.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob3-sp3.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob3-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob3-sp3.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob3-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob3-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob3-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob3-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob3-sp3.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[ob4-sp3.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for ob4-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template ob4-sp3.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template ios/main.j2 to config.txt for ob4-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/base.j2 to config-base.txt for ob4-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template ios/rescue.j2 to config-rescue.txt for ob4-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on ob4-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on ob4-sp3.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[spine1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.07</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr spine1.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: 
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml spine1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template spine1.ussfo03.blade-group.net for cumulus/dhcp.j2
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template spine1.ussfo03.blade-group.net for cumulus/default-isc-dhcp.j2
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template spine1.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check dhcpd.conf syntax check on spine1.ussfo03.blade-group.net due to missing input dhcpd.conf
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on spine1.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[spine2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.06</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr spine2.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: 
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml spine2.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template spine2.ussfo03.blade-group.net for cumulus/dhcp.j2
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template spine2.ussfo03.blade-group.net for cumulus/default-isc-dhcp.j2
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template spine2.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check dhcpd.conf syntax check on spine2.ussfo03.blade-group.net due to missing input dhcpd.conf
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on spine2.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[s-spine1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.06</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr s-spine1.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: 
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml s-spine1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for s-spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for s-spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for s-spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for s-spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for s-spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for s-spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template s-spine1.ussfo03.blade-group.net for cumulus/dhcp.j2
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for s-spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template s-spine1.ussfo03.blade-group.net for cumulus/default-isc-dhcp.j2
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for s-spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for s-spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for s-spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for s-spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on s-spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check dhcpd.conf syntax check on s-spine1.ussfo03.blade-group.net due to missing input dhcpd.conf
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on s-spine1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on s-spine1.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[s-spine2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.03</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr s-spine2.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: 
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml s-spine2.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for s-spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for s-spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for s-spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for s-spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for s-spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for s-spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template s-spine2.ussfo03.blade-group.net for cumulus/dhcp.j2
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for s-spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template s-spine2.ussfo03.blade-group.net for cumulus/default-isc-dhcp.j2
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for s-spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for s-spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for s-spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for s-spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on s-spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check dhcpd.conf syntax check on s-spine2.ussfo03.blade-group.net due to missing input dhcpd.conf
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on s-spine2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on s-spine2.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to1-ap1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to1-ap1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to1-ap1.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to1-ap1.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 294: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to1-ap1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to1-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to1-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to1-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to1-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to1-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to1-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to1-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to1-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to1-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to1-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to1-ap1.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to1-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to1-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to1-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to1-ap1.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to2-ap1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to2-ap1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to2-ap1.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to2-ap1.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 294: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to2-ap1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to2-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to2-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to2-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to2-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to2-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to2-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to2-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to2-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to2-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to2-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to2-ap1.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to2-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to2-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to2-ap1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to2-ap1.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to1-p1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.27</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to1-p1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to1-p1.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to1-p1.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 906: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to1-p1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to1-p1.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to1-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to1-p1.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to2-p1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.24</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to2-p1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to2-p1.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to2-p1.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 914: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to2-p1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to2-p1.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to2-p1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to2-p1.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to1-p2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.18</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> --------------------Captured syntax check with Junoser call--------------------- <br/>P: checks/junoser to1-p2.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to1-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to1-p2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template junos/main.j2 to config.txt for to1-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template junos/base.j2 to config-base.txt for to1-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template junos/irr.j2 to config-irr.txt for to1-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to1-p2.ussfo03.blade-group.net for junos/irr.j2
+INFO     jerikan.build:build.py:123 execute check `syntax check with Junoser&#x27; on to1-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to1-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on to1-p2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to2-p2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.13</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> --------------------Captured syntax check with Junoser call--------------------- <br/>P: checks/junoser to2-p2.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to2-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to2-p2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template junos/main.j2 to config.txt for to2-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template junos/base.j2 to config-base.txt for to2-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template junos/irr.j2 to config-irr.txt for to2-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to2-p2.ussfo03.blade-group.net for junos/irr.j2
+INFO     jerikan.build:build.py:123 execute check `syntax check with Junoser&#x27; on to2-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to2-p2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on to2-p2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to1-p3.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.25</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to1-p3.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to1-p3.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to1-p3.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 906: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to1-p3.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to1-p3.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to1-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to1-p3.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to2-p3.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.24</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to2-p3.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to2-p3.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to2-p3.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 914: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to2-p3.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to2-p3.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to2-p3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to2-p3.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to1-p5.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.24</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to1-p5.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to1-p5.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to1-p5.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 906: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to1-p5.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to1-p5.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to1-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to1-p5.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to2-p5.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.24</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to2-p5.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to2-p5.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to2-p5.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 914: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to2-p5.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to2-p5.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to2-p5.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to2-p5.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to1-p8.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.25</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to1-p8.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to1-p8.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to1-p8.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 906: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to1-p8.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to1-p8.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to1-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to1-p8.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to2-p8.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.24</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to2-p8.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to2-p8.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to2-p8.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 910: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to2-p8.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to2-p8.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to2-p8.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to2-p8.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to1-sp2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.14</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to1-sp2.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to1-sp2.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to1-sp2.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 245: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to1-sp2.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to1-sp2.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to1-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to1-sp2.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to2-sp2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.14</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to2-sp2.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to2-sp2.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to2-sp2.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 245: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to2-sp2.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to2-sp2.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to2-sp2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to2-sp2.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to1-sp3.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.14</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to1-sp3.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to1-sp3.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to1-sp3.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 245: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to1-sp3.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to1-sp3.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to1-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to1-sp3.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[to2-sp3.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.18</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd.conf to2-sp3.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/to2-sp3.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> ----------------------Captured frr.conf syntax check call----------------------- <br/>P: checks/linux-frr to2-sp3.ussfo03.blade-group.net
+C: /app/jerikan
+O: % Command not allowed: enable
+O: % Unknown command: configure terminal
+O: % Command not allowed: enable
+O: % Unknown command: disable
+E: line 245: % Unknown command[4]: exit-vrf
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml to2-sp3.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for to2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/main.j2 to config.txt for to2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/frr.j2 to frr.conf for to2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/interfaces.j2 to interfaces.conf for to2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/ports.j2 to ports.conf for to2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/dhcp.j2 to dhcpd.conf for to2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/default-isc-dhcp.j2 to default-isc-dhcp for to2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/authorized-keys.j2 to authorized_keys for to2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for to2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template cumulus/acl.j2 to acl.rules for to2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template to2-sp3.ussfo03.blade-group.net for cumulus/acl.j2
+INFO     jerikan.build:build.py:112 build template cumulus/rsyslog.conf.j2 to rsyslog.conf for to2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on to2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `frr.conf syntax check&#x27; on to2-sp3.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on to2-sp3.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[con1-n1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for con1-n1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template con1-n1.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template opengear/config.j2 to config.txt for con1-n1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template opengear/motd.j2 to motd for con1-n1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template opengear/ssh_authorized_keys.j2 to ssh_authorized_keys for con1-n1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on con1-n1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on con1-n1.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[con1-n2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for con1-n2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template con1-n2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template opengear/config.j2 to config.txt for con1-n2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template opengear/motd.j2 to motd for con1-n2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template opengear/ssh_authorized_keys.j2 to ssh_authorized_keys for con1-n2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on con1-n2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on con1-n2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[con1-ag1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for con1-ag1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template con1-ag1.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template opengear/config.j2 to config.txt for con1-ag1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template opengear/motd.j2 to motd for con1-ag1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template opengear/ssh_authorized_keys.j2 to ssh_authorized_keys for con1-ag1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on con1-ag1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on con1-ag1.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[con1-ag2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for con1-ag2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template con1-ag2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template opengear/config.j2 to config.txt for con1-ag2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template opengear/motd.j2 to motd for con1-ag2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template opengear/ssh_authorized_keys.j2 to ssh_authorized_keys for con1-ag2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on con1-ag2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on con1-ag2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[gateway1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.39</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------Captured /etc/network/interfaces syntax check call--------------- <br/>P: checks/linux-interfaces gateway1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip link set dev lo up
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 172.30.20.4/255.255.255.255 broadcast 172.30.20.4 	  dev lo:1 label lo:1
+E: /sbin/ip link set dev lo:1   up
+E: 
+E: sysctl -qw net.ipv4.icmp_errors_use_inbound_ifaddr=1
+E: sysctl -qw net.ipv4.conf.all.accept_redirects=0
+E: sysctl -qw net.ipv4.conf.all.send_redirects=0
+E: sysctl -qw net.ipv4.conf.default.send_redirects=0
+E: sysctl -qw net.ipv6.conf.all.disable_ipv6=1
+E: sysctl -qw net.ipv4.conf.all.forwarding=1
+E: ip route add blackhole default metric 4278198272
+E: ip route add blackhole 10.0.0.0/8
+E: ip route add blackhole 172.16.0.0/12
+E: ip route add blackhole 192.168.0.0/16
+E: ip rule add iif lo to 192.168.0.0/16 table main priority 12
+E: ip rule add iif lo to 10.0.0.0/8     table main priority 12
+E: ip rule add iif lo to 172.16.0.0/12  table main priority 12
+E: ip rule add iif lo to 169.254.0.0/16 table main priority 12
+E: ip rule add iif lo to 100.64.0.0/10  table main priority 12
+E: ip rule add fwmark 0x2/0x2           table main priority 15
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: ip link add public type dummy
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 69.58.92.4/255.255.255.255 broadcast 69.58.92.4 	  dev public label public
+E: /sbin/ip link set dev public mtu 1500  up
+E: 
+E: ip route add blackhole default metric 4278198272 table public
+E: ip rule add iif lo table public priority 13
+E: ip rule add fwmark 0x1/0x1 table public priority 15
+E: ip rule add iif ens3f1.100 table public priority 100 &amp;&amp; ip rule add iif enp196s0f0.100 table public priority 100 &amp;&amp; :
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 38.140.109.178/255.255.255.248 broadcast 38.140.109.183 	  dev ens3f0 label ens3f0
+E: /sbin/ip link set dev ens3f0   up
+E: 
+E: ip route add default via 38.140.109.177 metric 4278198271 table public
+E: ip route add default via 38.140.109.177 table rescue
+E: ip rule add from 38.140.109.178 table rescue priority 10
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 172.30.31.253/255.255.248.0 broadcast 172.30.31.255 	  dev oob label oob
+E: /sbin/ip link set dev oob   up
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+S: 0
+<br/> -----------------Captured SSH authorized_keys syntax check call----------------- <br/>P: checks/linux-authorized_keys gateway1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 3072 SHA256:XeU8KCd5pPT14QKDVJLC0BSgg3sidfuKK+IXARQdoSI roger (RSA)
+O: 3072 SHA256:6cIEUUjK2tGyscAxQw0FLRUzS8BvNcLhLQTm4DprNWc alfred (RSA)
+E: 
+S: 0
+<br/> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd gateway1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/gateway1.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> --------------------Captured nftables.conf syntax check call-------------------- <br/>P: checks/linux-nftables gateway1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml gateway1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/interfaces.j2 to network-interfaces for gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/keepalived.j2 to keepalived.conf for gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template gateway1.ussfo03.blade-group.net for linux/keepalived.j2
+INFO     jerikan.build:build.py:112 build template linux/authorized-keys.j2 to authorized_keys for gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/nftables-rules-v4.j2 to nftables.conf for gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/sysctl.conf.j2 to sysctl.conf for gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/dhcp.j2 to dhcpd.conf for gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/nginx.j2 to nginx.conf for gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/conserver.j2 to conserver.cf for gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `/etc/network/interfaces syntax check&#x27; on gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `keepalived.conf syntax check&#x27; on gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check keepalived.conf syntax check on gateway1.ussfo03.blade-group.net due to missing input keepalived.conf
+INFO     jerikan.build:build.py:123 execute check `SSH authorized_keys syntax check&#x27; on gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `nftables.conf syntax check&#x27; on gateway1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on gateway1.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[gateway2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.34</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ---------------Captured /etc/network/interfaces syntax check call--------------- <br/>P: checks/linux-interfaces gateway2.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip link set dev lo up
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 172.30.20.5/255.255.255.255 broadcast 172.30.20.5 	  dev lo:1 label lo:1
+E: /sbin/ip link set dev lo:1   up
+E: 
+E: sysctl -qw net.ipv4.icmp_errors_use_inbound_ifaddr=1
+E: sysctl -qw net.ipv4.conf.all.accept_redirects=0
+E: sysctl -qw net.ipv4.conf.all.send_redirects=0
+E: sysctl -qw net.ipv4.conf.default.send_redirects=0
+E: sysctl -qw net.ipv6.conf.all.disable_ipv6=1
+E: sysctl -qw net.ipv4.conf.all.forwarding=1
+E: ip route add blackhole default metric 4278198272
+E: ip route add blackhole 10.0.0.0/8
+E: ip route add blackhole 172.16.0.0/12
+E: ip route add blackhole 192.168.0.0/16
+E: ip rule add iif lo to 192.168.0.0/16 table main priority 12
+E: ip rule add iif lo to 10.0.0.0/8     table main priority 12
+E: ip rule add iif lo to 172.16.0.0/12  table main priority 12
+E: ip rule add iif lo to 169.254.0.0/16 table main priority 12
+E: ip rule add iif lo to 100.64.0.0/10  table main priority 12
+E: ip rule add fwmark 0x2/0x2           table main priority 15
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: ip link add public type dummy
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 69.58.92.5/255.255.255.255 broadcast 69.58.92.5 	  dev public label public
+E: /sbin/ip link set dev public mtu 1500  up
+E: 
+E: ip route add blackhole default metric 4278198272 table public
+E: ip rule add iif lo table public priority 13
+E: ip rule add fwmark 0x1/0x1 table public priority 15
+E: ip rule add iif ens3f1.100 table public priority 100 &amp;&amp; ip rule add iif enp196s0f0.100 table public priority 100 &amp;&amp; :
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 38.140.109.179/255.255.255.248 broadcast 38.140.109.183 	  dev ens3f0 label ens3f0
+E: /sbin/ip link set dev ens3f0   up
+E: 
+E: ip route add default via 38.140.109.177 metric 4278198271 table public
+E: ip route add default via 38.140.109.177 table rescue
+E: ip rule add from 38.140.109.179 table rescue priority 10
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-pre-up.d
+E: /sbin/ip addr add 172.30.31.252/255.255.248.0 broadcast 172.30.31.255 	  dev oob label oob
+E: /sbin/ip link set dev oob   up
+E: 
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+E: /bin/run-parts --exit-on-error /etc/network/if-up.d
+S: 0
+<br/> -----------------Captured SSH authorized_keys syntax check call----------------- <br/>P: checks/linux-authorized_keys gateway2.ussfo03.blade-group.net
+C: /app/jerikan
+O: 3072 SHA256:XeU8KCd5pPT14QKDVJLC0BSgg3sidfuKK+IXARQdoSI roger (RSA)
+O: 3072 SHA256:6cIEUUjK2tGyscAxQw0FLRUzS8BvNcLhLQTm4DprNWc alfred (RSA)
+E: 
+S: 0
+<br/> ---------------------Captured dhcpd.conf syntax check call---------------------- <br/>P: checks/linux-dhcpd gateway2.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: Internet Systems Consortium DHCP Server 4.4.1
+E: Copyright 2004-2018 Internet Systems Consortium.
+E: All rights reserved.
+E: For info, please visit https://www.isc.org/software/dhcp/
+E: Config file: output/gateway2.ussfo03.blade-group.net/dhcpd.conf
+E: Database file: /var/lib/dhcp/dhcpd.leases
+E: PID file: /var/run/dhcpd.pid
+S: 0
+<br/> --------------------Captured nftables.conf syntax check call-------------------- <br/>P: checks/linux-nftables gateway2.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml gateway2.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/interfaces.j2 to network-interfaces for gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/keepalived.j2 to keepalived.conf for gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template gateway2.ussfo03.blade-group.net for linux/keepalived.j2
+INFO     jerikan.build:build.py:112 build template linux/authorized-keys.j2 to authorized_keys for gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/nftables-rules-v4.j2 to nftables.conf for gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/sysctl.conf.j2 to sysctl.conf for gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/motd.j2 to motd for gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/dhcp.j2 to dhcpd.conf for gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/nginx.j2 to nginx.conf for gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template linux/conserver.j2 to conserver.cf for gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `/etc/network/interfaces syntax check&#x27; on gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `keepalived.conf syntax check&#x27; on gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check keepalived.conf syntax check on gateway2.ussfo03.blade-group.net due to missing input keepalived.conf
+INFO     jerikan.build:build.py:123 execute check `SSH authorized_keys syntax check&#x27; on gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `dhcpd.conf syntax check&#x27; on gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `nftables.conf syntax check&#x27; on gateway2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on gateway2.ussfo03.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[edge1.sk1.blade-group.net]</td>
+          <td class="col-duration">0.16</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml edge1.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for edge1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template iosxr/main.j2 to config.txt for edge1.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template iosxr/base.j2 to config-base.txt for edge1.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on edge1.sk1.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[edge2.sk1.blade-group.net]</td>
+          <td class="col-duration">0.03</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------Captured check YAML data call-------------------------- <br/>P: checks/data.yaml edge2.sk1.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for edge2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template iosxr/main.j2 to config.txt for edge2.sk1.blade-group.net
+INFO     jerikan.build:build.py:112 build template iosxr/base.j2 to config-base.txt for edge2.sk1.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on edge2.sk1.blade-group.net<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[edge1.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.26</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> --------------------Captured syntax check with Junoser call--------------------- <br/>P: checks/junoser edge1.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for edge1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template edge1.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template junos/main.j2 to config.txt for edge1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template junos/base.j2 to config-base.txt for edge1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template junos/irr.j2 to config-irr.txt for edge1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template edge1.ussfo03.blade-group.net for junos/irr.j2
+INFO     jerikan.build:build.py:123 execute check `syntax check with Junoser&#x27; on edge1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on edge1.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on edge1.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[edge2.ussfo03.blade-group.net]</td>
+          <td class="col-duration">0.04</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> --------------------Captured syntax check with Junoser call--------------------- <br/>P: checks/junoser edge2.ussfo03.blade-group.net
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for edge2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:213 skip empty template edge2.ussfo03.blade-group.net for data.j2
+INFO     jerikan.build:build.py:112 build template junos/main.j2 to config.txt for edge2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template junos/base.j2 to config-base.txt for edge2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:112 build template junos/irr.j2 to config-irr.txt for edge2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `syntax check with Junoser&#x27; on edge2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on edge2.ussfo03.blade-group.net
+INFO     jerikan.build:build.py:50 skip check check YAML data on edge2.ussfo03.blade-group.net due to missing input data.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">jerikan/build.py::build[none]</td>
+          <td class="col-duration">15.68</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> --------------------------Captured check dns.yaml call-------------------------- <br/>P: checks/dns.yaml none
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> ------------------------Captured check netbox.yaml call------------------------- <br/>P: checks/netbox.yaml none
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------Captured check roas.yaml call-------------------------- <br/>P: checks/roas.yaml none
+C: /app/jerikan
+O: 
+E: 
+S: 0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     jerikan.build:build.py:112 build template data.j2 to data.yaml for none
+INFO     jerikan.build:build.py:213 skip empty template none for data.j2
+INFO     jerikan.build:build.py:112 build template none/dns.j2 to dns.yaml for none
+INFO     jerikan.build:build.py:112 build template none/ansible-inventory.j2 to ansible-inventory for none
+INFO     jerikan.build:build.py:112 build template none/netbox.j2 to netbox.yaml for none
+INFO     jerikan.build:build.py:112 build template none/whois-ripe.j2 to whois-ripe.txt for none
+INFO     jerikan.build:build.py:112 build template none/whois-arin.j2 to whois-arin.txt for none
+INFO     jerikan.build:build.py:112 build template none/whois-apnic.j2 to whois-apnic.txt for none
+INFO     jerikan.build:build.py:112 build template none/geofeed.j2 to geofeed.csv for none
+INFO     jerikan.build:build.py:112 build template none/roas.j2 to roas.yaml for none
+INFO     jerikan.build:build.py:123 execute check `check dns.yaml&#x27; on none
+INFO     jerikan.utils:utils.py:20 check check dns.yaml on none: 0min 9sec
+INFO     jerikan.build:build.py:123 execute check `check netbox.yaml&#x27; on none
+INFO     jerikan.utils:utils.py:20 check check netbox.yaml on none: 0min 4sec
+INFO     jerikan.build:build.py:123 execute check `check roas.yaml&#x27; on none
+INFO     jerikan.utils:utils.py:20 check check roas.yaml on none: 0min 0sec
+INFO     jerikan.build:build.py:123 execute check `check YAML data&#x27; on none
+INFO     jerikan.build:build.py:50 skip check check YAML data on none due to missing input data.yaml<br/></div></td></tr></tbody></table></body></html>

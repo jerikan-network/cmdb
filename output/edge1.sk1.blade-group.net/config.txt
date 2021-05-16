@@ -1,0 +1,887 @@
+hostname edge1.sk1
+clock timezone UTC 0
+banner motd C
+______ _           _
+| ___ \ |         | |
+| |_/ / | __ _  __| | ___      This is a private system.
+| ___ \ |/ _` |/ _` |/ _ \     Use by unauthorized persons is prohibited.
+| |_/ / | (_| | (_| |  __/     Go away.
+\____/|_|\__,_|\__,_|\___|
+
+C
+domain name blade-group.net
+domain vrf VRF-MANAGEMENT name-server 172.29.64.2
+domain vrf VRF-MANAGEMENT name-server 172.29.64.3
+!
+logging 172.29.64.9 vrf VRF-MANAGEMENT
+logging 172.29.64.10 vrf VRF-MANAGEMENT
+!
+vrf VRF-MANAGEMENT
+ address-family ipv4 unicast
+!
+line default
+ exec-timeout 0 0
+!
+ntp
+ server vrf VRF-MANAGEMENT 172.29.64.4
+ server vrf VRF-MANAGEMENT 172.29.64.5
+!
+xml agent tty
+ iteration off
+!
+lldp
+!
+ipv4 access-list ACL-INTERNET-IN-V4
+ permit udp 209.50.158.0/23  any  eq snmp
+ deny udp any  any  eq snmp
+ deny udp any  any  eq ntp
+ deny udp any  any  eq 7
+ deny udp any  any  eq 9
+ deny udp any  any  eq 17
+ deny udp any  any  eq 19
+ deny udp any  any  eq 1900
+ permit ipv4 any any
+!
+ipv4 access-list ACL-SNMP
+ permit ipv4 209.50.158.0/23 any
+!
+snmp-server vrf VRF-MANAGEMENT
+snmp-server community 67dskf8fds78fdn RO IPv4 ACL-SNMP
+snmp-server contact Blade Network team <someone@example.com>
+snmp-server location KINX Dogok-dong, KR
+snmp-server ifindex persist
+!
+ipv4 access-list ACL-SSH
+ permit ipv4 172.29.8.0/21 any
+ permit ipv4 203.0.113.11/32 any
+!
+username roger group root-lr
+username roger group root-system
+username roger group cisco-support
+username alfred group root-lr
+username alfred group root-system
+username alfred group cisco-support
+!
+ssh server v2
+ssh server vrf default ipv4 access-list ACL-SSH
+ssh server netconf vrf default ipv4 access-list ACL-SSH
+ssh server vrf VRF-MANAGEMENT ipv4 access-list ACL-SSH
+ssh server netconf vrf VRF-MANAGEMENT ipv4 access-list ACL-SSH
+!
+
+interface MgmtEth0/RSP0/CPU0/0
+ vrf VRF-MANAGEMENT
+ ipv4 address 172.29.15.28 255.255.248.0
+!
+router static
+ vrf VRF-MANAGEMENT
+  address-family ipv4 unicast
+   0.0.0.0/0 172.29.15.254
+  !
+ !
+!
+
+interface Loopback0
+ description "Loopback:"
+ ipv4 address 198.51.100.1 255.255.255.255
+ ipv6 address 2406:3bc0:100:b1:a:de:c633:6401/128 
+!
+interface GigabitEthernet0/0/0/0
+ description IX: KINX-IX [1G-LX] (...) {RackN1-U33 port:11,12}
+ load-interval 30
+ ipv4 address 192.145.251.201 255.255.255.0
+ ipv6 address 2001:7fa:8::49/64 
+ ipv6 nd suppress-ra
+ ipv4 access-group ACL-INTERNET-IN-V4 ingress
+ lldp
+   receive disable
+   transmit disable
+ !
+ flow ipv4 monitor FLOW-IPv4 sampler FLOW-SAMPLER ingress
+ flow ipv6 monitor FLOW-IPv6 sampler FLOW-SAMPLER ingress
+!
+interface TenGigE0/0/1/0
+ mtu 9216
+ description Core: spine1 [10G-SR]
+ load-interval 30
+ flow ipv4 monitor FLOW-IPv4 sampler FLOW-SAMPLER ingress
+ flow ipv6 monitor FLOW-IPv6 sampler FLOW-SAMPLER ingress
+!
+interface TenGigE0/0/1/1
+ mtu 9216
+ description Core: spine2 [10G-SR]
+ load-interval 30
+ flow ipv4 monitor FLOW-IPv4 sampler FLOW-SAMPLER ingress
+ flow ipv6 monitor FLOW-IPv6 sampler FLOW-SAMPLER ingress
+!
+interface TenGigE0/0/1/3
+ mtu 9216
+ description Core: edge2 [10G-SR]
+ load-interval 30
+ ipv4 address 198.51.100.8 255.255.255.254
+ ipv6 address 2406:3bc0:100:b1:a:de:c633:6408/127 
+ flow ipv4 monitor FLOW-IPv4 sampler FLOW-SAMPLER ingress
+ flow ipv6 monitor FLOW-IPv6 sampler FLOW-SAMPLER ingress
+!
+interface TenGigE0/0/2/0
+ description Transit: KINX-DOM [10G-LR] (...) {RackN1-U33 port:3,4}
+ load-interval 30
+ ipv4 address 121.78.30.146 255.255.255.252
+ ipv6 address 2401:2700::162/126 
+ ipv4 access-group ACL-INTERNET-IN-V4 ingress
+ flow ipv4 monitor FLOW-IPv4 sampler FLOW-SAMPLER ingress
+ flow ipv6 monitor FLOW-IPv6 sampler FLOW-SAMPLER ingress
+!
+interface TenGigE0/0/2/1
+ description Transit: KINX-INT [10G-LR] (...) {RackN1-U33 port:7,8}
+ load-interval 30
+ ipv4 address 121.78.30.154 255.255.255.252
+ ipv6 address 2401:2700::16a/126 
+ ipv4 access-group ACL-INTERNET-IN-V4 ingress
+ flow ipv4 monitor FLOW-IPv4 sampler FLOW-SAMPLER ingress
+ flow ipv6 monitor FLOW-IPv6 sampler FLOW-SAMPLER ingress
+!
+prefix-set PFX-BLADE-SUPERNET-V4
+ 198.51.100.0/24
+end-set
+!
+prefix-set PFX-BLADE-SUPERNET-ORLONGER-V4
+ 198.51.100.0/24 ge 24
+end-set
+!
+prefix-set PFX-BLADE-SUPERNET-V6
+ 2406:3bc0::/40,
+ 2406:3bc0:100::/40
+end-set
+!
+prefix-set PFX-BLADE-SUPERNET-ORLONGER-V6
+ 2406:3bc0::/40 ge 40,
+ 2406:3bc0:100::/40 ge 40
+end-set
+!
+prefix-set PFX-BOGON-V4
+ 0.0.0.0/8 le 32,
+ 10.0.0.0/8 le 32,
+ 100.64.0.0/10 le 32,
+ 127.0.0.0/8 le 32,
+ 169.254.0.0/16 le 32,
+ 172.16.0.0/12 le 32,
+ 192.0.2.0/24 le 32,
+ 192.88.99.0/24 le 32,
+ 192.168.0.0/16 le 32,
+ 198.18.0.0/15 le 32,
+ 198.51.100.0/24 le 32,
+ 203.0.113.0/24 le 32,
+ 224.0.0.0/4 le 32,
+ 240.0.0.0/4 le 32
+end-set
+!
+prefix-set PFX-BOGON-V6
+ ::/8 le 128,
+ 100::/64 le 128,
+ 2001:2::/48 le 128,
+ 2001:10::/28 le 128,
+ 2001:db8::/32 le 128,
+ 2002::/16 le 128,
+ 3ffe::/16 le 128,
+ fc00::/7 le 128,
+ fe80::/10 le 128,
+ fec0::/10 le 128,
+ ff00::/8 le 128
+end-set
+!
+prefix-set PFX-DEFAULT-V4
+ 0.0.0.0/0
+end-set
+!
+prefix-set PFX-TOO-SPECIFIC-V4
+ 0.0.0.0/0 ge 25
+end-set
+!
+prefix-set PFX-DEFAULT-V6
+ ::/0
+end-set
+!
+prefix-set PFX-TOO-SPECIFIC-V6
+ ::/0 ge 49
+end-set
+!
+as-path-set AS-SET-BOGON-ASN
+ ios-regex '_0_',
+ passes-through '23456',
+ passes-through '[64496..64511]',
+ passes-through '[65536..65551]',
+ passes-through '[64512..65534]',
+ passes-through '[4200000000..4294967294]',
+ passes-through '65535',
+ passes-through '4294967295',
+ passes-through '[65552..131071]'
+end-set
+!
+route-policy RPL-REJECT-BOGON-ASN
+ if as-path in AS-SET-BOGON-ASN then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-LONG-AS-PATH
+ if as-path length ge 65 then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-RPKI-INVALID
+ if validation-state is invalid then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-ACCEPT
+ done
+end-policy
+!
+route-policy RPL-REJECT
+ drop
+end-policy
+!
+route-policy RPL-ACCEPT-DEFAULT-V4
+ if destination in PFX-DEFAULT-V4 then
+   done
+ endif
+end-policy
+!
+route-policy RPL-REJECT-DEFAULT-V4
+ if destination in PFX-DEFAULT-V4 then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-BOGON-V4
+ if destination in PFX-BOGON-V4 then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-TOO-SPECIFIC-V4
+ if destination in PFX-TOO-SPECIFIC-V4 then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-SET-ORIGIN-V4
+ if destination in PFX-BLADE-SUPERNET-V4 then
+   set origin igp
+   set community (64476:64476)
+ endif
+end-policy
+!
+route-policy RPL-ACCEPT-BLADE-SUPERNET-V4
+ if destination in PFX-BLADE-SUPERNET-V4 then
+   done
+ endif
+end-policy
+!
+route-policy RPL-ACCEPT-BLADE-SUPERNET-ORLONGER-V4
+ if destination in PFX-BLADE-SUPERNET-ORLONGER-V4 then
+   done
+ endif
+end-policy
+!
+route-policy RPL-SET-CORE-COMM-V4
+ if destination in PFX-BLADE-SUPERNET-ORLONGER-V4 then
+   set community (64476:1)
+   done
+ endif
+end-policy
+!
+route-policy RPL-CORE-IN-V4
+ apply RPL-SET-CORE-COMM-V4
+ apply RPL-ACCEPT-BLADE-SUPERNET-ORLONGER-V4
+ drop
+end-policy
+!
+route-policy RPL-CORE-OUT-V4
+ apply RPL-ACCEPT-DEFAULT-V4
+ drop
+end-policy
+!
+route-policy RPL-ACCEPT-DEFAULT-ORIGINATE-V4
+ if rib-has-route in (0.0.0.0/1 le 12, 128.0.0.0/1 le 12) then
+   done
+ endif
+ drop
+end-policy
+!
+route-policy RPL-IBGP-IN-V4
+ done
+end-policy
+!
+route-policy RPL-IBGP-OUT-V4
+ done
+end-policy
+!
+route-policy RPL-COLLECTOR-OUT-V4
+ apply RPL-REJECT-DEFAULT-V4
+ done
+end-policy
+!
+route-policy RPL-ACCEPT-DEFAULT-V6
+ if destination in PFX-DEFAULT-V6 then
+   done
+ endif
+end-policy
+!
+route-policy RPL-REJECT-DEFAULT-V6
+ if destination in PFX-DEFAULT-V6 then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-BOGON-V6
+ if destination in PFX-BOGON-V6 then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-TOO-SPECIFIC-V6
+ if destination in PFX-TOO-SPECIFIC-V6 then
+   drop
+ endif
+end-policy
+!
+route-policy RPL-SET-ORIGIN-V6
+ if destination in PFX-BLADE-SUPERNET-V6 then
+   set origin igp
+   set community (64476:64476)
+ endif
+end-policy
+!
+route-policy RPL-ACCEPT-BLADE-SUPERNET-V6
+ if destination in PFX-BLADE-SUPERNET-V6 then
+   done
+ endif
+end-policy
+!
+route-policy RPL-ACCEPT-BLADE-SUPERNET-ORLONGER-V6
+ if destination in PFX-BLADE-SUPERNET-ORLONGER-V6 then
+   done
+ endif
+end-policy
+!
+route-policy RPL-SET-CORE-COMM-V6
+ if destination in PFX-BLADE-SUPERNET-ORLONGER-V6 then
+   set community (64476:1)
+   done
+ endif
+end-policy
+!
+route-policy RPL-CORE-IN-V6
+ apply RPL-SET-CORE-COMM-V6
+ apply RPL-ACCEPT-BLADE-SUPERNET-ORLONGER-V6
+ drop
+end-policy
+!
+route-policy RPL-CORE-OUT-V6
+ apply RPL-ACCEPT-DEFAULT-V6
+ drop
+end-policy
+!
+route-policy RPL-ACCEPT-DEFAULT-ORIGINATE-V6
+ if rib-has-route in (::/1 le 32, 8000::/1 le 32) then
+   done
+ endif
+ drop
+end-policy
+!
+route-policy RPL-IBGP-IN-V6
+ done
+end-policy
+!
+route-policy RPL-IBGP-OUT-V6
+ done
+end-policy
+!
+route-policy RPL-COLLECTOR-OUT-V6
+ apply RPL-REJECT-DEFAULT-V6
+ done
+end-policy
+!
+
+route-policy RPL-REJECT-NOT-AS9286-IRR-V4
+ if destination in PFX-AS9286-IRR-V4 then
+  pass
+ else
+  drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-NOT-AS9286-IRR-V6
+ if destination in PFX-AS9286-IRR-V6 then
+  pass
+ else
+  drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-NOT-AS9957-IRR-V4
+ if destination in PFX-AS9957-IRR-V4 then
+  pass
+ else
+  drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-NOT-AS9957-IRR-V6
+ if destination in PFX-AS9957-IRR-V6 then
+  pass
+ else
+  drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-NOT-AS9957-IRR-V4
+ if destination in PFX-AS9957-IRR-V4 then
+  pass
+ else
+  drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-NOT-AS9957-IRR-V6
+ if destination in PFX-AS9957-IRR-V6 then
+  pass
+ else
+  drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-NOT-AS15169-IRR-V4
+ if destination in PFX-AS15169-IRR-V4 then
+  pass
+ else
+  drop
+ endif
+end-policy
+!
+route-policy RPL-REJECT-NOT-AS15169-IRR-V6
+ if destination in PFX-AS15169-IRR-V6 then
+  pass
+ else
+  drop
+ endif
+end-policy
+!
+route-policy RPL-AS9286-TRANSIT-IN-V4
+ apply RPL-REJECT-DEFAULT-V4
+ apply RPL-REJECT-LONG-AS-PATH
+ apply RPL-REJECT-TOO-SPECIFIC-V4
+ apply RPL-REJECT-BOGON-V4
+ apply RPL-REJECT-BOGON-ASN
+ done
+end-policy
+!
+route-policy RPL-AS9286-TRANSIT-OUT-V4
+ if destination in PFX-BLADE-SUPERNET-V4 then
+   done
+ endif
+ drop
+end-policy
+!
+route-policy RPL-AS9286-TRANSIT-IN-V6
+ apply RPL-REJECT-DEFAULT-V6
+ apply RPL-REJECT-LONG-AS-PATH
+ apply RPL-REJECT-TOO-SPECIFIC-V6
+ apply RPL-REJECT-BOGON-V6
+ apply RPL-REJECT-BOGON-ASN
+ done
+end-policy
+!
+route-policy RPL-AS9286-TRANSIT-OUT-V6
+ if destination in PFX-BLADE-SUPERNET-V6 then
+   done
+ endif
+ drop
+end-policy
+!
+route-policy RPL-AS9957-TRANSIT-IN-V4
+ apply RPL-REJECT-DEFAULT-V4
+ apply RPL-REJECT-LONG-AS-PATH
+ apply RPL-REJECT-TOO-SPECIFIC-V4
+ apply RPL-REJECT-BOGON-V4
+ apply RPL-REJECT-BOGON-ASN
+ done
+end-policy
+!
+route-policy RPL-AS9957-TRANSIT-OUT-V4
+ if destination in PFX-BLADE-SUPERNET-V4 then
+   done
+ endif
+ drop
+end-policy
+!
+route-policy RPL-AS9957-TRANSIT-IN-V6
+ apply RPL-REJECT-DEFAULT-V6
+ apply RPL-REJECT-LONG-AS-PATH
+ apply RPL-REJECT-TOO-SPECIFIC-V6
+ apply RPL-REJECT-BOGON-V6
+ apply RPL-REJECT-BOGON-ASN
+ done
+end-policy
+!
+route-policy RPL-AS9957-TRANSIT-OUT-V6
+ if destination in PFX-BLADE-SUPERNET-V6 then
+   done
+ endif
+ drop
+end-policy
+!
+route-policy RPL-AS9957-IX-KINX-IN-V4
+ apply RPL-REJECT-DEFAULT-V4
+ apply RPL-REJECT-LONG-AS-PATH
+ apply RPL-REJECT-TOO-SPECIFIC-V4
+ apply RPL-REJECT-BOGON-V4
+ apply RPL-REJECT-BOGON-ASN
+ set local-preference 200
+ done
+end-policy
+!
+route-policy RPL-AS9957-IX-KINX-OUT-V4
+ if destination in PFX-BLADE-SUPERNET-V4 then
+   done
+ endif
+ drop
+end-policy
+!
+route-policy RPL-AS15169-IX-KINX-IN-V4
+ apply RPL-REJECT-DEFAULT-V4
+ apply RPL-REJECT-LONG-AS-PATH
+ apply RPL-REJECT-TOO-SPECIFIC-V4
+ apply RPL-REJECT-BOGON-V4
+ apply RPL-REJECT-BOGON-ASN
+ set community (64476:108)
+ set local-preference 200
+ done
+end-policy
+!
+route-policy RPL-AS15169-IX-KINX-OUT-V4
+ if destination in PFX-BLADE-SUPERNET-V4 then
+   set community (64476:108)
+   done
+ endif
+ drop
+end-policy
+!
+
+router static
+ address-family ipv4 unicast
+   198.51.100.0/24 Null0
+ !
+ address-family ipv6 unicast
+   2406:3bc0::/40 Null0
+   2406:3bc0:100::/40 Null0
+ !
+!
+router bgp 140894
+ nsr
+ bgp router-id 198.51.100.1
+ bgp graceful-restart
+ bgp log neighbor changes detail
+ bgp origin-as validation time 30
+ address-family ipv4 unicast
+  bgp origin-as validation enable
+  bgp bestpath origin-as allow invalid
+  network 198.51.100.0/24 route-policy RPL-SET-ORIGIN-V4
+  redistribute connected
+ !
+ address-family ipv6 unicast
+  bgp origin-as validation enable
+  bgp bestpath origin-as allow invalid
+  network 2406:3bc0::/40 route-policy RPL-SET-ORIGIN-V6
+  network 2406:3bc0:100::/40 route-policy RPL-SET-ORIGIN-V6
+  redistribute connected
+ !
+ neighbor-group NBRGRP-AS9286-TRANSIT-V4
+  remote-as 9286
+  enforce-first-as
+  address-family ipv4 unicast
+   maximum-prefix 1048576 90
+   send-community-ebgp
+   allowas-in 5
+   remove-private-as
+   route-policy RPL-AS9286-TRANSIT-IN-V4 in
+   route-policy RPL-AS9286-TRANSIT-OUT-V4 out
+   soft-reconfiguration inbound always
+  !
+ !
+ neighbor-group NBRGRP-AS9286-TRANSIT-V6
+  remote-as 9286
+  enforce-first-as
+  address-family ipv6 unicast
+   send-community-ebgp
+   allowas-in 5
+   remove-private-as
+   route-policy RPL-AS9286-TRANSIT-IN-V6 in
+   route-policy RPL-AS9286-TRANSIT-OUT-V6 out
+   soft-reconfiguration inbound always
+  !
+ !
+ neighbor-group NBRGRP-AS9957-TRANSIT-V4
+  remote-as 9957
+  enforce-first-as
+  address-family ipv4 unicast
+   maximum-prefix 1048576 90
+   send-community-ebgp
+   allowas-in 5
+   remove-private-as
+   route-policy RPL-AS9957-TRANSIT-IN-V4 in
+   route-policy RPL-AS9957-TRANSIT-OUT-V4 out
+   soft-reconfiguration inbound always
+  !
+ !
+ neighbor-group NBRGRP-AS9957-TRANSIT-V6
+  remote-as 9957
+  enforce-first-as
+  address-family ipv6 unicast
+   send-community-ebgp
+   allowas-in 5
+   remove-private-as
+   route-policy RPL-AS9957-TRANSIT-IN-V6 in
+   route-policy RPL-AS9957-TRANSIT-OUT-V6 out
+   soft-reconfiguration inbound always
+  !
+ !
+ neighbor-group NBRGRP-AS9957-IX-KINX-V4
+  remote-as 9957
+  enforce-first-as disable
+  address-family ipv4 unicast
+   maximum-prefix 70000 90
+   send-community-ebgp
+   remove-private-as
+   route-policy RPL-AS9957-IX-KINX-IN-V4 in
+   route-policy RPL-AS9957-IX-KINX-OUT-V4 out
+   soft-reconfiguration inbound always
+  !
+ !
+ neighbor-group NBRGRP-AS15169-IX-KINX-V4
+  remote-as 15169
+  enforce-first-as
+  password encrypted ...
+  address-family ipv4 unicast
+   maximum-prefix 15000 90
+   send-community-ebgp
+   remove-private-as
+   route-policy RPL-AS15169-IX-KINX-IN-V4 in
+   route-policy RPL-AS15169-IX-KINX-OUT-V4 out
+   soft-reconfiguration inbound always
+  !
+ !
+ neighbor 121.78.30.145
+  use neighbor-group NBRGRP-AS9286-TRANSIT-V4
+  description Kinx-dom AS9286
+ !
+ neighbor 2401:2700::161
+  use neighbor-group NBRGRP-AS9286-TRANSIT-V6
+  description Kinx-dom AS9286
+ !
+ neighbor 121.78.30.153
+  use neighbor-group NBRGRP-AS9957-TRANSIT-V4
+  description Kinx-int AS9957
+ !
+ neighbor 2401:2700::169
+  use neighbor-group NBRGRP-AS9957-TRANSIT-V6
+  description Kinx-int AS9957
+ !
+ neighbor 192.145.251.2
+  use neighbor-group NBRGRP-AS9957-IX-KINX-V4
+  description Rs-kinx AS9957
+ !
+ neighbor 192.145.251.3
+  use neighbor-group NBRGRP-AS9957-IX-KINX-V4
+  description Rs-kinx AS9957
+ !
+ neighbor 192.145.251.168
+  use neighbor-group NBRGRP-AS15169-IX-KINX-V4
+  description Google AS15169
+ !
+ neighbor 192.145.251.169
+  use neighbor-group NBRGRP-AS15169-IX-KINX-V4
+  description Google AS15169
+ !
+!
+flow exporter-map FLOW-EXPORT
+ version v9
+  options interface-table timeout 60
+  options sampler-table timeout 60
+  template timeout 30
+ !
+ transport udp 20013
+ source Loopback0
+ destination 208.76.14.241
+!
+flow monitor-map FLOW-IPv4
+ record ipv4
+ exporter FLOW-EXPORT
+ cache entries 500000
+ cache timeout active 60
+ cache timeout inactive 15
+!
+flow monitor-map FLOW-IPv6
+ record ipv6
+ exporter FLOW-EXPORT
+ cache timeout active 60
+ cache timeout inactive 15
+!
+sampler-map FLOW-SAMPLER
+ random 1 out-of 1024
+!
+router bgp 140894
+ neighbor-group NBRGRP-KENTIK-COLLECTOR-V4
+  remote-as 140894
+  cluster-id 198.51.100.1
+  update-source Loopback0
+  address-family ipv4 unicast
+   route-reflector-client
+   route-policy RPL-REJECT in
+   route-policy RPL-COLLECTOR-OUT-V4 out
+   soft-reconfiguration inbound always
+  !
+ !
+ neighbor 208.76.14.223
+  use neighbor-group NBRGRP-KENTIK-COLLECTOR-V4
+  description Route collector: KENTIK [IPv4]
+ !
+ neighbor-group NBRGRP-KENTIK-COLLECTOR-V6
+  remote-as 140894
+  cluster-id 198.51.100.1
+  update-source Loopback0
+  address-family ipv6 unicast
+   route-reflector-client
+   route-policy RPL-REJECT in
+   route-policy RPL-COLLECTOR-OUT-V6 out
+   soft-reconfiguration inbound always
+  !
+ !
+ neighbor 2620:129:1:2::1
+  use neighbor-group NBRGRP-KENTIK-COLLECTOR-V6
+  description Route collector: KENTIK [IPv6]
+ !
+!
+
+router ospf 140894
+ router-id 198.51.100.1
+ area 0
+  interface Loopback0
+   passive enable
+  !
+  interface TenGigE0/0/1/3
+   network point-to-point
+   cost 10
+  !
+ !
+!
+
+router bgp 140894
+ neighbor-group NBRGRP-IBGP-V4
+  remote-as 140894
+  update-source Loopback0
+  address-family ipv4 unicast
+  maximum-prefix 1048576 90
+   next-hop-self
+   allowas-in 5
+   route-policy RPL-IBGP-IN-V4 in
+   route-policy RPL-IBGP-OUT-V4 out
+   soft-reconfiguration inbound always
+  !
+ !
+ neighbor 198.51.100.2
+  use neighbor-group NBRGRP-IBGP-V4
+  description iBGP session to edge2.sk1.blade-group.net [IPv4]
+ !
+!
+
+router ospfv3 140894
+ router-id 198.51.100.1
+ area 0
+  interface Loopback0
+   passive
+  !
+  interface TenGigE0/0/1/3
+   network point-to-point
+   cost 10
+  !
+ !
+!
+
+router bgp 140894
+ neighbor-group NBRGRP-IBGP-V6
+  remote-as 140894
+  update-source Loopback0
+  address-family ipv6 unicast
+   next-hop-self
+   allowas-in 5
+   route-policy RPL-IBGP-IN-V6 in
+   route-policy RPL-IBGP-OUT-V6 out
+   soft-reconfiguration inbound always
+  !
+ !
+ neighbor 2406:3bc0:100:b1:a:de:c633:6402
+  use neighbor-group NBRGRP-IBGP-V6
+  description iBGP session to edge2.sk1.blade-group.net [IPv6]
+ !
+!
+interface TenGigE0/0/1/0.100
+ mtu 9216
+ ipv4 address 100.71.238.61 255.255.255.254
+ ipv6 address 2406:3bc0:100:b1:a:de:6447:ee3d/127
+ load-interval 30
+ flow ipv4 monitor FLOW-IPv4 sampler FLOW-SAMPLER ingress
+ flow ipv6 monitor FLOW-IPv6 sampler FLOW-SAMPLER ingress
+ encapsulation dot1q 100
+!
+interface TenGigE0/0/1/1.100
+ mtu 9216
+ ipv4 address 100.71.238.189 255.255.255.254
+ ipv6 address 2406:3bc0:100:b1:a:de:6447:eebd/127
+ load-interval 30
+ flow ipv4 monitor FLOW-IPv4 sampler FLOW-SAMPLER ingress
+ flow ipv6 monitor FLOW-IPv6 sampler FLOW-SAMPLER ingress
+ encapsulation dot1q 100
+!
+router bgp 140894
+ neighbor-group NBRGRP-SPINE-V4
+  remote-as 4207999980
+  local-as 4207999994
+  address-family ipv4 unicast
+   route-policy RPL-CORE-IN-V4 in
+   route-policy RPL-CORE-OUT-V4 out
+   default-originate route-policy RPL-ACCEPT-DEFAULT-ORIGINATE-V4
+   soft-reconfiguration inbound always
+  !
+ !
+ neighbor 100.71.238.60
+  use neighbor-group NBRGRP-SPINE-V4
+  description BGP Fabric: edge1 to spine1 [IPv4]
+ !
+ neighbor-group NBRGRP-SPINE-V6
+  remote-as 4207999980
+  local-as 4207999994
+  address-family ipv6 unicast
+   route-policy RPL-CORE-IN-V6 in
+   route-policy RPL-CORE-OUT-V6 out
+   default-originate route-policy RPL-ACCEPT-DEFAULT-ORIGINATE-V6
+   soft-reconfiguration inbound always
+  !
+ !
+ neighbor 2406:3bc0:100:b1:a:de:6447:ee3c
+  use neighbor-group NBRGRP-SPINE-V6
+  description BGP Fabric: edge1 to spine1 [IPv6]
+ !
+ neighbor 100.71.238.188
+  use neighbor-group NBRGRP-SPINE-V4
+  description BGP Fabric: edge1 to spine2 [IPv4]
+ !
+ neighbor 2406:3bc0:100:b1:a:de:6447:eebc
+  use neighbor-group NBRGRP-SPINE-V6
+  description BGP Fabric: edge1 to spine2 [IPv6]
+ !
+!

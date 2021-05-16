@@ -1,0 +1,39 @@
+version 12.2
+no service pad
+no service password-encryption
+!
+hostname ob4-p8.ussfo03
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$eFML$kx7rcJVgO9jLGEFvfqERc0
+!
+username blade privilege 15 password 0 blade
+!
+banner motd 
+
+To upgrade this system, use the following commands:
+
+write erase
+archive download-sw /force-reload /leave-old-sw tftp://172.30.31.253/c2960s-universalk9-tar.150-2.SE12.tar
+
+
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+interface Vlan1
+ ip address 172.30.24.58 255.255.248.0
+!
+ip default-gateway 172.30.31.254
+!
+line con 0
+line vty 0 4
+ login local
+ transport input telnet
+line vty 5 15
+ login local
+ transport input telnet
+!
+end

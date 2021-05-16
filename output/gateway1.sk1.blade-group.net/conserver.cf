@@ -1,0 +1,38 @@
+default * {
+        timestamp 1hab;
+        master localhost;
+        logfile /var/log/conserver/devices/&;
+        rw *;                           # allow all users
+}
+access * {
+        trusted 127.0.0.1;
+}
+default opengear {
+        portinc 1;
+        type exec;
+        exec /usr/bin/ssh -l root -p P H;
+        execsubst H=hs,P=Pd;
+        portbase 3000;
+}
+
+default con1-n1.sk1.blade-group.net {
+        include opengear ;
+        host con1-n1.sk1.blade-group.net;
+}
+
+console edge1 { include con1-n1.sk1.blade-group.net ;port 1; }
+console edge2 { include con1-n1.sk1.blade-group.net ;port 2; }
+console spine1 { include con1-n1.sk1.blade-group.net ;port 3; }
+console spine2 { include con1-n1.sk1.blade-group.net ;port 4; }
+console to1-ap1 { include con1-n1.sk1.blade-group.net ;port 5; }
+console to2-ap1 { include con1-n1.sk1.blade-group.net ;port 6; }
+console to1-p1 { include con1-n1.sk1.blade-group.net ;port 7; }
+console to2-p1 { include con1-n1.sk1.blade-group.net ;port 8; }
+console to1-p2 { include con1-n1.sk1.blade-group.net ;port 9; }
+console to2-p2 { include con1-n1.sk1.blade-group.net ;port 10; }
+console ob1-n1 { include con1-n1.sk1.blade-group.net ;port 11; }
+console ob2-n1 { include con1-n1.sk1.blade-group.net ;port 12; }
+console ob1-p1 { include con1-n1.sk1.blade-group.net ;port 13; }
+console ob2-p1 { include con1-n1.sk1.blade-group.net ;port 14; }
+console ob1-p2 { include con1-n1.sk1.blade-group.net ;port 15; }
+console ob2-p2 { include con1-n1.sk1.blade-group.net ;port 16; }

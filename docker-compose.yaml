@@ -7,7 +7,7 @@ services:
 
   # IRRd
   irrd:
-    image: registry.gitlab.com/blade-group/infra/network/irrd-legacy:latest
+    image: ghcr.io/jerikan-network/irrd-legacy:latest
     expose:
       - 43
 

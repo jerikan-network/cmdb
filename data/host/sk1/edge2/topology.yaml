@@ -39,6 +39,6 @@ interfaces:
     connectivity: 10G
 addresses:
   loopback:
-    - 103.153.6.2
+    - 198.51.100.2
     - ~^ip6
   main: 172.29.15.29/21

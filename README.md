@@ -396,7 +396,7 @@ IPv6 address from an IPv4 address:
 ```yaml
 addresses:
   loopback:
-    - 103.153.6.2/24
+    - 198.51.100.2/24
     - ~^ip6
 ```
 
@@ -405,8 +405,8 @@ This will be translated to:
 ```yaml
 addresses:
   loopback:
-    - 103.153.6.2/24
-    - 2406:3bc0:100:b1:a:de:103.153.6.2/120
+    - 198.51.100.2/24
+    - 2406:3bc0:100:b1:a:de:198.51.100.2/120
 ```
 
 This requires `base-public-6` to be defined in `topology.yaml`.

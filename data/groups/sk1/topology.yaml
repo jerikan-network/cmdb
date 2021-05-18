@@ -27,7 +27,7 @@ patchpanels:
         port: GigabitEthernet0/0/0/0
 
 base: 172.29.0.0/16
-base-public: 103.153.6.0/24
+base-public: 198.51.100.0/24
 base-provisioning: 10.142.0.0/15
 vlans:
   public: 100

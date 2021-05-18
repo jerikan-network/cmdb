@@ -411,6 +411,40 @@ addresses:
 
 This requires `base-public-6` to be defined in `topology.yaml`.
 
+### Examples
+#### BGP
+```yaml
+peers:
+  transit:
+    MyTransit:
+      authentication: PASSWORD
+      asn: 64496
+      irr: AS-MYTRANSIT
+      max-prefixes-4: false
+      max-prefixes-6: false
+      monitored: true
+      policy-name: "AS64496-SPECIFIC"
+      raw-import-4: |
+        term SomeTerm {
+          from {
+            route-filter 192.0.2.2/32 exact;
+          }
+      raw-import-6: |
+        term SomeTerm {
+          from {
+            route-filter 2001:db8::2/128 exact;
+          }
+      remote:
+        - 192.0.2.1
+        - 2001:db8::1
+      specific-import:
+        - name: REMOTE-AS
+          as-path: ".*64497.*"
+          lp-delta: 50 #+/-
+      specific-export:
+        prepend: 2
+```
+
 ## Checks
 
 Check scripts are executed from the main directory and are provided

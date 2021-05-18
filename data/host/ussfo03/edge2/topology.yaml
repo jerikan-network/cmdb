@@ -112,7 +112,7 @@ interfaces:
   ae0.100:
     ospf: 10
     address:
-      - 69.58.92.9/31
+      - "~{{ lookup('topology', 'subnets').interco|ippeer }}/31"
       - ~^ip6
     
 addresses:

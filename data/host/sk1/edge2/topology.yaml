@@ -14,7 +14,7 @@ interfaces:
     type: core
     connectivity: 10G-SR
     address:
-      - 103.153.6.9/31
+      - "~{{ lookup('topology', 'subnets').interco|ippeer }}/31"
       - ~^ip6
     ospf: 10
   TenGigE0/0/2/0:

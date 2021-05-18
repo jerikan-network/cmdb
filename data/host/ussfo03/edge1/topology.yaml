@@ -28,8 +28,7 @@ interfaces:
   et-0/0/4:
     connectivity: null
   et-0/0/5:
-    connectivity: 100G-LR4
-    aggregate: ae2
+    connectivity: 100G
   et-0/0/6:
     connectivity: null
   et-0/0/7:
@@ -108,16 +107,8 @@ interfaces:
   ae0.100:
     ospf: 10
     address:
-      - 69.58.92.8/31
+      - "~{{ lookup('topology', 'subnets').interco }}"
       - ~^ip6
-  ae2:
-    type: man
-    remote: edge1.sv2
-    address:
-      - 69.58.92.6/31
-      - ~^ip6
-    contract: ...
-    provider: zayo
 addresses:
   loopback:
     - 69.58.92.1

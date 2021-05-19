@@ -3,7 +3,7 @@ templates:
   config-base.txt: junos/base.j2
   config-irr.txt: junos/irr.j2
 checks:
-  - description: "syntax check with Junoser"
+  - description: "Juniper configuration file syntax check"
     script: checks/junoser
     cache:
       input: config.txt

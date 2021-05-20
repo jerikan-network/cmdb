@@ -2,7 +2,7 @@
 FROM python:3.8-buster AS dependencies
 WORKDIR /app
 ENV PYTHONUSERBASE=/app/python
-RUN pip install --user pipenv
+RUN pip install --user --no-warn-script-location pipenv
 COPY ci/jerikan/Pipfile* ./
 RUN env PIP_USER=1 PIPENV_SYSTEM=1 /app/python/bin/pipenv install --deploy
 

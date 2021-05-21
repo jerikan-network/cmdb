@@ -1,9 +1,9 @@
 ipv4 access-list ACL-SSH
 {% if lookup("topology", "addresses").main is defined %}
- permit ipv4 {{ lookup('topology', 'addresses').main | ipaddr('subnet') }} any
+ 100 permit ipv4 {{ lookup('topology', 'addresses').main | ipaddr('subnet') }} any
 {% endif %}
 {% for items, prefix in lookup('topology', 'acl-addresses').admin.items() %}
- permit ipv4 {{ prefix }} any
+ {{ loop.index0 * 10 + 110 }} permit ipv4 {{ prefix }} any
 {% endfor %}
 !
 {% for user, value in lookup("system", "users").items() if  user != "blade" %}

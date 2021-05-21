@@ -4,8 +4,8 @@
       {% for name, peer in peers.items() if peer.irr is defined %}
         {% set prefix_set_4 = 'PFX-AS{}-IRR-V4'.format(peer.asn | upper) %}
         {% set prefix_set_6 = 'PFX-AS{}-IRR-V6'.format(peer.asn | upper) %}
-{{ bgpq3(prefix_set_4, "-4 -R 24 -m 24", peer.irr) }}
-{{ bgpq3(prefix_set_6, "-6 -R 48 -m 48", peer.irr) }}
+{{ bgpq3(prefix_set_4, "-4 -R 24 -m 24", peer.irr) | replace("no prefix-set {}".format(prefix_set_4), "") }}
+{{ bgpq3(prefix_set_6, "-6 -R 48 -m 48", peer.irr) | replace("no prefix-set {}".format(prefix_set_6), "") }}
       {% endfor %}
     {% endfor %}
   {% endif %}

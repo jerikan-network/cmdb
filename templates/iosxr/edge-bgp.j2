@@ -254,6 +254,8 @@ end-policy
 {% endfor %}
 {% endfor %}
 
+{% include "iosxr/irr.j2" %}
+
 {% set asn = lookup("bgp", "local-asn") %}
 {% set supernets = lookup("bgp", "supernets") %}
 router static

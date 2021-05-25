@@ -8,7 +8,7 @@ templates in `templates/`. It uses the list of devices in
 
 More details on use and rationale are available in a [blog post][].
 
-[blog post]: https://vincent.bernat.ch/en/blog/2021-cmdb-network "Jerikan: a configuration management system for network teams"
+[blog post]: https://vincent.bernat.ch/en/blog/2021-network-jerikan-ansible "Jerikan: a configuration management system for network teams"
 
 # Get started
 

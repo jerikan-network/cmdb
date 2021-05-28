@@ -1,98 +1,98 @@
 matchers:
-  - "^none$":
-      host: "none"
-  - "^(([^.]*)\\..*)\\.blade-group\\.net":
+  - '^none$':
+      host: 'none'
+  - '^(([^.]*)\..*)\.blade-group\.net':
       environment: prod
-      host: "\\1"
-      shorthost: "\\2"
-  - "\\.lab\\.":
+      host: '\1'
+      shorthost: '\2'
+  - '\.lab\.':
       environment: lab
   # Location
-  - "\\.(ussfo03)\\.":
-      location: "\\1"
+  - '\.(ussfo03)\.':
+      location: '\1'
       continent: us
-  - "\\.(sk1)\\.":
-      location: "\\1"
+  - '\.(sk1)\.':
+      location: '\1'
       continent: apac
-  - "^[^.]+(\\d+)\\.":
-      member: "\\1"
-  - "^to([12])-[as]?p(\\d+)\\.":
-      member: "\\1"
-      pod: "\\2"
+  - '^[^.]+(\d+)\.':
+      member: '\1'
+  - '^to([12])-[as]?p(\d+)\.':
+      member: '\1'
+      pod: '\2'
   # Groups
-  - "^to[12]-p\\d+\\.":
+  - '^to[12]-p\d+\.':
       groups:
         - tor
         - tor-bgp
         - tor-bgp-compute
-  - "^to[12]-ap\\d+\\.":
+  - '^to[12]-ap\d+\.':
       groups:
         - tor
         - tor-bgp
         - tor-bgp-admin
-  - "^to[12]-sp\\d+\\.":
+  - '^to[12]-sp\d+\.':
       groups:
         - tor
         - tor-bgp
         - tor-bgp-storage
-  - "^spine\\d+\\.":
+  - '^spine\d+\.':
       groups:
         - spine
         - spine-bgp
-  - "^s-spine\\d+\\.":
+  - '^s-spine\d+\.':
       groups:
         - sspine
         - sspine-bgp
-  - "^con\\d+-n\\d+\\.":
+  - '^con\d+-n\d+\.':
       groups:
         - console
-  - "^edge\\d+\\.":
+  - '^edge\d+\.':
       groups:
         - edge
-  - "^ob[1-4]-":
+  - '^ob[1-4]-':
       groups:
         - oob
-  - "^gateway[12]\\.":
+  - '^gateway[12]\.':
       os: linux
       groups:
         - adm-gateway
   # Vendor
-  - "^to[12]-(p|ap)\\d+\\.sk1\\.":
+  - '^to[12]-(p|ap)\d+\.sk1\.':
       os: cumulus
       model: dell-s4048
-  - "^to[12]-sp\\d+\\.sk1\\.":
+  - '^to[12]-sp\d+\.sk1\.':
       os: cumulus
       model: dell-s6010
-  - "^to[12]-(p|ap|sp)\\d+\\.ussfo03\\.":
+  - '^to[12]-(p|ap|sp)\d+\.ussfo03\.':
       os: cumulus
       model: wedge100
-  - "^to[12]-p2\\.ussfo03\\.":
+  - '^to[12]-p2\.ussfo03\.':
       os: junos
       model: qfx5110-48s
-  - "^spine\\d+\\.sk1\\.":
+  - '^spine\d+\.sk1\.':
       os: cumulus
       model: dell-s6010
-  - "^spine\\d+\\.ussfo03\\.":
+  - '^spine\d+\.ussfo03\.':
       os: cumulus
       model: wedge100
-  - "^con\\d+-n\\d+\\.sk1\\.":
+  - '^con\d+-n\d+\.sk1\.':
       os: opengear
       model: cm7116-2-sac
-  - "^con\\d+-n\\d+\\.ussfo03\\.":
+  - '^con\d+-n\d+\.ussfo03\.':
       os: opengear
       model: cm7116-2-dac
-  - "^con\\d+-ag\\d+\\.ussfo03\\.":
+  - '^con\d+-ag\d+\.ussfo03\.':
       os: opengear
       model: cm7132-2-dac
-  - "^s-spine[12]\\.ussfo03\\.":
+  - '^s-spine[12]\.ussfo03\.':
       os: cumulus
       model: wedge100
-  - "^edge\\d+\\.ussfo03\\.":
+  - '^edge\d+\.ussfo03\.':
       os: junos
       model: qfx10002-36q
-  - "^edge\\d+\\.sk1\\.":
+  - '^edge\d+\.sk1\.':
       os: iosxr
       model: asr9k
-  - "^ob[1-4]-(p|sp|ag|n)\\d+\\.":
+  - '^ob[1-4]-(p|sp|ag|n)\d+\.':
       os: ios
       model: c2960s

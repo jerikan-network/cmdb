@@ -208,8 +208,8 @@ main by GitLab. If needed, this is possible use an older version of
 main or the result of a merge request. For this, you need to
 retrieve the SHA of the commit to use as a base.
 
-For older versions of master, the [commit
-history](https://gitlab.com/blade-group/infra/network/cmdb/-/commits/master)
+For older versions of main, the [commit
+history](https://github.com/jerikan-network/cmdb/commits)
 as the information. Use the clipboard icon to retrieve the full SHA.
 Only the commits with a green checkmark will work. For MR, you can get
 the same information from the "Commits" tab. Only the top-most commit

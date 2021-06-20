@@ -2,7 +2,7 @@
 /.venv/
 /.cache~/
 /.pytest_cache/
-/master.zip
+/main.zip
 
 *.pyc
 .DS_Store

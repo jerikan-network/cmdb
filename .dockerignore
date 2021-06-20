@@ -2,4 +2,4 @@ output/
 .venv/
 .cache~/
 .pytest_cache/
-master.zip
+main.zip

@@ -26,10 +26,10 @@ case $SERVICE in
         mkdir -p .cache~ output
         ;;
     ansible-gitlab)
-        # Grab `output` from Gitlab. By default, latest master is
+        # Grab `output` from Gitlab. By default, latest main is
         # used. Beware that local ansible/ content is still used.
-        remote=$(git for-each-ref --format='%(upstream:remotename)' refs/heads/master)
-        export SHA=${SHA:-$(git fetch -q ${remote} && git show-ref -s remotes/${remote}/master)}
+        remote=$(git for-each-ref --format='%(upstream:remotename)' refs/heads/main)
+        export SHA=${SHA:-$(git fetch -q ${remote} && git show-ref -s remotes/${remote}/main)}
         docker-compose build ansible-gitlab
         ;;
 esac

@@ -11,7 +11,7 @@ build templates:
   stage: build
   tags: [network]
   script:
-    # Retrieve master output if we are in a merge request
+    # Retrieve main output if we are in a merge request
     - |
       if test -n "$CI_MERGE_REQUEST_ID"; then
            echo "Target branch is $CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
@@ -23,20 +23,20 @@ build templates:
            echo "Common ancestor with $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME is $ref"
            echo "Pulling docker image $image"
            docker pull $image
-           echo "Extract to output-master"
+           echo "Extract to output-main"
            docker container create --name tmp_$$ $image nothing
-           mkdir output-master
+           mkdir output-main
            docker container export tmp_$$ \
-             | tar -C output-master -xf - --strip-components=1 --wildcards output/\*
+             | tar -C output-main -xf - --strip-components=1 --wildcards output/\*
            docker container rm tmp_$$
       fi
     # Build templates
     - docker-compose rm -s -f -v
     - docker image rm --no-prune cmdb_jerikan-ci:latest || true
     - docker-compose pull
-    - SERVICE=jerikan-ci ./run build $(test -n "$CI_MERGE_REQUEST_ID" && echo --diff=output-master)
+    - SERVICE=jerikan-ci ./run build $(test -n "$CI_MERGE_REQUEST_ID" && echo --diff=output-main)
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "main"
     - if: $CI_MERGE_REQUEST_ID
   cache:
     paths:
@@ -55,7 +55,7 @@ push artifacts to registry:
   stage: report
   tags: [network]
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "main"
     - if: $CI_MERGE_REQUEST_ID
   dependencies:
     - build templates
@@ -74,7 +74,7 @@ diff generated:
     - docker-compose build diff2html
     - (cat output/*/diff.txt; echo) | docker-compose run --rm diff2html > diff.html
   artifacts:
-    expose_as: differences with master
+    expose_as: differences with main
     expire_in: 1 month
     paths:
       - diff.html

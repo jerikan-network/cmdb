@@ -31,7 +31,7 @@ $ ./run-jerikan build
 To limit to a few devices:
 
 ```console
-$ ./run-jerikan build --limit=gateway\?.ussfo03.blade-group.net,none
+$ ./run-jerikan build --limit=spine\?.ussfo03.blade-group.net,none
 ```
 
 ## Get the scope of a device

@@ -1,5 +1,9 @@
+image: docker/compose:latest
+services:
+  - docker:dind
 before_script:
   - docker info
+  - docker-compose version
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
 stages:
@@ -9,7 +13,6 @@ stages:
 
 build templates:
   stage: build
-  tags: [network]
   script:
     # Retrieve main output if we are in a merge request
     - |
@@ -53,7 +56,6 @@ build templates:
 
 push artifacts to registry:
   stage: report
-  tags: [network]
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
     - if: $CI_MERGE_REQUEST_ID
@@ -65,7 +67,6 @@ push artifacts to registry:
 
 diff generated:
   stage: report
-  tags: [network]
   rules:
     - if: $CI_MERGE_REQUEST_ID
   dependencies:

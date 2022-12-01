@@ -189,20 +189,32 @@ def torange(arg):
     [1, 2, 3, 4, 5, 8, 9]
     >>> torange("5-1,9,10")
     [5, 4, 3, 2, 1, 9, 10]
+    >>> torange("5/1,5/4,6/1-4")
+    ['5/1', '5/4', '6/1', '6/2', '6/3', '6/4']
     """
     result = []
     for r in str(arg).split(","):
         if not r:
             continue
         if "-" in r:
+            prefix = None
+            if "/" in r:
+                prefix, r = r.rsplit("/", 1)
             start, end = r.split("-", 1)
             start, end = int(start), int(end)
             if start <= end:
-                result += list(range(start, end + 1))
+                partial_result = list(range(start, end + 1))
             else:
-                result += list(range(start, end - 1, -1))
+                partial_result = list(range(start, end - 1, -1))
+            if prefix is None:
+                result += partial_result
+            else:
+                result += ["{}/{}".format(prefix, c) for c in partial_result]
         else:
-            result.append(int(r))
+            try:
+                result.append(int(r))
+            except ValueError:
+                result.append(r)
     return result
 
 

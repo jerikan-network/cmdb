@@ -1,3 +1,7 @@
+> [!WARNING]
+> This repository is unmaintained. Everything is still relevant today but the
+> software suffers from bitrot (old Python version, old Ansible version).
+
 This repository contains the configuration management system for Blade
 Network Team. It contains the base of truth in `data/`. Jerikan is the
 piece of software generating configuration files from data and
